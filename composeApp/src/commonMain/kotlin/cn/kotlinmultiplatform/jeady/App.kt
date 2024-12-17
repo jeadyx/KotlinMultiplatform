@@ -1,37 +1,45 @@
 package cn.kotlinmultiplatform.jeady
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.material.*
+import androidx.compose.foundation.layout.*
+import cn.kotlinmultiplatform.jeady.pages.*
 
 import kotlinmultiplatform.composeapp.generated.resources.Res
 import kotlinmultiplatform.composeapp.generated.resources.compose_multiplatform
 
 @Composable
-@Preview
 fun App() {
-    MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
-        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me!")
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text("科技网站") })
+        },
+        content = {
+            Navigation()
+        }
+    )
+}
+
+@Composable
+fun Navigation() {
+    var selectedTab by remember { mutableStateOf(0) }
+    val tabs = listOf("推荐", "博客", "Bugs", "关于")
+
+    Column {
+        TabRow(selectedTabIndex = selectedTab) {
+            tabs.forEachIndexed { index, title ->
+                Tab(
+                    text = { Text(title) },
+                    selected = selectedTab == index,
+                    onClick = { selectedTab = index }
+                )
             }
-            AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
-                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting")
-                }
-            }
+        }
+        when (selectedTab) {
+            0 -> RecommendationsPage()
+            1 -> BlogPage()
+            2 -> BugsPage()
+            3 -> AboutPage()
         }
     }
 }
