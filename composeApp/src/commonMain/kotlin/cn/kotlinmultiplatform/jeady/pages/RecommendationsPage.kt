@@ -34,8 +34,10 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -135,6 +137,206 @@ fun RecommendationsPage(
             tags = listOf("JavaScript", "React", "跨平台"),
             iconRes = Res.drawable.react_hero,
             onClick = { onNavigateToDetail("react-native") }
+        ),
+        RecommendItem(
+            title = "Vue.js",
+            description = "渐进式 JavaScript 框架",
+            category = "前端开发",
+            tags = listOf("JavaScript", "Vue", "前端"),
+            iconRes = Res.drawable.tech_hero,
+            onClick = { onNavigateToDetail("vue") }
+        ),
+        RecommendItem(
+            title = "Spring Boot",
+            description = "简化 Spring 应用开发的框架",
+            category = "后端开发",
+            tags = listOf("Java", "Spring", "后端"),
+            iconRes = Res.drawable.tech_hero,
+            onClick = { onNavigateToDetail("spring-boot") }
+        ),
+        RecommendItem(
+            title = "TensorFlow",
+            description = "开源机器学习平台",
+            category = "人工智能",
+            tags = listOf("AI", "机器学习", "深度学习"),
+            iconRes = Res.drawable.tech_hero,
+            onClick = { onNavigateToDetail("tensorflow") }
+        ),
+        RecommendItem(
+            title = "Docker",
+            description = "开发、部署和运行应用程序的开放平台",
+            category = "DevOps",
+            tags = listOf("容器化", "DevOps", "部署"),
+            iconRes = Res.drawable.tech_hero,
+            onClick = { onNavigateToDetail("docker") }
+        ),
+        RecommendItem(
+            title = "GraphQL",
+            description = "API 查询语言和运行时",
+            category = "后端开发",
+            tags = listOf("API", "查询语言", "后端"),
+            iconRes = Res.drawable.tech_hero,
+            onClick = { onNavigateToDetail("graphql") }
+        ),
+        RecommendItem(
+            title = "Next.js",
+            description = "React 应用开发框架",
+            category = "前端开发",
+            tags = listOf("React", "SSR", "前端"),
+            iconRes = Res.drawable.tech_hero,
+            onClick = { onNavigateToDetail("nextjs") }
+        ),
+        RecommendItem(
+            title = "Kubernetes",
+            description = "容器编排平台",
+            category = "DevOps",
+            tags = listOf("容器编排", "DevOps", "云原生"),
+            iconRes = Res.drawable.tech_hero,
+            onClick = { onNavigateToDetail("kubernetes") }
+        ),
+        RecommendItem(
+            title = "PyTorch",
+            description = "开源机器学习库",
+            category = "人工智能",
+            tags = listOf("AI", "深度学习", "Python"),
+            iconRes = Res.drawable.tech_hero,
+            onClick = { onNavigateToDetail("pytorch") }
+        ),
+        RecommendItem(
+            title = "Angular",
+            description = "TypeScript 开发平台",
+            category = "前端开发",
+            tags = listOf("TypeScript", "前端", "框架"),
+            iconRes = Res.drawable.tech_hero,
+            onClick = { onNavigateToDetail("angular") }
+        ),
+        RecommendItem(
+            title = "Redis",
+            description = "开源内存数据存储",
+            category = "数据库",
+            tags = listOf("缓存", "数据库", "性能"),
+            iconRes = Res.drawable.tech_hero,
+            onClick = { onNavigateToDetail("redis") }
+        ),
+        RecommendItem(
+            title = "Electron",
+            description = "构建跨平台桌面应用",
+            category = "桌面开发",
+            tags = listOf("JavaScript", "桌面", "跨平台"),
+            iconRes = Res.drawable.tech_hero,
+            onClick = { onNavigateToDetail("electron") }
+        ),
+        RecommendItem(
+            title = "FastAPI",
+            description = "现代、快速的 Web 框架",
+            category = "后端开发",
+            tags = listOf("Python", "API", "异步"),
+            iconRes = Res.drawable.tech_hero,
+            onClick = { onNavigateToDetail("fastapi") }
+        ),
+        RecommendItem(
+            title = "Unity",
+            description = "跨平台游戏引擎",
+            category = "游戏开发",
+            tags = listOf("游戏", "C#", "3D"),
+            iconRes = Res.drawable.tech_hero,
+            onClick = { onNavigateToDetail("unity") }
+        ),
+        RecommendItem(
+            title = "PostgreSQL",
+            description = "开源对象关系数据库",
+            category = "数据库",
+            tags = listOf("数据库", "SQL", "关系型"),
+            iconRes = Res.drawable.tech_hero,
+            onClick = { onNavigateToDetail("postgresql") }
+        ),
+        RecommendItem(
+            title = "Rust",
+            description = "系统编程语言",
+            category = "系统开发",
+            tags = listOf("系统", "性能", "安全"),
+            iconRes = Res.drawable.tech_hero,
+            onClick = { onNavigateToDetail("rust") }
+        ),
+        RecommendItem(
+            title = "Svelte",
+            description = "构建用户界面的编译器",
+            category = "前端开发",
+            tags = listOf("JavaScript", "编译器", "UI"),
+            iconRes = Res.drawable.tech_hero,
+            onClick = { onNavigateToDetail("svelte") }
+        ),
+        RecommendItem(
+            title = "MongoDB",
+            description = "文档数据库",
+            category = "数据库",
+            tags = listOf("NoSQL", "文档", "数据库"),
+            iconRes = Res.drawable.tech_hero,
+            onClick = { onNavigateToDetail("mongodb") }
+        ),
+        RecommendItem(
+            title = "Deno",
+            description = "JavaScript 和 TypeScript 运行时",
+            category = "后端开发",
+            tags = listOf("JavaScript", "TypeScript", "运行时"),
+            iconRes = Res.drawable.tech_hero,
+            onClick = { onNavigateToDetail("deno") }
+        ),
+        RecommendItem(
+            title = "Unreal Engine",
+            description = "专业游戏引擎",
+            category = "游戏开发",
+            tags = listOf("游戏", "C++", "3D"),
+            iconRes = Res.drawable.tech_hero,
+            onClick = { onNavigateToDetail("unreal") }
+        ),
+        RecommendItem(
+            title = "Tauri",
+            description = "构建跨平台应用的工具包",
+            category = "桌面开发",
+            tags = listOf("Rust", "跨平台", "桌面"),
+            iconRes = Res.drawable.tech_hero,
+            onClick = { onNavigateToDetail("tauri") }
+        ),
+        RecommendItem(
+            title = "NestJS",
+            description = "Node.js 服务端框架",
+            category = "后端开发",
+            tags = listOf("TypeScript", "Node.js", "后端"),
+            iconRes = Res.drawable.tech_hero,
+            onClick = { onNavigateToDetail("nestjs") }
+        ),
+        RecommendItem(
+            title = "Godot",
+            description = "开源游戏引擎",
+            category = "游戏开发",
+            tags = listOf("游戏", "开源", "2D/3D"),
+            iconRes = Res.drawable.tech_hero,
+            onClick = { onNavigateToDetail("godot") }
+        ),
+        RecommendItem(
+            title = "Elasticsearch",
+            description = "分布式搜索引擎",
+            category = "数据库",
+            tags = listOf("搜索", "分析", "分布式"),
+            iconRes = Res.drawable.tech_hero,
+            onClick = { onNavigateToDetail("elasticsearch") }
+        ),
+        RecommendItem(
+            title = "Astro",
+            description = "现代静态站点生成器",
+            category = "前端开发",
+            tags = listOf("静态站点", "性能", "前端"),
+            iconRes = Res.drawable.tech_hero,
+            onClick = { onNavigateToDetail("astro") }
+        ),
+        RecommendItem(
+            title = "Go",
+            description = "云原生编程语言",
+            category = "后端开发",
+            tags = listOf("并发", "性能", "云原生"),
+            iconRes = Res.drawable.tech_hero,
+            onClick = { onNavigateToDetail("go") }
         )
     )
     
@@ -149,6 +351,11 @@ fun RecommendationsPage(
             }
     }
     
+    var currentPage by remember { mutableStateOf(0) }
+    val itemsPerPage = 10
+    val totalPages = (recommendations.size + itemsPerPage - 1) / itemsPerPage
+    val currentPageItems = recommendations.drop(currentPage * itemsPerPage).take(itemsPerPage)
+    
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -162,8 +369,61 @@ fun RecommendationsPage(
             Spacer(modifier = Modifier.height(8.dp))
         }
         
-        items(recommendations) { item ->
+        items(currentPageItems) { item ->
             RecommendationCard(item)
+        }
+        
+        item {
+            if (recommendations.size > itemsPerPage) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Surface(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                            .clickable(enabled = currentPage > 0) {
+                                if (currentPage > 0) currentPage--
+                            },
+                        color = if (currentPage > 0)
+                            MaterialTheme.colors.primary
+                        else
+                            MaterialTheme.colors.primary.copy(alpha = 0.5f)
+                    ) {
+                        Text(
+                            "上一页",
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            color = MaterialTheme.colors.onPrimary
+                        )
+                    }
+                    
+                    Text(
+                        "${currentPage + 1} / $totalPages",
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                    
+                    Surface(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                            .clickable(enabled = currentPage < totalPages - 1) {
+                                if (currentPage < totalPages - 1) currentPage++
+                            },
+                        color = if (currentPage < totalPages - 1)
+                            MaterialTheme.colors.primary
+                        else
+                            MaterialTheme.colors.primary.copy(alpha = 0.5f)
+                    ) {
+                        Text(
+                            "下一页",
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            color = MaterialTheme.colors.onPrimary
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -391,7 +651,7 @@ private fun RecommendationCard(item: RecommendItem) {
                         
                         Spacer(modifier = Modifier.height(12.dp))
                         
-                        // ���述
+                        // 描述
                         Text(
                             text = item.description,
                             style = MaterialTheme.typography.body1.copy(

@@ -23,6 +23,7 @@ import cn.kotlinmultiplatform.jeady.pages.BugsPage
 import cn.kotlinmultiplatform.jeady.pages.DetailPage
 import cn.kotlinmultiplatform.jeady.pages.OpenSourcePage
 import cn.kotlinmultiplatform.jeady.pages.RecommendationsPage
+import cn.kotlinmultiplatform.jeady.platform.getPlatformUrlHandler
 import kotlinmultiplatform.composeapp.generated.resources.NotoSansSC_Bold
 import kotlinmultiplatform.composeapp.generated.resources.NotoSansSC_Regular
 import kotlinmultiplatform.composeapp.generated.resources.Res
@@ -94,7 +95,7 @@ fun Navigation(
                 }
             )
             2 -> BugsPage()
-            3 -> OpenSourcePage()
+            3 -> OpenSourcePage(urlHandler = getPlatformUrlHandler())
             4 -> AboutPage()
         }
     }

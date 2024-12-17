@@ -1,13 +1,14 @@
 package cn.kotlinmultiplatform.jeady.platform
 
-import android.content.Intent
-import android.net.Uri
-import cn.kotlinmultiplatform.jeady.MainActivity
 import cn.kotlinmultiplatform.jeady.platform.UrlHandler
+import platform.Foundation.NSURL
+import platform.UIKit.UIApplication
 
 actual fun getPlatformUrlHandler(): UrlHandler = object : UrlHandler {
     override fun openUrl(url: String) {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-        MainActivity.instance?.startActivity(intent)
+        val nsUrl = NSURL.URLWithString(url)
+        if (nsUrl != null) {
+            UIApplication.sharedApplication.openURL(nsUrl)
+        }
     }
-}
+} 
