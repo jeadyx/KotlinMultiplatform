@@ -9,6 +9,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -46,7 +47,9 @@ data class CarouselItem(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun RecommendationsPage() {
+fun RecommendationsPage(
+    onNavigateToDetail: (String) -> Unit
+) {
     val carouselItems = listOf(
         CarouselItem("Kotlin多平台开发", "一次编写，到处运行"),
         CarouselItem("现代化UI框架", "使用Compose构建跨平台应用"),
@@ -55,55 +58,62 @@ fun RecommendationsPage() {
     
     val recommendations = listOf(
         RecommendItem(
-            "Kotlin Multiplatform Mobile",
-            "使用 Kotlin 开发跨平台应用的现代解决方案",
-            "跨平台开发",
-            listOf("Kotlin", "Mobile", "跨平台"),
-            Res.drawable.kotlin_multiplatform
-        ) {
-            println("Clicked: KMM")
-        },
+            title = "Kotlin Multiplatform Mobile",
+            description = "使用 Kotlin 开发跨平台应用的现代解决方案",
+            category = "跨平台开发",
+            tags = listOf("Kotlin", "Mobile", "跨平台"),
+            iconRes = Res.drawable.kotlin_multiplatform,
+            onClick = { onNavigateToDetail("kmm") }
+        ),
         RecommendItem(
-            "Jetpack Compose",
-            "Android 现代化 UI 开发工具包",
-            "UI框架",
-            listOf("Android", "UI", "声明式"),
-            Res.drawable.jetpack_compose
-        ) {
-            println("Clicked: Compose")
-        },
+            title = "Jetpack Compose",
+            description = "Android 现代化 UI 开发工具包",
+            category = "UI框架",
+            tags = listOf("Android", "UI", "声明式"),
+            iconRes = Res.drawable.jetpack_compose,
+            onClick = { onNavigateToDetail("compose") }
+        ),
         RecommendItem(
-            "Flutter",
-            "Google 的跨平台应用开发框架",
-            "跨平台开发",
-            listOf("Dart", "Mobile", "跨平台"),
-            Res.drawable.kotlin_multiplatform
-        ) {
-            println("Clicked: Flutter")
-        },
+            title = "Flutter",
+            description = "Google 的跨平台应用开发框架",
+            category = "跨平台开发",
+            tags = listOf("Dart", "Mobile", "跨平台"),
+            iconRes = Res.drawable.kotlin_multiplatform,
+            onClick = { onNavigateToDetail("flutter") }
+        ),
         RecommendItem(
-            "SwiftUI",
-            "Apple 原生的声明式 UI 框架",
-            "UI框架",
-            listOf("Swift", "iOS", "声明式"),
-            Res.drawable.jetpack_compose
-        ) {
-            println("Clicked: SwiftUI")
-        },
+            title = "SwiftUI",
+            description = "Apple 原生的声明式 UI 框架",
+            category = "UI框架",
+            tags = listOf("Swift", "iOS", "声明式"),
+            iconRes = Res.drawable.jetpack_compose,
+            onClick = { onNavigateToDetail("swiftui") }
+        ),
         RecommendItem(
-            "React Native",
-            "使用 React 构建原生应用",
-            "跨平台开发",
-            listOf("JavaScript", "React", "跨平台"),
-            Res.drawable.kotlin_multiplatform
-        ) {
-            println("Clicked: React Native")
-        }
+            title = "React Native",
+            description = "使用 React 构建原生应用",
+            category = "跨平台开发",
+            tags = listOf("JavaScript", "React", "跨平台"),
+            iconRes = Res.drawable.kotlin_multiplatform,
+            onClick = { onNavigateToDetail("react-native") }
+        )
     )
+    
+    val listState = rememberLazyListState()
+    
+    // 监听滚动位置变化
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.firstVisibleItemIndex }
+            .collect { index ->
+                // 保存滚动位置到本地
+                // 这里可以使用其他方式保存状态
+            }
+    }
     
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        state = listState
     ) {
         item {
             ImageCarousel(carouselItems)

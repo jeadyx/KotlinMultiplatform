@@ -2,7 +2,6 @@ package cn.kotlinmultiplatform.jeady
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.Text
@@ -18,13 +17,22 @@ import cn.kotlinmultiplatform.jeady.pages.AboutPage
 import cn.kotlinmultiplatform.jeady.pages.BlogPage
 import cn.kotlinmultiplatform.jeady.pages.BugsPage
 import cn.kotlinmultiplatform.jeady.pages.RecommendationsPage
+import cn.kotlinmultiplatform.jeady.pages.DetailPage
 import kotlinmultiplatform.composeapp.generated.resources.NotoSansSC_Bold
 import kotlinmultiplatform.composeapp.generated.resources.NotoSansSC_Regular
 import kotlinmultiplatform.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.Font
 
+sealed class Screen {
+    object Home : Screen()
+    data class Detail(val itemId: String) : Screen()
+}
+
 @Composable
 fun App() {
+    var currentScreen by remember { mutableStateOf<Screen>(Screen.Home) }
+    var selectedTab by remember { mutableStateOf(0) }
+    
     val notoSansSCFamily = FontFamily(
         Font(Res.font.NotoSansSC_Regular, FontWeight.Normal),
         Font(Res.font.NotoSansSC_Bold, FontWeight.Bold)
@@ -34,13 +42,30 @@ fun App() {
             defaultFontFamily = notoSansSCFamily
         )
     ) {
-        Navigation()
+        when (val screen = currentScreen) {
+            is Screen.Home -> Navigation(
+                selectedTab = selectedTab,
+                onSelectedTabChange = { selectedTab = it },
+                onNavigateToDetail = { itemId ->
+                    currentScreen = Screen.Detail(itemId)
+                }
+            )
+            is Screen.Detail -> DetailPage(
+                itemId = screen.itemId,
+                onBackClick = {
+                    currentScreen = Screen.Home
+                }
+            )
+        }
     }
 }
 
 @Composable
-fun Navigation() {
-    var selectedTab by remember { mutableStateOf(0) }
+fun Navigation(
+    selectedTab: Int,
+    onSelectedTabChange: (Int) -> Unit,
+    onNavigateToDetail: (String) -> Unit
+) {
     val tabs = listOf("推荐", "博客", "Bugs", "关于")
 
     Column {
@@ -49,12 +74,12 @@ fun Navigation() {
                 Tab(
                     text = { Text(title) },
                     selected = selectedTab == index,
-                    onClick = { selectedTab = index }
+                    onClick = { onSelectedTabChange(index) }
                 )
             }
         }
         when (selectedTab) {
-            0 -> RecommendationsPage()
+            0 -> RecommendationsPage(onNavigateToDetail)
             1 -> BlogPage()
             2 -> BugsPage()
             3 -> AboutPage()
