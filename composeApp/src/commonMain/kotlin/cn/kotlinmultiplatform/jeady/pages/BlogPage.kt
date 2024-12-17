@@ -3,6 +3,7 @@ package cn.kotlinmultiplatform.jeady.pages
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,13 +16,17 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -62,6 +67,8 @@ fun BlogPage(
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf<BlogCategory?>(null) }
+    var isEditorVisible by remember { mutableStateOf(false) }
+    var currentEditPost by remember { mutableStateOf<BlogPost?>(null) }
     
     val categories = listOf(
         BlogCategory("技术", Color(0xFF2196F3)),
@@ -96,7 +103,7 @@ fun BlogPage(
             ),
             BlogPost(
                 id = "3",
-                title = "程序员的成长之��",
+                title = "程序员的成长之路",
                 summary = "分享一个程序员从初级到高级的成长经历，以及在这个过程中的思考和感悟...",
                 content = "详细内容",
                 author = "王五",
@@ -185,37 +192,68 @@ fun BlogPage(
         )
     }
     
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        // 搜索栏
-        SearchBar(
-            query = searchQuery,
-            onQueryChange = { searchQuery = it }
-        )
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        // 分类选择
-        CategorySelector(
-            categories = categories,
-            selectedCategory = selectedCategory,
-            onCategorySelect = { selectedCategory = it }
-        )
-        
-        Spacer(modifier = Modifier.height(24.dp))
-        
-        // 博客列表
-        BlogList(
-            posts = posts.filter {
-                (selectedCategory == null || it.category == selectedCategory?.name) &&
-                (searchQuery.isEmpty() || it.title.contains(searchQuery, ignoreCase = true) ||
-                    it.summary.contains(searchQuery, ignoreCase = true))
-            },
-            onPostClick = onPostClick
-        )
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (isEditorVisible) {
+            MarkdownEditor(
+                post = currentEditPost,
+                onSave = { /* TODO: Implement save functionality */ },
+                onClose = { 
+                    isEditorVisible = false 
+                    currentEditPost = null
+                }
+            )
+        } else {
+            Scaffold(
+                floatingActionButton = {
+                    FloatingActionButton(
+                        onClick = { 
+                            currentEditPost = null
+                            isEditorVisible = true 
+                        }
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = "添加文章")
+                    }
+                }
+            ) { padding ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .padding(16.dp)
+                ) {
+                    // 搜索栏
+                    SearchBar(
+                        query = searchQuery,
+                        onQueryChange = { searchQuery = it }
+                    )
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    // 分类选择
+                    CategorySelector(
+                        categories = categories,
+                        selectedCategory = selectedCategory,
+                        onCategorySelect = { selectedCategory = it }
+                    )
+                    
+                    Spacer(modifier = Modifier.height(24.dp))
+                    
+                    // 博客列表
+                    BlogList(
+                        posts = posts.filter {
+                            (selectedCategory == null || it.category == selectedCategory?.name) &&
+                            (searchQuery.isEmpty() || it.title.contains(searchQuery, ignoreCase = true) ||
+                                it.summary.contains(searchQuery, ignoreCase = true))
+                        },
+                        onPostClick = onPostClick,
+                        onEditClick = { post ->
+                            currentEditPost = post
+                            isEditorVisible = true
+                        }
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -303,13 +341,18 @@ private fun CategoryChip(
 @Composable
 private fun BlogList(
     posts: List<BlogPost>,
-    onPostClick: (String) -> Unit
+    onPostClick: (String) -> Unit,
+    onEditClick: (BlogPost) -> Unit
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(posts) { post ->
-            BlogCard(post = post, onClick = { onPostClick(post.id) })
+            BlogCard(
+                post = post,
+                onClick = { onPostClick(post.id) },
+                onEditClick = { onEditClick(post) }
+            )
         }
     }
 }
@@ -317,7 +360,8 @@ private fun BlogList(
 @Composable
 private fun BlogCard(
     post: BlogPost,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onEditClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -329,7 +373,6 @@ private fun BlogCard(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            // 标题和分类
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -341,7 +384,14 @@ private fun BlogCard(
                     fontWeight = FontWeight.Bold
                 )
                 
-                CategoryLabel(post.category)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    TextButton(onClick = onEditClick) {
+                        Text("编辑")
+                    }
+                    CategoryLabel(post.category)
+                }
             }
             
             Spacer(modifier = Modifier.height(8.dp))
