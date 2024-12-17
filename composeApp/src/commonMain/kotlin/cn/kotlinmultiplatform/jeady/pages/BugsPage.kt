@@ -193,7 +193,7 @@ fun BugsPage() {
             BugReport(
                 id = "BUG-017",
                 title = "字体加载延迟",
-                description = "自定义字体加载时间过长，导致文字闪烁，需要优化字体加载策略。",
+                description = "自定义字体加载时间过长，导致文字闪烁，需��优化字体加载策略。",
                 status = BugStatus.IN_PROGRESS,
                 priority = BugPriority.LOW,
                 reportedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
@@ -235,63 +235,47 @@ fun BugsPage() {
     val currentPageBugs = bugs.drop(currentPage * itemsPerPage).take(itemsPerPage)
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+        modifier = Modifier.fillMaxSize().padding(16.dp)
     ) {
-        // 标题
         Text(
-            text = "问题追踪",
-            style = MaterialTheme.typography.h5.copy(
-                fontWeight = FontWeight.Bold
-            ),
-            modifier = Modifier.padding(bottom = 24.dp)
+            text = "Bugs",
+            style = MaterialTheme.typography.h4,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // 统计信息
-        BugStatistics(bugs)
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Bug列表
-        Column(
-            modifier = Modifier.weight(1f)
+        LazyColumn(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+            items(currentPageBugs) { bug ->
+                BugCard(bug)
+            }
+        }
+
+        // 分页控制
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            TextButton(
+                onClick = { if (currentPage > 0) currentPage-- },
+                enabled = currentPage > 0
             ) {
-                items(currentPageBugs) { bug ->
-                    BugCard(bug)
-                }
+                Text("上一页")
             }
             
-            if (bugs.size > itemsPerPage) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    TextButton(
-                        onClick = { if (currentPage > 0) currentPage-- },
-                        enabled = currentPage > 0
-                    ) {
-                        Text("上一页")
-                    }
-                    
-                    Text(
-                        text = "${currentPage + 1} / $totalPages",
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-                    
-                    TextButton(
-                        onClick = { if (currentPage < totalPages - 1) currentPage++ },
-                        enabled = currentPage < totalPages - 1
-                    ) {
-                        Text("下一页")
-                    }
-                }
+            Text(
+                text = "${currentPage + 1} / $totalPages",
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            
+            TextButton(
+                onClick = { if (currentPage < totalPages - 1) currentPage++ },
+                enabled = currentPage < totalPages - 1
+            ) {
+                Text("下一页")
             }
         }
     }

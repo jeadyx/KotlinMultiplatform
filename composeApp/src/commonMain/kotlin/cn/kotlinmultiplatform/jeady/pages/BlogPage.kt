@@ -170,7 +170,7 @@ fun BlogPage(
             BlogPost(
                 id = "9",
                 title = "构建高性能的跨平台应用",
-                summary = "探讨在跨平台开发中如何保持应用的高性能，包括存优化、渲染优化等技术细节...",
+                summary = "探讨在跨平台开发中如何保持应用的高性能，包括��优化、渲染优化等技术细节...",
                 content = "详细内容",
                 author = "郑十一",
                 category = "技术",
@@ -195,7 +195,7 @@ fun BlogPage(
                 summary = "探讨函数式编程范式在现代软件开发中的实际应用场景和优势...",
                 content = "详细内容",
                 author = "林一",
-                category = "技术",
+                category = "��术",
                 tags = listOf("函数式编程", "软件架构", "最佳实践"),
                 publishDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
                 readingTime = 15
@@ -314,7 +314,7 @@ fun BlogPage(
                 id = "22",
                 title = "远程团队管理之道",
                 summary = "如何有效管理和协调远程开发团队，提升团队效率...",
-                content = "详细内容",
+                content = "详细内���",
                 author = "刘十二",
                 category = "思考",
                 tags = listOf("团队管理", "远程办公", "协作"),
@@ -468,7 +468,9 @@ fun BlogPage(
     }
     
     var currentPage by remember { mutableStateOf(0) }
-    val itemsPerPage = 8
+    val itemsPerPage = 5
+    val totalPages = (posts.size + itemsPerPage - 1) / itemsPerPage
+    val currentPagePosts = posts.drop(currentPage * itemsPerPage).take(itemsPerPage)
     
     Box(modifier = Modifier.fillMaxSize()) {
         if (isEditorVisible) {
@@ -523,16 +525,11 @@ fun BlogPage(
                             it.summary.contains(searchQuery, ignoreCase = true))
                     }
                     
-                    val totalPages = (filteredPosts.size + itemsPerPage - 1) / itemsPerPage
-                    val currentPagePosts = filteredPosts
-                        .drop(currentPage * itemsPerPage)
-                        .take(itemsPerPage)
-
                     Column(
                         modifier = Modifier.weight(1f)
                     ) {
                         BlogList(
-                            posts = currentPagePosts,
+                            posts = filteredPosts,
                             onPostClick = onPostClick,
                             onEditClick = { post ->
                                 currentEditPost = post
