@@ -112,6 +112,132 @@ private suspend fun fetchDetailInfo(itemId: String): DetailInfo {
     // 模拟网络延迟
     kotlinx.coroutines.delay(1000)
     
+    // 处理博客文章
+    if (itemId.matches(Regex("\\d+"))) {
+        return when (itemId) {
+            "1" -> DetailInfo(
+                title = "Kotlin Multiplatform 开发实践",
+                description = "本文将分享在使用 Kotlin Multiplatform 开发跨平台应用时的经验和最佳实践",
+                content = """
+                    在当今移动应用开发领域，跨平台开发方案越来越受到关注。Kotlin Multiplatform Mobile (KMM) 作为一个强大的跨平台开发框架，提供了许多优势：
+
+                    1. 代码共享
+                    - 业务逻辑可以在 Android 和 iOS 平台间共享
+                    - 减少重复代码，提高开发效率
+                    - 降低维护成本
+
+                    2. 性能优势
+                    - 直接编译为原生代码
+                    - 无运行时开销
+                    - 更好的内存管理
+
+                    3. 开发体验
+                    - 强大的 IDE 支持
+                    - 热重载
+                    - 丰富的调试工具
+
+                    4. 实践建议
+                    - 从小功能开始尝试
+                    - 逐步迁移现有代码
+                    - 保持模块化设计
+                    - 编写单元测试
+                """.trimIndent(),
+                features = listOf(
+                    "代码共享策略",
+                    "性能优化技巧",
+                    "调试和测试方法",
+                    "实际项目经验",
+                    "最佳实践总结"
+                ),
+                links = mapOf(
+                    "KMM 官方文档" to "https://kotlinlang.org/docs/multiplatform-mobile-getting-started.html",
+                    "示例代码" to "https://github.com/JetBrains/KotlinMultiplatformSamples",
+                    "相关博客" to "https://blog.jetbrains.com/kotlin/"
+                )
+            )
+            "2" -> DetailInfo(
+                title = "现代化 UI 设计趋势",
+                description = "探讨2024年UI设计的新趋势，包括Neumorphism、玻璃态设计等新兴设计风格",
+                content = """
+                    2024年的UI设计领域正在经历一场革新，新的设计趋势不断涌现：
+
+                    1. Neumorphism（新拟物设计）
+                    - 柔和的阴影效果
+                    - 真实感的质地表现
+                    - 适度的深浅对比
+
+                    2. 玻璃态设计（Glassmorphism）
+                    - 磨砂玻璃效果
+                    - 半透明层叠
+                    - 景深表现
+
+                    3. 暗色模式优化
+                    - 护眼配色方案
+                    - 层次感处理
+                    - 关键信息突出
+
+                    4. 响应式动效
+                    - 流畅的过渡动画
+                    - 交互反馈
+                    - 微动效设计
+                """.trimIndent(),
+                features = listOf(
+                    "新拟物设计实践",
+                    "玻璃态效果应用",
+                    "暗色模式设计",
+                    "动效设计指南",
+                    "配色方案推荐"
+                ),
+                links = mapOf(
+                    "设计灵感" to "https://dribbble.com",
+                    "设计资源" to "https://www.figma.com/community",
+                    "教程分享" to "https://www.youtube.com/c/DesignCourse"
+                )
+            )
+            "3" -> DetailInfo(
+                title = "程序员的成长之路",
+                description = "分享一个程序员从初级到高级的成长经历，以及在这个过程中的思考和感悟",
+                content = """
+                    作为一名程序员，职业发展道路上有许多重要的里程碑：
+
+                    1. 技术积累阶段
+                    - 夯实基础知识
+                    - 熟练掌握工具
+                    - 参与实际项目
+
+                    2. 架构思维培养
+                    - 系统设计能力
+                    - 代码重构经验
+                    - 性能优化意识
+
+                    3. 团队协作能力
+                    - 代码审查
+                    - 技术分享
+                    - 项目管理
+
+                    4. 持续学习
+                    - 关注新技术
+                    - 阅读源码
+                    - 参与开源项目
+                """.trimIndent(),
+                features = listOf(
+                    "技术学习路线",
+                    "架构设计思维",
+                    "团队协作技巧",
+                    "职业规划建议",
+                    "学习方法分享"
+                ),
+                links = mapOf(
+                    "技术社区" to "https://github.com",
+                    "学习资源" to "https://www.coursera.org",
+                    "技术博客" to "https://medium.com/tag/programming"
+                )
+            )
+            else -> throw IllegalArgumentException("Unknown blog post id: $itemId")
+        }
+    }
+    
+    // 处理推荐项目
     return when (itemId) {
         "kmm" -> DetailInfo(
             title = "Kotlin Multiplatform Mobile",
