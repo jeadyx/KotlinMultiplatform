@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,6 +23,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.BorderStroke
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.DrawableResource
@@ -30,6 +35,7 @@ import org.jetbrains.compose.resources.painterResource
 import kotlinmultiplatform.composeapp.generated.resources.Res
 import kotlinmultiplatform.composeapp.generated.resources.kotlin_multiplatform
 import kotlinmultiplatform.composeapp.generated.resources.jetpack_compose
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 
 data class RecommendItem(
     val title: String,
@@ -68,7 +74,7 @@ fun RecommendationsPage(
         RecommendItem(
             title = "Jetpack Compose",
             description = "Android 现代化 UI 开发工具包",
-            category = "UI框架",
+            category = "UI框",
             tags = listOf("Android", "UI", "声明式"),
             iconRes = Res.drawable.jetpack_compose,
             onClick = { onNavigateToDetail("compose") }
@@ -101,7 +107,7 @@ fun RecommendationsPage(
     
     val listState = rememberLazyListState()
     
-    // 监听滚动位置变化
+    // 监听滚位置变化
     LaunchedEffect(listState) {
         snapshotFlow { listState.firstVisibleItemIndex }
             .collect { index ->
@@ -213,87 +219,131 @@ private fun CarouselPage(item: CarouselItem) {
 
 @Composable
 private fun RecommendationCard(item: RecommendItem) {
-    Card(
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .clip(RoundedCornerShape(24.dp))
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) { 
-                item.onClick() 
-            },
-        elevation = 8.dp,
-        backgroundColor = MaterialTheme.colors.surface
     ) {
-        Box {
-            // 背景装饰
-            Box(
-                modifier = Modifier
-                    .size(120.dp)
-                    .align(Alignment.TopEnd)
-                    .offset(x = 40.dp, y = (-40).dp)
-                    .background(
-                        MaterialTheme.colors.primary.copy(alpha = 0.05f),
-                        CircleShape
-                    )
-            )
-            
-            Row(
-                modifier = Modifier.padding(24.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                // 图标部分
-                Surface(
-                    modifier = Modifier.size(56.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colors.primary.copy(alpha = 0.1f)
-                ) {
-                    Icon(
-                        painter = painterResource(item.iconRes),
-                        contentDescription = item.title,
-                        modifier = Modifier
-                            .padding(12.dp)
-                            .size(32.dp),
-                        tint = MaterialTheme.colors.primary
-                    )
-                }
-                
-                // 内容部分
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    // 标题行
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = item.title,
-                            style = MaterialTheme.typography.h6.copy(
-                                fontWeight = FontWeight.Bold
+        // 底部大阴影
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .offset(y = if (isPressed) 6.dp else 8.dp),
+            shape = RoundedCornerShape(24.dp),
+            color = MaterialTheme.colors.primary.copy(alpha = if (isPressed) 0.1f else 0.08f),
+            elevation = if (isPressed) 3.dp else 2.dp
+        ) {
+            Spacer(modifier = Modifier.height(100.dp))
+        }
+        
+        // 中间阴影
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .offset(y = if (isPressed) 3.dp else 4.dp),
+            shape = RoundedCornerShape(24.dp),
+            color = MaterialTheme.colors.primary.copy(alpha = if (isPressed) 0.12f else 0.1f),
+            elevation = if (isPressed) 4.dp else 3.dp
+        ) {
+            Spacer(modifier = Modifier.height(100.dp))
+        }
+        
+        // 主卡片
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .offset(y = if (isPressed) 2.dp else 0.dp)
+                .clip(RoundedCornerShape(24.dp))
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null
+                ) { 
+                    item.onClick() 
+                },
+            elevation = if (isPressed) 5.dp else 4.dp,
+            backgroundColor = MaterialTheme.colors.surface,
+            shape = RoundedCornerShape(24.dp)
+        ) {
+            Box {
+                // 渐变背景装饰
+                Box(
+                    modifier = Modifier
+                        .size(160.dp)
+                        .align(Alignment.TopEnd)
+                        .offset(x = 40.dp, y = (-40).dp)
+                        .background(
+                            brush = Brush.radialGradient(
+                                colors = listOf(
+                                    MaterialTheme.colors.primary.copy(alpha = 0.08f),
+                                    MaterialTheme.colors.primary.copy(alpha = 0.04f),
+                                    MaterialTheme.colors.primary.copy(alpha = 0.01f)
+                                )
                             ),
-                            color = MaterialTheme.colors.primary
+                            shape = CircleShape
                         )
-                        CategoryChip(item.category)
+                )
+                
+                Row(
+                    modifier = Modifier.padding(20.dp),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
+                    // 图标部分 - 移除阴影
+                    Surface(
+                        modifier = Modifier.size(64.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colors.primary.copy(alpha = 0.1f)
+                    ) {
+                        Icon(
+                            painter = painterResource(item.iconRes),
+                            contentDescription = item.title,
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .size(32.dp),
+                            tint = MaterialTheme.colors.primary
+                        )
                     }
                     
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    // 描述
-                    Text(
-                        text = item.description,
-                        style = MaterialTheme.typography.body1,
-                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.8f),
-                        modifier = Modifier.padding(end = 32.dp)
-                    )
-                    
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    // 标签
-                    TagsRow(item.tags)
+                    // 内容部分
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        // 标题
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = item.title,
+                                style = MaterialTheme.typography.h6.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    letterSpacing = (-0.5).sp
+                                ),
+                                color = MaterialTheme.colors.primary
+                            )
+                            CategoryChip(item.category)
+                        }
+                        
+                        Spacer(modifier = Modifier.height(12.dp))
+                        
+                        // 描述
+                        Text(
+                            text = item.description,
+                            style = MaterialTheme.typography.body1.copy(
+                                lineHeight = 22.sp
+                            ),
+                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.8f),
+                            modifier = Modifier.padding(end = 32.dp)
+                        )
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        // 标签
+                        TagsRow(item.tags)
+                    }
                 }
             }
         }
@@ -304,14 +354,19 @@ private fun RecommendationCard(item: RecommendItem) {
 private fun CategoryChip(category: String) {
     Surface(
         color = MaterialTheme.colors.primary.copy(alpha = 0.1f),
-        shape = RoundedCornerShape(20.dp)
+        shape = RoundedCornerShape(20.dp),
+        border = BorderStroke(
+            width = 1.dp,
+            color = MaterialTheme.colors.primary.copy(alpha = 0.2f)
+        )
     ) {
         Text(
             text = category,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
             color = MaterialTheme.colors.primary,
             style = MaterialTheme.typography.caption.copy(
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Medium,
+                letterSpacing = 0.5.sp
             )
         )
     }
@@ -326,14 +381,15 @@ private fun TagsRow(tags: List<String>) {
         tags.forEach { tag ->
             Surface(
                 color = MaterialTheme.colors.secondary.copy(alpha = 0.08f),
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
                     text = "#$tag",
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                     color = MaterialTheme.colors.secondary,
                     style = MaterialTheme.typography.caption.copy(
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Medium,
+                        letterSpacing = 0.5.sp
                     )
                 )
             }
