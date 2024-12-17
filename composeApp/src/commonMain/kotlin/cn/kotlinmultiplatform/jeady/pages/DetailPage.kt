@@ -1,22 +1,35 @@
 package cn.kotlinmultiplatform.jeady.pages
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Person
+import cn.kotlinmultiplatform.jeady.icons.CustomLink
+import cn.kotlinmultiplatform.jeady.icons.CustomSchedule
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
+import androidx.compose.ui.unit.sp
 
 data class DetailInfo(
     val title: String,
     val description: String,
     val content: String,
     val features: List<String>,
-    val links: Map<String, String>
+    val links: Map<String, String>,
+    val author: String = "",
+    val publishDate: String = "",
+    val readingTime: Int = 0,
+    val category: String = "",
+    val tags: List<String> = emptyList()
 )
 
 @Composable
@@ -25,7 +38,6 @@ fun DetailPage(
     onBackClick: () -> Unit
 ) {
     var detailInfo by remember { mutableStateOf<DetailInfo?>(null) }
-    val coroutineScope = rememberCoroutineScope()
 
     // 模拟从网络加载数据
     LaunchedEffect(itemId) {
@@ -45,7 +57,10 @@ fun DetailPage(
         }
     ) { padding ->
         if (detailInfo == null) {
-            Box(modifier = Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
                 CircularProgressIndicator()
             }
         } else {
@@ -53,58 +68,236 @@ fun DetailPage(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .padding(16.dp),
+                    .padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                // 文章头部信息
                 item {
-                    Text(
-                        text = detailInfo!!.description,
-                        style = MaterialTheme.typography.subtitle1,
-                        color = MaterialTheme.colors.primary
-                    )
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = detailInfo!!.title,
+                            style = MaterialTheme.typography.h4,
+                            fontWeight = FontWeight.Bold
+                        )
+                        
+                        // 分类和标签
+                        if (detailInfo!!.category.isNotEmpty() || detailInfo!!.tags.isNotEmpty()) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                if (detailInfo!!.category.isNotEmpty()) {
+                                    CategoryChip(detailInfo!!.category)
+                                }
+                                detailInfo!!.tags.take(3).forEach { tag ->
+                                    TagChip(tag)
+                                }
+                            }
+                        }
+                        
+                        // 作者信息和发布时间
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            if (detailInfo!!.author.isNotEmpty()) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Default.Person,
+                                        contentDescription = "作者",
+                                        modifier = Modifier.size(16.dp),
+                                        tint = MaterialTheme.colors.primary
+                                    )
+                                    Text(
+                                        text = detailInfo!!.author,
+                                        style = MaterialTheme.typography.subtitle2
+                                    )
+                                }
+                            }
+                            
+                            if (detailInfo!!.publishDate.isNotEmpty()) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Default.DateRange,
+                                        contentDescription = "发布日期",
+                                        modifier = Modifier.size(16.dp),
+                                        tint = MaterialTheme.colors.primary
+                                    )
+                                    Text(
+                                        text = detailInfo!!.publishDate,
+                                        style = MaterialTheme.typography.caption
+                                    )
+                                }
+                            }
+                            
+                            if (detailInfo!!.readingTime > 0) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Default.CustomSchedule,
+                                        contentDescription = "阅读时间",
+                                        modifier = Modifier.size(16.dp),
+                                        tint = MaterialTheme.colors.primary
+                                    )
+                                    Text(
+                                        text = "${detailInfo!!.readingTime} min",
+                                        style = MaterialTheme.typography.caption
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
 
+                // 描述
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = 2.dp,
+                        backgroundColor = MaterialTheme.colors.primary.copy(alpha = 0.1f)
+                    ) {
+                        Text(
+                            text = detailInfo!!.description,
+                            style = MaterialTheme.typography.subtitle1,
+                            modifier = Modifier.padding(16.dp),
+                            color = MaterialTheme.colors.primary
+                        )
+                    }
+                }
+
+                // 主要内容
                 item {
                     Text(
                         text = detailInfo!!.content,
-                        style = MaterialTheme.typography.body1
+                        style = MaterialTheme.typography.body1,
+                        lineHeight = 24.sp
                     )
                 }
 
+                // 主要特性
                 item {
-                    Text(
-                        text = "主要特性",
-                        style = MaterialTheme.typography.h6,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    detailInfo!!.features.forEach { feature ->
-                        Text(
-                            text = "• $feature",
-                            style = MaterialTheme.typography.body1,
-                            modifier = Modifier.padding(vertical = 4.dp)
-                        )
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = 2.dp
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = "主要特性",
+                                style = MaterialTheme.typography.h6,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colors.primary
+                            )
+                            detailInfo!!.features.forEach { feature ->
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        Icons.Default.Check,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colors.primary,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Text(
+                                        text = feature,
+                                        style = MaterialTheme.typography.body1
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
 
+                // 相关链接
                 item {
-                    Text(
-                        text = "相关链接",
-                        style = MaterialTheme.typography.h6,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    detailInfo!!.links.forEach { (title, url) ->
-                        Text(
-                            text = "• $title: $url",
-                            style = MaterialTheme.typography.body2,
-                            color = MaterialTheme.colors.primary,
-                            modifier = Modifier.padding(vertical = 4.dp)
-                        )
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = 2.dp
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = "相关链接",
+                                style = MaterialTheme.typography.h6,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colors.primary
+                            )
+                            detailInfo!!.links.forEach { (title, url) ->
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.clickable { /* TODO: 处理链接点击 */ }
+                                ) {
+                                    Icon(
+                                        Icons.Default.CustomLink,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colors.primary,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Text(
+                                        text = title,
+                                        style = MaterialTheme.typography.body1,
+                                        color = MaterialTheme.colors.primary
+                                    )
+                                }
+                            }
+                        }
                     }
+                }
+                
+                // 底部间距
+                item {
+                    Spacer(modifier = Modifier.height(32.dp))
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun CategoryChip(category: String) {
+    Surface(
+        color = MaterialTheme.colors.primary.copy(alpha = 0.1f),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Text(
+            text = category,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+            style = MaterialTheme.typography.caption,
+            color = MaterialTheme.colors.primary
+        )
+    }
+}
+
+@Composable
+private fun TagChip(tag: String) {
+    Surface(
+        color = MaterialTheme.colors.secondary.copy(alpha = 0.1f),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Text(
+            text = "#$tag",
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            style = MaterialTheme.typography.caption,
+            color = MaterialTheme.colors.secondary
+        )
     }
 }
 
@@ -119,15 +312,15 @@ private suspend fun fetchDetailInfo(itemId: String): DetailInfo {
                 title = "Kotlin Multiplatform 开发实践",
                 description = "本文将分享在使用 Kotlin Multiplatform 开发跨平台应用时的经验和最佳实践",
                 content = """
-                    在当今移动应用开发领域，跨平台开发方案越来越受到关注。Kotlin Multiplatform Mobile (KMM) 作为一个强大的跨平台开发框架，提供了许多优势：
+                    在当今移动应用开发领域，跨平台开发方案越来越受到关注。Kotlin Multiplatform Mobile (KMM) 作为个强大的跨平台开发框架，提供了许多优势：
 
                     1. 代码共享
                     - 业务逻辑可以在 Android 和 iOS 平台间共享
                     - 减少重复代码，提高开发效率
-                    - 降低维护成本
+                    - 降��维护成本
 
                     2. 性能优势
-                    - 直接编译为原生代码
+                    - 接编译为原生代码
                     - 无运行时开销
                     - 更好的内存管理
 
@@ -153,7 +346,12 @@ private suspend fun fetchDetailInfo(itemId: String): DetailInfo {
                     "KMM 官方文档" to "https://kotlinlang.org/docs/multiplatform-mobile-getting-started.html",
                     "示例代码" to "https://github.com/JetBrains/KotlinMultiplatformSamples",
                     "相关博客" to "https://blog.jetbrains.com/kotlin/"
-                )
+                ),
+                author = "张三",
+                publishDate = "2024-01-15",
+                readingTime = 10,
+                category = "技术",
+                tags = listOf("Kotlin", "跨平台", "移动开发")
             )
             "2" -> DetailInfo(
                 title = "现代化 UI 设计趋势",
@@ -177,14 +375,14 @@ private suspend fun fetchDetailInfo(itemId: String): DetailInfo {
                     - 关键信息突出
 
                     4. 响应式动效
-                    - 流畅的过渡动画
+                    - 流畅的渡动画
                     - 交互反馈
                     - 微动效设计
                 """.trimIndent(),
                 features = listOf(
                     "新拟物设计实践",
                     "玻璃态效果应用",
-                    "暗色模式设计",
+                    "暗��模式设计",
                     "动效设计指南",
                     "配色方案推荐"
                 ),
@@ -192,27 +390,32 @@ private suspend fun fetchDetailInfo(itemId: String): DetailInfo {
                     "设计灵感" to "https://dribbble.com",
                     "设计资源" to "https://www.figma.com/community",
                     "教程分享" to "https://www.youtube.com/c/DesignCourse"
-                )
+                ),
+                author = "李四",
+                publishDate = "2024-01-18",
+                readingTime = 8,
+                category = "设计",
+                tags = listOf("UI", "设计趋势", "用户体验")
             )
             "3" -> DetailInfo(
                 title = "程序员的成长之路",
-                description = "分享一个程序员从初级到高级的成长经历，以及在这个过程中的思考和感悟",
+                description = "分享一个程序员从初级到高级的成长经历，以及在这过程中的思考和感悟",
                 content = """
                     作为一名程序员，职业发展道路上有许多重要的里程碑：
 
                     1. 技术积累阶段
-                    - 夯实基础知识
-                    - 熟练掌握���具
+                    - 夯实基础知
+                    - 熟练掌握具
                     - 参与实际项目
 
                     2. 架构思维培养
                     - 系统设计能力
-                    - 代码重构经验
+                    - 代码重构验
                     - 性能优化意识
 
                     3. 团队协作能力
                     - 代码审查
-                    - 技术分享
+                    - 技术共享
                     - 项目管理
 
                     4. 持续学习
@@ -274,7 +477,7 @@ private suspend fun fetchDetailInfo(itemId: String): DetailInfo {
             )
             "5" -> DetailInfo(
                 title = "设计系统的构建之道",
-                description = "如何从零开始构建一个完整的设计系统？本文将分享设计系统的规划、实施和维护经验",
+                description = "如何从零开始构建一个完整的设计系统？本文将分享设计系统的规划实施和维护经验",
                 content = """
                     设计系统是现代产品设计中不可或缺的一部分，它能确保产品设计的一致性和效率：
 
@@ -357,7 +560,7 @@ private suspend fun fetchDetailInfo(itemId: String): DetailInfo {
                     AI 技术正在深刻改变软件开发的方式，让我们看看它能为开发者带来哪些改变：
 
                     1. 代码生成
-                    - 智能代码补全
+                    - 智能代码补���
                     - 自动重构建议
                     - 测试用例生成
 
@@ -398,7 +601,7 @@ private suspend fun fetchDetailInfo(itemId: String): DetailInfo {
                     1. 基础技能
                     - 设计理论
                     - 工具掌握
-                    - 版式布局
+                    - 版式设计
 
                     2. 设计思维
                     - 用户思维
@@ -429,7 +632,7 @@ private suspend fun fetchDetailInfo(itemId: String): DetailInfo {
                 )
             )
             "9" -> DetailInfo(
-                title = "构建高性能的跨平台应用",
+                title = "构建高���能的跨平台应用",
                 description = "探讨在跨平台开发中如何保持应用的高性能，包括内存优化、渲染优化等技术细节",
                 content = """
                     跨平台应用的性能优化是一个永恒的话题，让我们深入探讨一些关键技术：
@@ -469,7 +672,7 @@ private suspend fun fetchDetailInfo(itemId: String): DetailInfo {
             )
             "10" -> DetailInfo(
                 title = "我的极简主义生活实践",
-                description = "分享如何将极简主义理念应用到生活中，提升生活品质，减少物质和精神的负担",
+                description = "分享如何将极简主义理念应用到生活，提升生活品质，减少物质和精神的负担",
                 content = """
                     极简主义不仅是一种生活方式，更是一种人生哲学：
 
@@ -534,7 +737,7 @@ private suspend fun fetchDetailInfo(itemId: String): DetailInfo {
             description = "Android 现代化 UI 开发工具包",
             content = "Jetpack Compose 是用于构建原生 Android UI 的现代工具包。它使用声明式 UI 模型，让您可以通过调用 Composable 函数来描述应用程序的 UI。",
             features = listOf(
-                "声明式 UI 设计",
+                "声明式 UI ��计",
                 "强大的状态管理",
                 "内置动画支持",
                 "Material Design 组件",
@@ -549,13 +752,13 @@ private suspend fun fetchDetailInfo(itemId: String): DetailInfo {
         "flutter" -> DetailInfo(
             title = "Flutter",
             description = "Google 的跨平台应用开发框架",
-            content = "Flutter 是 Google 的开源框架，用于构建美观、原生编译的多平台应用。使用 Dart 语言和丰富的组件库，可以快速开发高性能应用。",
+            content = "Flutter 是 Google 的开源框架，用于构建美观、原生编译的多平台应用。使用 Dart 语言和丰富的组件库，可以速开发高性能应用。",
             features = listOf(
                 "热重载开发体验",
                 "丰富的 Widget 库",
                 "高性能渲染引擎",
                 "跨平台一致性",
-                "��定义设计灵活性"
+                "定义设计灵活性"
             ),
             links = mapOf(
                 "官方网站" to "https://flutter.dev",
@@ -583,7 +786,7 @@ private suspend fun fetchDetailInfo(itemId: String): DetailInfo {
         "react-native" -> DetailInfo(
             title = "React Native",
             description = "使用 React 构建原生应用",
-            content = "React Native 是 Facebook 开发的开���框架，让您可以使用 JavaScript 和 React 构建原生移动应用。它允许开发者使用相同的代码库构建 iOS 和 Android 应用。",
+            content = "React Native 是 Facebook 开发的开源框架，让您可以使用 JavaScript 和 React 构建原生移动应用。它允许开发者用相同的代码库构建 iOS 和 Android 应用。",
             features = listOf(
                 "使用 JavaScript 开发",
                 "热重载支持",

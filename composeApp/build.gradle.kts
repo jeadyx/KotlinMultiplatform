@@ -69,7 +69,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(projects.shared)
-            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.5.0")
+            implementation(libs.jetbrains.kotlinx.datetime)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -78,7 +78,7 @@ kotlin {
         
         val wasmJsMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
             }
         }
     }
@@ -112,6 +112,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.firebase.perf.ktx)
     debugImplementation(compose.uiTooling)
 }
 
