@@ -6,7 +6,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,22 +26,15 @@ import org.jetbrains.compose.resources.Font
 @Composable
 fun App() {
     val notoSansSCFamily = FontFamily(
-        Font(Res.font.NotoSansSC_Regular,FontWeight.Normal),
-        Font(Res.font.NotoSansSC_Bold,FontWeight.Bold)
+        Font(Res.font.NotoSansSC_Regular, FontWeight.Normal),
+        Font(Res.font.NotoSansSC_Bold, FontWeight.Bold)
     )
     MaterialTheme(
         typography = Typography(
             defaultFontFamily = notoSansSCFamily
         )
     ) {
-        Scaffold(
-            topBar = {
-                TopAppBar(title = { Text("科技网站") })
-            },
-            content = {
-                Navigation()
-            }
-        )
+        Navigation()
     }
 }
 
