@@ -96,7 +96,7 @@ fun BlogPage(
             ),
             BlogPost(
                 id = "3",
-                title = "程序员的成长之路",
+                title = "程序员的成长之��",
                 summary = "分享一个程序员从初级到高级的成长经历，以及在这个过程中的思考和感悟...",
                 content = "详细内容",
                 author = "王五",
@@ -104,6 +104,83 @@ fun BlogPage(
                 tags = listOf("职业发展", "经验分享", "技术成长"),
                 publishDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
                 readingTime = 15
+            ),
+            BlogPost(
+                id = "4",
+                title = "SwiftUI 与 Jetpack Compose 对比",
+                summary = "深入分析两大现代声明式UI框架的异同，探讨它们在实际项目中的应用场景和优劣势...",
+                content = "详细内容",
+                author = "赵六",
+                category = "技术",
+                tags = listOf("SwiftUI", "Compose", "跨平台"),
+                publishDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+                readingTime = 12
+            ),
+            BlogPost(
+                id = "5",
+                title = "设计系统的构建之道",
+                summary = "如何从零开始构建一个完整的设计系统？本文将分享设计系统的规划、实施和维护经验...",
+                content = "详细内容",
+                author = "钱七",
+                category = "设计",
+                tags = listOf("设计系统", "组件库", "规范"),
+                publishDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+                readingTime = 20
+            ),
+            BlogPost(
+                id = "6",
+                title = "远程工作的效率之道",
+                summary = "在后疫情时代，远程办公已成为新常态。如何提高远程工作效率？如何保持工作与生活的平衡？...",
+                content = "详细内容",
+                author = "孙八",
+                category = "生活",
+                tags = listOf("远程办公", "效率", "工作方式"),
+                publishDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+                readingTime = 8
+            ),
+            BlogPost(
+                id = "7",
+                title = "AI 驱动的代码生成实践",
+                summary = "探索 AI 在软件开发中的应用，从代码补全到自动化测试，AI 如何提升开发效率...",
+                content = "详细内容",
+                author = "周九",
+                category = "技术",
+                tags = listOf("AI", "代码生成", "效率工具"),
+                publishDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+                readingTime = 15
+            ),
+            BlogPost(
+                id = "8",
+                title = "写给新手设计师的建议",
+                summary = "从个人经验出发，分享设计师职业发展的经验和建议，帮助新手快速成长...",
+                content = "详细内容",
+                author = "吴十",
+                category = "思考",
+                tags = listOf("设计师", "职业发展", "经验分享"),
+                publishDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+                readingTime = 10
+            ),
+            BlogPost(
+                id = "9",
+                title = "构建高性能的跨平台应用",
+                summary = "探讨在跨平台开发中如何保持应用的高性能，包括内存优化、渲染优化等技术细节...",
+                content = "详细内容",
+                author = "郑十一",
+                category = "技术",
+                tags = listOf("性能优化", "跨平台", "最佳实践"),
+                publishDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+                readingTime = 18
+            ),
+            BlogPost(
+                id = "10",
+                title = "我的极简主义生活实践",
+                summary = "分享如何将极简主义理念应用到生活中，提升生活品质，减少物质和精神的负担...",
+                content = "详细内容",
+                author = "陈十二",
+                category = "生活",
+                tags = listOf("极简主义", "生活方式", "心得体会"),
+                publishDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+                readingTime = 12
             )
         )
     }

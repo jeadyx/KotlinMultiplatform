@@ -202,7 +202,7 @@ private suspend fun fetchDetailInfo(itemId: String): DetailInfo {
 
                     1. 技术积累阶段
                     - 夯实基础知识
-                    - 熟练掌握工具
+                    - 熟练掌握���具
                     - 参与实际项目
 
                     2. 架构思维培养
@@ -231,6 +231,279 @@ private suspend fun fetchDetailInfo(itemId: String): DetailInfo {
                     "技术社区" to "https://github.com",
                     "学习资源" to "https://www.coursera.org",
                     "技术博客" to "https://medium.com/tag/programming"
+                )
+            )
+            "4" -> DetailInfo(
+                title = "SwiftUI 与 Jetpack Compose 对比",
+                description = "深入分析两大现代声明式UI框架的异同，探讨它们在实际项目中的应用场景和优劣势",
+                content = """
+                    现代声明式UI框架正在改变移动应用开发的方式。本文将从多个角度对比 SwiftUI 和 Jetpack Compose：
+
+                    1. 开发范式
+                    - 声明式 vs 命令式
+                    - 状态管理方式
+                    - 生命周期处理
+
+                    2. 性能表现
+                    - 渲染机制
+                    - 内存占用
+                    - 启动时间
+
+                    3. 开发体验
+                    - 工具支持
+                    - 热重载
+                    - 调试能力
+
+                    4. 生态系统
+                    - 组件库
+                    - 第三方支持
+                    - 社区活跃度
+                """.trimIndent(),
+                features = listOf(
+                    "深入框架原理",
+                    "性能对比分析",
+                    "最佳实践指南",
+                    "迁移策略建议",
+                    "案例研究"
+                ),
+                links = mapOf(
+                    "SwiftUI 文档" to "https://developer.apple.com/xcode/swiftui/",
+                    "Compose 文档" to "https://developer.android.com/jetpack/compose",
+                    "示例项目" to "https://github.com/topics/ui-framework"
+                )
+            )
+            "5" -> DetailInfo(
+                title = "设计系统的构建之道",
+                description = "如何从零开始构建一个完整的设计系统？本文将分享设计系统的规划、实施和维护经验",
+                content = """
+                    设计系统是现代产品设计中不可或缺的一部分，它能确保产品设计的一致性和效率：
+
+                    1. 设计系统基础
+                    - 设计原则制定
+                    - 组件库规划
+                    - 设计标准化
+
+                    2. 技术实现
+                    - 组件开发
+                    - 样式管理
+                    - 版本控制
+
+                    3. 团队协作
+                    - 设计开发协作
+                    - 文档管理
+                    - 反馈机制
+
+                    4. 持续优化
+                    - 使用分析
+                    - 性能监控
+                    - 迭代更新
+                """.trimIndent(),
+                features = listOf(
+                    "设计系统规划",
+                    "组件库开发",
+                    "团队协作流程",
+                    "维护更新机制",
+                    "实践案例分析"
+                ),
+                links = mapOf(
+                    "Material Design" to "https://material.io/design",
+                    "Ant Design" to "https://ant.design",
+                    "设计系统实例" to "https://designsystemsrepo.com"
+                )
+            )
+            "6" -> DetailInfo(
+                title = "远程工作的效率之道",
+                description = "在后疫情时代，远程办公已成为新常态。如何提高远程工作效率？如何保持工作与生活的平衡？",
+                content = """
+                    远程工作已经成为一种新常态，如何在这种模式下保持高效率是每个人都需要思考的问题：
+
+                    1. 工作环境布置
+                    - 专业的办公设备
+                    - 舒适的工作空间
+                    - 稳定的网络环境
+
+                    2. 时间管理
+                    - 明确的工作界限
+                    - 科学的休息安排
+                    - 高效的会议控制
+
+                    3. 沟通协作
+                    - 异步沟通技巧
+                    - 文档驱动开发
+                    - 团队同步机制
+
+                    4. 自我管理
+                    - 目标设定
+                    - 进度跟踪
+                    - 成果展示
+                """.trimIndent(),
+                features = listOf(
+                    "环境配置指南",
+                    "时间管理方法",
+                    "沟通协作技巧",
+                    "自我管理策略",
+                    "工具推荐"
+                ),
+                links = mapOf(
+                    "远程工作指南" to "https://about.gitlab.com/company/culture/all-remote/",
+                    "效率工具" to "https://www.notion.so",
+                    "团队协作" to "https://slack.com"
+                )
+            )
+            "7" -> DetailInfo(
+                title = "AI 驱动的代码生成实践",
+                description = "探索 AI 在软件开发中的应用，从代码补全到自动化测试，AI 如何提升开发效率",
+                content = """
+                    AI 技术正在深刻改变软件开发的方式，让我们看看它能为开发者带来哪些改变：
+
+                    1. 代码生成
+                    - 智能代码补全
+                    - 自动重构建议
+                    - 测试用例生成
+
+                    2. 开发辅助
+                    - 代码审查
+                    - Bug 预测
+                    - 性能优化建议
+
+                    3. 文档生成
+                    - 注释生成
+                    - API 文档
+                    - 变更说明
+
+                    4. 未来展望
+                    - 自然语言编程
+                    - 智能调试
+                    - 自动化部署
+                """.trimIndent(),
+                features = listOf(
+                    "AI 工具应用",
+                    "效率提升方法",
+                    "最佳实践分享",
+                    "未来趋势分析",
+                    "案例研究"
+                ),
+                links = mapOf(
+                    "GitHub Copilot" to "https://github.com/features/copilot",
+                    "OpenAI API" to "https://openai.com/api/",
+                    "AI 开发工具" to "https://cursor.sh"
+                )
+            )
+            "8" -> DetailInfo(
+                title = "写给新手设计师的建议",
+                description = "从个人经验出发，分享设计师职业发展的经验和建议，帮助新手快速成长",
+                content = """
+                    成为一名优秀的设计师需要持续的学习和积累，这里是一些重要的建议：
+
+                    1. 基础技能
+                    - 设计理论
+                    - 工具掌握
+                    - 版式布局
+
+                    2. 设计思维
+                    - 用户思维
+                    - 商业思维
+                    - 系统思维
+
+                    3. 项目实践
+                    - 个人项目
+                    - 实战练习
+                    - 作品集打造
+
+                    4. 职业发展
+                    - 技能提升
+                    - 人脉建设
+                    - 行业洞察
+                """.trimIndent(),
+                features = listOf(
+                    "入门指南",
+                    "技能提升路线",
+                    "实战经验分享",
+                    "资源推荐",
+                    "常见问题解答"
+                ),
+                links = mapOf(
+                    "设计社区" to "https://www.behance.net",
+                    "学习资源" to "https://www.skillshare.com",
+                    "设计工具" to "https://www.figma.com"
+                )
+            )
+            "9" -> DetailInfo(
+                title = "构建高性能的跨平台应用",
+                description = "探讨在跨平台开发中如何保持应用的高性能，包括内存优化、渲染优化等技术细节",
+                content = """
+                    跨平台应用的性能优化是一个永恒的话题，让我们深入探讨一些关键技术：
+
+                    1. 性能基础
+                    - 启动优化
+                    - 内存管理
+                    - 渲染性能
+
+                    2. 架构优化
+                    - 模块化设计
+                    - 懒加载策略
+                    - 缓存机制
+
+                    3. 网络优化
+                    - 请求合并
+                    - 离线缓存
+                    - 断点续传
+
+                    4. 监控分析
+                    - 性能指标
+                    - 监控系统
+                    - 优化工具
+                """.trimIndent(),
+                features = listOf(
+                    "性能优化方法",
+                    "架构设计技巧",
+                    "监控系统搭建",
+                    "调试工具使用",
+                    "案例分析"
+                ),
+                links = mapOf(
+                    "性能工具" to "https://developer.chrome.com/docs/devtools/",
+                    "监控平台" to "https://firebase.google.com/products/performance",
+                    "最佳实践" to "https://web.dev/performance-optimizing-content-efficiency/"
+                )
+            )
+            "10" -> DetailInfo(
+                title = "我的极简主义生活实践",
+                description = "分享如何将极简主义理念应用到生活中，提升生活品质，减少物质和精神的负担",
+                content = """
+                    极简主义不仅是一种生活方式，更是一种人生哲学：
+
+                    1. 物质层面
+                    - 断舍离实践
+                    - 物品管理
+                    - 空间利用
+
+                    2. 时间管理
+                    - 优先级设定
+                    - 专注工作
+                    - 休闲安排
+
+                    3. 心理建设
+                    - 压力管理
+                    - 情绪控制
+                    - 心灵成长
+
+                    4. 社交关系
+                    - 关系筛选
+                    - 深度交往
+                    - 边界设定
+                """.trimIndent(),
+                features = listOf(
+                    "极简理念",
+                    "实践方法",
+                    "心得体会",
+                    "效果反馈",
+                    "建议分享"
+                ),
+                links = mapOf(
+                    "极简主义" to "https://www.theminimalists.com",
+                    "生活方式" to "https://zenhabits.net",
+                    "实践指南" to "https://www.becomingminimalist.com"
                 )
             )
             else -> throw IllegalArgumentException("Unknown blog post id: $itemId")
@@ -282,7 +555,7 @@ private suspend fun fetchDetailInfo(itemId: String): DetailInfo {
                 "丰富的 Widget 库",
                 "高性能渲染引擎",
                 "跨平台一致性",
-                "自定义设计灵活性"
+                "��定义设计灵活性"
             ),
             links = mapOf(
                 "官方网站" to "https://flutter.dev",
@@ -310,7 +583,7 @@ private suspend fun fetchDetailInfo(itemId: String): DetailInfo {
         "react-native" -> DetailInfo(
             title = "React Native",
             description = "使用 React 构建原生应用",
-            content = "React Native 是 Facebook 开发的开源框架，让您可以使用 JavaScript 和 React 构建原生移动应用。它允许开发者使用相同的代码库构建 iOS 和 Android 应用。",
+            content = "React Native 是 Facebook 开发的开���框架，让您可以使用 JavaScript 和 React 构建原生移动应用。它允许开发者使用相同的代码库构建 iOS 和 Android 应用。",
             features = listOf(
                 "使用 JavaScript 开发",
                 "热重载支持",

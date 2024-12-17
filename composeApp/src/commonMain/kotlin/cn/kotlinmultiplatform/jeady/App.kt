@@ -35,7 +35,7 @@ sealed class Screen {
 @Composable
 fun App() {
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Home) }
-    var selectedTab by remember { mutableStateOf(0) }
+    var selectedTab by remember { mutableStateOf(1) }
     
     val notoSansSCFamily = FontFamily(
         Font(Res.font.NotoSansSC_Regular, FontWeight.Normal),
