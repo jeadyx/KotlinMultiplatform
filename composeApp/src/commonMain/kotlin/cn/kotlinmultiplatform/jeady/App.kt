@@ -21,6 +21,7 @@ import cn.kotlinmultiplatform.jeady.pages.AboutPage
 import cn.kotlinmultiplatform.jeady.pages.BlogPage
 import cn.kotlinmultiplatform.jeady.pages.BugsPage
 import cn.kotlinmultiplatform.jeady.pages.DetailPage
+import cn.kotlinmultiplatform.jeady.pages.OpenSourcePage
 import cn.kotlinmultiplatform.jeady.pages.RecommendationsPage
 import kotlinmultiplatform.composeapp.generated.resources.NotoSansSC_Bold
 import kotlinmultiplatform.composeapp.generated.resources.NotoSansSC_Regular
@@ -73,7 +74,7 @@ fun Navigation(
     onSelectedTabChange: (Int) -> Unit,
     onNavigateToDetail: (String) -> Unit
 ) {
-    val tabs = listOf("推荐", "博客", "Bugs", "关于")
+    val tabs = listOf("推荐", "博客", "Bugs", "开源", "关于")
 
     Column(modifier = Modifier.fillMaxSize()) {
         TabRow(selectedTabIndex = selectedTab) {
@@ -89,12 +90,12 @@ fun Navigation(
             0 -> RecommendationsPage(onNavigateToDetail)
             1 -> BlogPage(
                 onPostClick = { postId ->
-                    // 使用相同的导航处理函数
                     onNavigateToDetail(postId)
                 }
             )
             2 -> BugsPage()
-            3 -> AboutPage()
+            3 -> OpenSourcePage()
+            4 -> AboutPage()
         }
     }
 }
