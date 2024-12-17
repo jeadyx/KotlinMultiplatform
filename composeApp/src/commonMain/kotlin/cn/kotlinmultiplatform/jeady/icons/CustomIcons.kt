@@ -407,4 +407,188 @@ val Icons.Filled.CustomVisibility: ImageVector
         }.build()
         return _customVisibility!!
     }
-private var _customVisibility: ImageVector? = null 
+private var _customVisibility: ImageVector? = null
+
+val Icons.Filled.CustomGitHub: ImageVector
+    get() {
+        if (_customGitHub != null) {
+            return _customGitHub!!
+        }
+        _customGitHub = ImageVector.Builder(
+            name = "CustomGitHub",
+            defaultWidth = 24.0.dp,
+            defaultHeight = 24.0.dp,
+            viewportWidth = 24.0f,
+            viewportHeight = 24.0f
+        ).apply {
+            path(
+                fill = SolidColor(Color.Black),
+                fillAlpha = 1f,
+                stroke = null,
+                strokeAlpha = 1f,
+                strokeLineWidth = 1.0f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+                strokeLineMiter = 1f,
+                pathFillType = PathFillType.EvenOdd
+            ) {
+                moveTo(12f, 2f)
+                curveTo(6.475f, 2f, 2f, 6.475f, 2f, 12f)
+                curveTo(2f, 16.425f, 4.8625f, 20.1625f, 8.8375f, 21.4875f)
+                curveTo(9.3375f, 21.575f, 9.525f, 21.275f, 9.525f, 21.0125f)
+                curveTo(9.525f, 20.775f, 9.5125f, 19.9875f, 9.5125f, 19.15f)
+                curveTo(7f, 19.6125f, 6.35f, 18.5375f, 6.15f, 17.975f)
+                curveTo(6.0375f, 17.6875f, 5.55f, 16.8f, 5.125f, 16.5625f)
+                curveTo(4.775f, 16.375f, 4.275f, 15.9125f, 5.1125f, 15.9f)
+                curveTo(5.9f, 15.8875f, 6.4625f, 16.625f, 6.65f, 16.925f)
+                curveTo(7.55f, 18.4375f, 8.9875f, 18.0125f, 9.5625f, 17.75f)
+                curveTo(9.65f, 17.1f, 9.9125f, 16.6625f, 10.2f, 16.4125f)
+                curveTo(7.975f, 16.1625f, 5.65f, 15.3f, 5.65f, 11.475f)
+                curveTo(5.65f, 10.3875f, 6.0375f, 9.4875f, 6.675f, 8.7875f)
+                curveTo(6.575f, 8.5375f, 6.225f, 7.5125f, 6.775f, 6.1375f)
+                curveTo(6.775f, 6.1375f, 7.6125f, 5.875f, 9.525f, 7.1625f)
+                curveTo(10.325f, 6.9375f, 11.175f, 6.825f, 12.025f, 6.825f)
+                curveTo(12.875f, 6.825f, 13.725f, 6.9375f, 14.525f, 7.1625f)
+                curveTo(16.4375f, 5.8625f, 17.275f, 6.1375f, 17.275f, 6.1375f)
+                curveTo(17.825f, 7.5125f, 17.475f, 8.5375f, 17.375f, 8.7875f)
+                curveTo(18.0125f, 9.4875f, 18.4f, 10.375f, 18.4f, 11.475f)
+                curveTo(18.4f, 15.3125f, 16.0625f, 16.1625f, 13.8375f, 16.4125f)
+                curveTo(14.2f, 16.725f, 14.5125f, 17.325f, 14.5125f, 18.2625f)
+                curveTo(14.5125f, 19.6f, 14.5f, 20.675f, 14.5f, 21.0125f)
+                curveTo(14.5f, 21.275f, 14.6875f, 21.5875f, 15.1875f, 21.4875f)
+                curveTo(19.1375f, 20.1625f, 22f, 16.425f, 22f, 12f)
+                curveTo(22f, 6.475f, 17.525f, 2f, 12f, 2f)
+                close()
+            }
+        }.build()
+        return _customGitHub!!
+    }
+private var _customGitHub: ImageVector? = null
+
+val Icons.Filled.CustomBugReport: ImageVector
+    get() {
+        if (_customBugReport != null) {
+            return _customBugReport!!
+        }
+        _customBugReport = ImageVector.Builder(
+            name = "CustomBugReport",
+            defaultWidth = 24.0.dp,
+            defaultHeight = 24.0.dp,
+            viewportWidth = 24.0f,
+            viewportHeight = 24.0f
+        ).apply {
+            path(
+                fill = SolidColor(Color.Black),
+                fillAlpha = 1f,
+                stroke = null,
+                strokeAlpha = 1f,
+                strokeLineWidth = 1.0f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+                strokeLineMiter = 1f,
+                pathFillType = PathFillType.NonZero
+            ) {
+                moveTo(20f, 8f)
+                horizontalLineTo(17.19f)
+                curveTo(16.74f, 7.22f, 16.12f, 6.55f, 15.37f, 6.04f)
+                lineTo(17f, 4.41f)
+                lineTo(15.59f, 3f)
+                lineTo(13.42f, 5.17f)
+                curveTo(12.96f, 5.06f, 12.49f, 5f, 12f, 5f)
+                curveTo(11.51f, 5f, 11.04f, 5.06f, 10.59f, 5.17f)
+                lineTo(8.41f, 3f)
+                lineTo(7f, 4.41f)
+                lineTo(8.62f, 6.04f)
+                curveTo(7.88f, 6.55f, 7.26f, 7.22f, 6.81f, 8f)
+                horizontalLineTo(4f)
+                verticalLineTo(10f)
+                horizontalLineTo(6.09f)
+                curveTo(6.04f, 10.33f, 6f, 10.66f, 6f, 11f)
+                verticalLineTo(12f)
+                horizontalLineTo(4f)
+                verticalLineTo(14f)
+                horizontalLineTo(6f)
+                verticalLineTo(15f)
+                curveTo(6f, 15.34f, 6.04f, 15.67f, 6.09f, 16f)
+                horizontalLineTo(4f)
+                verticalLineTo(18f)
+                horizontalLineTo(6.81f)
+                curveTo(7.85f, 19.79f, 9.78f, 21f, 12f, 21f)
+                reflectiveCurveTo(16.15f, 19.79f, 17.19f, 18f)
+                horizontalLineTo(20f)
+                verticalLineTo(16f)
+                horizontalLineTo(17.91f)
+                curveTo(17.96f, 15.67f, 18f, 15.34f, 18f, 15f)
+                verticalLineTo(14f)
+                horizontalLineTo(20f)
+                verticalLineTo(12f)
+                horizontalLineTo(18f)
+                verticalLineTo(11f)
+                curveTo(18f, 10.66f, 17.96f, 10.33f, 17.91f, 10f)
+                horizontalLineTo(20f)
+                verticalLineTo(8f)
+                close()
+                moveTo(14f, 16f)
+                horizontalLineTo(10f)
+                verticalLineTo(14f)
+                horizontalLineTo(14f)
+                verticalLineTo(16f)
+                close()
+                moveTo(14f, 12f)
+                horizontalLineTo(10f)
+                verticalLineTo(10f)
+                horizontalLineTo(14f)
+                verticalLineTo(12f)
+                close()
+            }
+        }.build()
+        return _customBugReport!!
+    }
+private var _customBugReport: ImageVector? = null
+
+val Icons.Filled.CustomEmail: ImageVector
+    get() {
+        if (_customEmail != null) {
+            return _customEmail!!
+        }
+        _customEmail = ImageVector.Builder(
+            name = "CustomEmail",
+            defaultWidth = 24.0.dp,
+            defaultHeight = 24.0.dp,
+            viewportWidth = 24.0f,
+            viewportHeight = 24.0f
+        ).apply {
+            path(
+                fill = SolidColor(Color.Black),
+                fillAlpha = 1f,
+                stroke = null,
+                strokeAlpha = 1f,
+                strokeLineWidth = 1.0f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+                strokeLineMiter = 1f,
+                pathFillType = PathFillType.NonZero
+            ) {
+                moveTo(20f, 4f)
+                horizontalLineTo(4f)
+                curveTo(2.9f, 4f, 2.01f, 4.9f, 2.01f, 6f)
+                lineTo(2f, 18f)
+                curveTo(2f, 19.1f, 2.9f, 20f, 4f, 20f)
+                horizontalLineTo(20f)
+                curveTo(21.1f, 20f, 22f, 19.1f, 22f, 18f)
+                verticalLineTo(6f)
+                curveTo(22f, 4.9f, 21.1f, 4f, 20f, 4f)
+                close()
+                moveTo(20f, 8f)
+                lineTo(12f, 13f)
+                lineTo(4f, 8f)
+                verticalLineTo(6f)
+                lineTo(12f, 11f)
+                lineTo(20f, 6f)
+                verticalLineTo(8f)
+                close()
+            }
+        }.build()
+        return _customEmail!!
+    }
+private var _customEmail: ImageVector? = null 
