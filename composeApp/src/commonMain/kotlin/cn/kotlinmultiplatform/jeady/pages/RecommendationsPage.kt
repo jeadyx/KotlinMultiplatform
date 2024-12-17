@@ -1,13 +1,24 @@
 package cn.kotlinmultiplatform.jeady.pages
 
-import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -16,26 +27,35 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.BorderStroke
+import kotlinmultiplatform.composeapp.generated.resources.Res
+import kotlinmultiplatform.composeapp.generated.resources.compose_hero
+import kotlinmultiplatform.composeapp.generated.resources.flutter_hero
+import kotlinmultiplatform.composeapp.generated.resources.react_hero
+import kotlinmultiplatform.composeapp.generated.resources.swift_hero
+import kotlinmultiplatform.composeapp.generated.resources.tech_hero
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
-import kotlinmultiplatform.composeapp.generated.resources.Res
-import kotlinmultiplatform.composeapp.generated.resources.kotlin_multiplatform
-import kotlinmultiplatform.composeapp.generated.resources.jetpack_compose
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 
 data class RecommendItem(
     val title: String,
@@ -48,35 +68,48 @@ data class RecommendItem(
 
 data class CarouselItem(
     val title: String,
-    val description: String
+    val description: String,
+    val iconRes: DrawableResource
 )
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalResourceApi::class)
 @Composable
 fun RecommendationsPage(
     onNavigateToDetail: (String) -> Unit
 ) {
     val carouselItems = listOf(
-        CarouselItem("Kotlin多平台开发", "一次编写，到处运行"),
-        CarouselItem("现代化UI框架", "使用Compose构建跨平台应用"),
-        CarouselItem("开源技术", "拥抱开源，共建生态")
+        CarouselItem(
+            "Kotlin多平台开发",
+            "一次编写，到处运行",
+            Res.drawable.tech_hero
+        ),
+        CarouselItem(
+            "现代化UI框架",
+            "使用Compose构建跨平台应用",
+            Res.drawable.compose_hero
+        ),
+        CarouselItem(
+            "开源技术",
+            "拥抱开源，共建生态",
+            Res.drawable.flutter_hero
+        )
     )
     
     val recommendations = listOf(
         RecommendItem(
             title = "Kotlin Multiplatform Mobile",
-            description = "使用 Kotlin 开发跨平台应用的现代解决方案",
+            description = "使用 Kotlin 开发平台应用的现代解决方案",
             category = "跨平台开发",
             tags = listOf("Kotlin", "Mobile", "跨平台"),
-            iconRes = Res.drawable.kotlin_multiplatform,
+            iconRes = Res.drawable.tech_hero,
             onClick = { onNavigateToDetail("kmm") }
         ),
         RecommendItem(
             title = "Jetpack Compose",
             description = "Android 现代化 UI 开发工具包",
-            category = "UI框",
+            category = "UI框架",
             tags = listOf("Android", "UI", "声明式"),
-            iconRes = Res.drawable.jetpack_compose,
+            iconRes = Res.drawable.compose_hero,
             onClick = { onNavigateToDetail("compose") }
         ),
         RecommendItem(
@@ -84,7 +117,7 @@ fun RecommendationsPage(
             description = "Google 的跨平台应用开发框架",
             category = "跨平台开发",
             tags = listOf("Dart", "Mobile", "跨平台"),
-            iconRes = Res.drawable.kotlin_multiplatform,
+            iconRes = Res.drawable.flutter_hero,
             onClick = { onNavigateToDetail("flutter") }
         ),
         RecommendItem(
@@ -92,7 +125,7 @@ fun RecommendationsPage(
             description = "Apple 原生的声明式 UI 框架",
             category = "UI框架",
             tags = listOf("Swift", "iOS", "声明式"),
-            iconRes = Res.drawable.jetpack_compose,
+            iconRes = Res.drawable.swift_hero,
             onClick = { onNavigateToDetail("swiftui") }
         ),
         RecommendItem(
@@ -100,7 +133,7 @@ fun RecommendationsPage(
             description = "使用 React 构建原生应用",
             category = "跨平台开发",
             tags = listOf("JavaScript", "React", "跨平台"),
-            iconRes = Res.drawable.kotlin_multiplatform,
+            iconRes = Res.drawable.react_hero,
             onClick = { onNavigateToDetail("react-native") }
         )
     )
@@ -191,11 +224,41 @@ private fun ImageCarousel(items: List<CarouselItem>) {
 
 @Composable
 private fun CarouselPage(item: CarouselItem) {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colors.primary.copy(alpha = 0.1f),
-        shape = RoundedCornerShape(16.dp)
+    Box(
+        modifier = Modifier.fillMaxSize()
     ) {
+        // 背景图片
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colors.primary.copy(alpha = 0.1f))
+        ) {
+            Image(
+                painter = painterResource(item.iconRes),
+                contentDescription = item.title,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(32.dp),
+                contentScale = ContentScale.Fit
+            )
+        }
+        
+        // 内容覆盖层
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colors.surface.copy(alpha = 0.7f),
+                            MaterialTheme.colors.surface.copy(alpha = 0.85f)
+                        )
+                    )
+                )
+        )
+        
+        // 文字内容
         Column(
             modifier = Modifier
                 .padding(16.dp)
@@ -227,7 +290,7 @@ private fun RecommendationCard(item: RecommendItem) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
     ) {
-        // 底部大阴影
+        // 部大阴影
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -296,13 +359,12 @@ private fun RecommendationCard(item: RecommendItem) {
                         shape = RoundedCornerShape(16.dp),
                         color = MaterialTheme.colors.primary.copy(alpha = 0.1f)
                     ) {
-                        Icon(
+                        Image(
                             painter = painterResource(item.iconRes),
                             contentDescription = item.title,
                             modifier = Modifier
                                 .padding(16.dp)
-                                .size(32.dp),
-                            tint = MaterialTheme.colors.primary
+                                .size(32.dp)
                         )
                     }
                     
@@ -329,7 +391,7 @@ private fun RecommendationCard(item: RecommendItem) {
                         
                         Spacer(modifier = Modifier.height(12.dp))
                         
-                        // 描述
+                        // ���述
                         Text(
                             text = item.description,
                             style = MaterialTheme.typography.body1.copy(
