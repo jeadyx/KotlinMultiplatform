@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material.Card
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
@@ -271,7 +272,20 @@ private fun BlogCard(
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    TextButton(onClick = onEditClick) {
+                    TextButton(
+                        onClick = { 
+                            onEditClick()
+                        },
+                        modifier = Modifier.clickable(
+                            enabled = true,
+                            onClickLabel = "Edit",
+                            onClick = {
+                                onEditClick()
+                            },
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        )
+                    ) {
                         Text("编辑")
                     }
                     CategoryLabel(post.category)

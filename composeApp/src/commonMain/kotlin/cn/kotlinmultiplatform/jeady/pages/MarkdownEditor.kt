@@ -9,9 +9,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -30,10 +34,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import cn.kotlinmultiplatform.jeady.components.MarkdownPreview
 import cn.kotlinmultiplatform.jeady.icons.CustomCode
 import cn.kotlinmultiplatform.jeady.icons.CustomFormatBold
@@ -59,6 +67,7 @@ fun MarkdownEditor(
     var tags by remember { mutableStateOf(post?.tags?.joinToString(", ") ?: "") }
     var summary by remember { mutableStateOf(post?.summary ?: "") }
     var isPreviewMode by remember { mutableStateOf(false) }
+    var showMetadataDialog by remember { mutableStateOf(false) }
     
     Scaffold(
         topBar = {
@@ -71,30 +80,27 @@ fun MarkdownEditor(
                 },
                 actions = {
                     // 预览切换按钮
-                    IconButton(onClick = { isPreviewMode = !isPreviewMode }) {
+                    IconButton(
+                        onClick = { isPreviewMode = !isPreviewMode },
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    ) {
                         Icon(
                             if (isPreviewMode) Icons.Default.Edit else Icons.Filled.CustomVisibility,
-                            contentDescription = if (isPreviewMode) "编辑" else "预览"
+                            contentDescription = if (isPreviewMode) "编辑" else "预览",
+                            tint = MaterialTheme.colors.onPrimary
                         )
                     }
                     
-                    TextButton(
-                        onClick = {
-                            val newPost = BlogPost(
-                                id = post?.id ?: Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).toString(),
-                                title = title,
-                                content = content,
-                                summary = summary,
-                                category = category,
-                                tags = tags.split(",").map { it.trim() }.filter { it.isNotEmpty() },
-                                author = "当前用户", // TODO: 实现用户系统
-                                publishDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                                readingTime = (content.length / 500).coerceAtLeast(1) // 假设每500字符需要1分钟阅读
-                            )
-                            onSave(newPost)
-                            onClose()
-                        },
-                        enabled = title.isNotEmpty() && content.isNotEmpty()
+                    Button(
+                        onClick = { showMetadataDialog = true },
+                        enabled = content.isNotEmpty(),
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = MaterialTheme.colors.onPrimary,
+                            contentColor = MaterialTheme.colors.primary,
+                            disabledBackgroundColor = MaterialTheme.colors.onSurface.copy(alpha = 0.12f),
+                            disabledContentColor = MaterialTheme.colors.onSurface.copy(alpha = 0.38f)
+                        )
                     ) {
                         Text("保存")
                     }
@@ -108,49 +114,6 @@ fun MarkdownEditor(
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            // 标题输入
-            OutlinedTextField(
-                value = title,
-                onValueChange = { title = it },
-                label = { Text("标题") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            // 分类和标签
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                OutlinedTextField(
-                    value = category,
-                    onValueChange = { category = it },
-                    label = { Text("分类") },
-                    modifier = Modifier.weight(1f)
-                )
-                
-                OutlinedTextField(
-                    value = tags,
-                    onValueChange = { tags = it },
-                    label = { Text("标签 (逗号分隔)") },
-                    modifier = Modifier.weight(2f)
-                )
-            }
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            // 摘要输入
-            OutlinedTextField(
-                value = summary,
-                onValueChange = { summary = it },
-                label = { Text("摘要") },
-                modifier = Modifier.fillMaxWidth(),
-                minLines = 2
-            )
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
             if (!isPreviewMode) {
                 // Markdown工具栏
                 MarkdownToolbar(
@@ -170,12 +133,15 @@ fun MarkdownEditor(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                elevation = 1.dp
+                elevation = 2.dp,
+                shape = RoundedCornerShape(12.dp)
             ) {
                 if (isPreviewMode) {
                     MarkdownPreview(
-                        markdown = content,
-                        modifier = Modifier.fillMaxSize()
+                        content = content,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
                     )
                 } else {
                     BasicTextField(
@@ -188,9 +154,114 @@ fun MarkdownEditor(
                         textStyle = TextStyle(
                             fontFamily = FontFamily.Monospace,
                             fontSize = 14.sp,
-                            color = MaterialTheme.colors.onSurface
+                            color = MaterialTheme.colors.onSurface,
+                            lineHeight = 1.5.em
                         )
                     )
+                }
+            }
+        }
+    }
+
+    if (showMetadataDialog) {
+        Dialog(onDismissRequest = { showMetadataDialog = false }) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                shape = RoundedCornerShape(16.dp),
+                elevation = 8.dp
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Text(
+                        text = "文章信息",
+                        style = MaterialTheme.typography.h6,
+                        color = MaterialTheme.colors.primary
+                    )
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    OutlinedTextField(
+                        value = title,
+                        onValueChange = { title = it },
+                        label = { Text("标题") },
+                        modifier = Modifier.fillMaxWidth(),
+                        textStyle = MaterialTheme.typography.subtitle1,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = category,
+                            onValueChange = { category = it },
+                            label = { Text("分类") },
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        
+                        OutlinedTextField(
+                            value = tags,
+                            onValueChange = { tags = it },
+                            label = { Text("标签 (逗号分隔)") },
+                            modifier = Modifier.weight(2f),
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    OutlinedTextField(
+                        value = summary,
+                        onValueChange = { summary = it },
+                        label = { Text("摘要") },
+                        modifier = Modifier.fillMaxWidth(),
+                        minLines = 2,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    
+                    Spacer(modifier = Modifier.height(24.dp))
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        TextButton(
+                            onClick = { showMetadataDialog = false }
+                        ) {
+                            Text("取消")
+                        }
+                        
+                        Button(
+                            onClick = {
+                                val newPost = BlogPost(
+                                    id = post?.id ?: Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).toString(),
+                                    title = title,
+                                    content = content,
+                                    summary = summary,
+                                    category = category,
+                                    tags = tags.split(",").map { it.trim() }.filter { it.isNotEmpty() },
+                                    author = "当前用户", // TODO: 实现用户系统
+                                    publishDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+                                    readingTime = (content.length / 500).coerceAtLeast(1) // 假设每500字符需要1分钟阅读
+                                )
+                                onSave(newPost)
+                                showMetadataDialog = false
+                            },
+                            enabled = title.isNotEmpty() && content.isNotEmpty(),
+                            modifier = Modifier.padding(start = 8.dp)
+                        ) {
+                            Text("确认")
+                        }
+                    }
                 }
             }
         }
@@ -208,32 +279,72 @@ private fun MarkdownToolbar(
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        elevation = 1.dp
+        elevation = 2.dp,
+        shape = RoundedCornerShape(8.dp),
+        color = MaterialTheme.colors.surface
     ) {
         Row(
             modifier = Modifier
                 .horizontalScroll(rememberScrollState())
                 .padding(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            IconButton(onClick = onBoldClick) {
-                Icon(Icons.Filled.CustomFormatBold, "粗体")
-            }
-            IconButton(onClick = onItalicClick) {
-                Icon(Icons.Filled.CustomFormatItalic, "斜体")
-            }
-            IconButton(onClick = onHeadingClick) {
-                Icon(Icons.Filled.CustomTitle, "标题")
-            }
-            IconButton(onClick = onLinkClick) {
-                Icon(Icons.Filled.CustomLink, "链接")
-            }
-            IconButton(onClick = onListClick) {
-                Icon(Icons.Filled.CustomFormatListBulleted, "列表")
-            }
-            IconButton(onClick = onCodeClick) {
-                Icon(Icons.Filled.CustomCode, "代码")
-            }
+            ToolbarButton(
+                icon = Icons.Filled.CustomFormatBold,
+                contentDescription = "粗体",
+                onClick = onBoldClick
+            )
+            ToolbarButton(
+                icon = Icons.Filled.CustomFormatItalic,
+                contentDescription = "斜体",
+                onClick = onItalicClick
+            )
+            ToolbarButton(
+                icon = Icons.Filled.CustomTitle,
+                contentDescription = "标题",
+                onClick = onHeadingClick
+            )
+            ToolbarButton(
+                icon = Icons.Filled.CustomLink,
+                contentDescription = "链接",
+                onClick = onLinkClick
+            )
+            ToolbarButton(
+                icon = Icons.Filled.CustomFormatListBulleted,
+                contentDescription = "列表",
+                onClick = onListClick
+            )
+            ToolbarButton(
+                icon = Icons.Filled.CustomCode,
+                contentDescription = "代码",
+                onClick = onCodeClick
+            )
+        }
+    }
+}
+
+@Composable
+private fun ToolbarButton(
+    icon: ImageVector,
+    contentDescription: String,
+    onClick: () -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .size(36.dp)
+            .clip(RoundedCornerShape(4.dp)),
+        color = MaterialTheme.colors.surface
+    ) {
+        IconButton(
+            onClick = onClick,
+            modifier = Modifier.size(36.dp)
+        ) {
+            Icon(
+                icon,
+                contentDescription = contentDescription,
+                tint = MaterialTheme.colors.onSurface.copy(alpha = 0.87f),
+                modifier = Modifier.size(20.dp)
+            )
         }
     }
 } 

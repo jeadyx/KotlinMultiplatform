@@ -36,13 +36,18 @@ data class DetailInfo(
 @Composable
 fun DetailPage(
     itemId: String,
+    source: String = "blog",
     onBackClick: () -> Unit
 ) {
     var detailInfo by remember { mutableStateOf<DetailInfo?>(null) }
 
-    // 模拟从网络加载数据
-    LaunchedEffect(itemId) {
-        detailInfo = fetchDetailInfo(itemId)
+    // 根据来源加载不同的数据
+    LaunchedEffect(itemId, source) {
+        detailInfo = when (source) {
+            "blog" -> fetchBlogDetailInfo(itemId)
+            "recommendation" -> fetchRecommendationDetailInfo(itemId)
+            else -> throw IllegalArgumentException("Unknown source: $source")
+        }
     }
 
     Scaffold(
@@ -130,7 +135,7 @@ fun DetailPage(
                                 ) {
                                     Icon(
                                         Icons.Default.DateRange,
-                                        contentDescription = "发布日期",
+                                        contentDescription = "���布日期",
                                         modifier = Modifier.size(16.dp),
                                         tint = MaterialTheme.colors.primary
                                     )
@@ -148,7 +153,7 @@ fun DetailPage(
                                 ) {
                                     Icon(
                                         Icons.Default.CustomSchedule,
-                                        contentDescription = "阅读���间",
+                                        contentDescription = "阅读时间",
                                         modifier = Modifier.size(16.dp),
                                         tint = MaterialTheme.colors.primary
                                     )
@@ -302,10 +307,8 @@ private fun TagChip(tag: String) {
     }
 }
 
-private suspend fun fetchDetailInfo(itemId: String): DetailInfo {
-    // 模拟网络延迟
-    kotlinx.coroutines.delay(500)
-    
+private suspend fun fetchBlogDetailInfo(itemId: String): DetailInfo {
+    // 从博客服务获取数据
     val blogService = BlogService.getInstance()
     val post = blogService.getPostById(itemId) ?: throw IllegalArgumentException("Blog post not found: $itemId")
     
@@ -320,5 +323,46 @@ private suspend fun fetchDetailInfo(itemId: String): DetailInfo {
         readingTime = post.readingTime,
         category = post.category,
         tags = post.tags
+    )
+}
+
+private suspend fun fetchRecommendationDetailInfo(itemId: String): DetailInfo {
+    // 模拟网络延迟
+    kotlinx.coroutines.delay(500)
+    
+    // 这里返回推荐内容的详细信息
+    return DetailInfo(
+        title = "Kotlin Multiplatform 详情",
+        description = "使用 Kotlin 开发跨平台应用的现代解决方案",
+        content = """
+            # Kotlin Multiplatform
+            
+            Kotlin Multiplatform 是一个强大的跨平台开发框架，它允许你使用单一语言开发多个平台的应用。
+            
+            ## 主要特点
+            
+            - 共享业务逻辑
+            - 平台特定API支持
+            - 优秀的开发体验
+            
+            ## 支持的平台
+            
+            - Android
+            - iOS
+            - Desktop
+            - Web
+            - Server
+        """.trimIndent(),
+        features = listOf(
+            "跨平台开发",
+            "代码共享",
+            "原生性能",
+            "灵活性"
+        ),
+        links = mapOf(
+            "官方文档" to "https://kotlinlang.org/docs/multiplatform.html",
+            "GitHub" to "https://github.com/Kotlin/kotlin-multiplatform",
+            "示例项目" to "https://github.com/Kotlin/kmm-sample"
+        )
     )
 } 

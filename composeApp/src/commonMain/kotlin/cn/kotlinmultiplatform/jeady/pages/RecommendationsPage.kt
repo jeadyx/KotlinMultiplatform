@@ -172,7 +172,7 @@ private object CarouselColors {
 @OptIn(ExperimentalFoundationApi::class, ExperimentalResourceApi::class)
 @Composable
 fun RecommendationsPage(
-    onNavigateToDetail: (String) -> Unit
+    onNavigateToDetail: (String, String) -> Unit
 ) {
     val carouselItems = listOf(
         CarouselItem(
@@ -202,7 +202,7 @@ fun RecommendationsPage(
             tags = listOf("Kotlin", "Mobile", "跨平台"),
             iconRes = Res.drawable.tech_hero,
             isHot = true,
-            onClick = { onNavigateToDetail("kmm") }
+            onClick = { onNavigateToDetail("kmm", "recommendation") }
         ),
         RecommendItem(
             id = "flutter",
@@ -212,7 +212,7 @@ fun RecommendationsPage(
             tags = listOf("Dart", "Mobile", "跨平台"),
             iconRes = Res.drawable.flutter_hero,
             isHot = true,
-            onClick = { onNavigateToDetail("flutter") }
+            onClick = { onNavigateToDetail("flutter", "recommendation") }
         ),
         RecommendItem(
             id = "react-native",
@@ -221,7 +221,7 @@ fun RecommendationsPage(
             category = "移动开发",
             tags = listOf("JavaScript", "React", "跨平台"),
             iconRes = Res.drawable.react_hero,
-            onClick = { onNavigateToDetail("react-native") }
+            onClick = { onNavigateToDetail("react-native", "recommendation") }
         ),
 
         // Web开发分类
@@ -233,7 +233,7 @@ fun RecommendationsPage(
             tags = listOf("React", "SSR", "前端"),
             iconRes = Res.drawable.tech_hero,
             isHot = true,
-            onClick = { onNavigateToDetail("nextjs") }
+            onClick = { onNavigateToDetail("nextjs", "recommendation") }
         ),
         RecommendItem(
             id = "vue",
@@ -243,7 +243,7 @@ fun RecommendationsPage(
             tags = listOf("JavaScript", "Vue", "前端"),
             iconRes = Res.drawable.tech_hero,
             isHot = true,
-            onClick = { onNavigateToDetail("vue") }
+            onClick = { onNavigateToDetail("vue", "recommendation") }
         ),
         RecommendItem(
             id = "svelte",
@@ -252,7 +252,7 @@ fun RecommendationsPage(
             category = "Web开发",
             tags = listOf("JavaScript", "编译器", "UI"),
             iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("svelte") }
+            onClick = { onNavigateToDetail("svelte", "recommendation") }
         ),
 
         // 人工智能分类
@@ -264,7 +264,7 @@ fun RecommendationsPage(
             tags = listOf("AI", "机器学习", "深度学习"),
             iconRes = Res.drawable.tech_hero,
             isHot = true,
-            onClick = { onNavigateToDetail("tensorflow") }
+            onClick = { onNavigateToDetail("tensorflow", "recommendation") }
         ),
         RecommendItem(
             id = "pytorch",
@@ -274,7 +274,7 @@ fun RecommendationsPage(
             tags = listOf("AI", "深度学习", "Python"),
             iconRes = Res.drawable.tech_hero,
             isHot = true,
-            onClick = { onNavigateToDetail("pytorch") }
+            onClick = { onNavigateToDetail("pytorch", "recommendation") }
         ),
         RecommendItem(
             id = "huggingface",
@@ -283,7 +283,7 @@ fun RecommendationsPage(
             category = "人工智能",
             tags = listOf("AI", "NLP", "模型库"),
             iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("huggingface") }
+            onClick = { onNavigateToDetail("huggingface", "recommendation") }
         ),
 
         // 云原生分类
@@ -295,7 +295,7 @@ fun RecommendationsPage(
             tags = listOf("容器编排", "DevOps", "云原生"),
             iconRes = Res.drawable.tech_hero,
             isHot = true,
-            onClick = { onNavigateToDetail("kubernetes") }
+            onClick = { onNavigateToDetail("kubernetes", "recommendation") }
         ),
         RecommendItem(
             id = "docker",
@@ -305,7 +305,7 @@ fun RecommendationsPage(
             tags = listOf("容器化", "DevOps", "部署"),
             iconRes = Res.drawable.tech_hero,
             isHot = true,
-            onClick = { onNavigateToDetail("docker") }
+            onClick = { onNavigateToDetail("docker", "recommendation") }
         ),
         RecommendItem(
             id = "istio",
@@ -314,7 +314,7 @@ fun RecommendationsPage(
             category = "云原生",
             tags = listOf("微服务", "服务网格", "云原生"),
             iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("istio") }
+            onClick = { onNavigateToDetail("istio", "recommendation") }
         )
     )
     
@@ -358,7 +358,7 @@ fun RecommendationsPage(
         item {
             HotSection(
                 items = recommendations.filter { it.isHot },
-                onItemClick = onNavigateToDetail
+                onItemClick = { id -> onNavigateToDetail(id, "recommendation") }
             )
         }
         
@@ -366,7 +366,7 @@ fun RecommendationsPage(
         item {
             NewReleaseSection(
                 items = recommendations.take(5),
-                onItemClick = onNavigateToDetail
+                onItemClick = { id -> onNavigateToDetail(id, "recommendation") }
             )
         }
         
@@ -376,7 +376,7 @@ fun RecommendationsPage(
                 CategoryRecommendations(
                     category = selectedCategory!!,
                     items = recommendations.filter { it.category == selectedCategory },
-                    onItemClick = onNavigateToDetail
+                    onItemClick = { id -> onNavigateToDetail(id, "recommendation") }
                 )
             }
         }

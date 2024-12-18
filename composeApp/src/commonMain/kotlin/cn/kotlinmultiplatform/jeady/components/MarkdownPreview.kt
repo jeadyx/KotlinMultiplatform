@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun MarkdownPreview(
-    markdown: String,
+    content: String,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -31,7 +31,7 @@ fun MarkdownPreview(
         Text(
             text = buildAnnotatedString {
                 // Simple Markdown rendering
-                markdown.split("\n").forEach { line ->
+                content.split("\n").forEach { line ->
                     when {
                         line.startsWith("# ") -> {
                             pushStyle(SpanStyle(

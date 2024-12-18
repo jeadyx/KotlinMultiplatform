@@ -55,8 +55,8 @@ import org.jetbrains.compose.resources.painterResource
 
 sealed class Screen(val route: String) {
     object Home : Screen("home")
-    object Detail : Screen("detail/{itemId}") {
-        fun createRoute(itemId: String) = "detail/$itemId"
+    object Detail : Screen("detail/{itemId}/{source}") {
+        fun createRoute(itemId: String, source: String) = "detail/$itemId/$source"
     }
 }
 
@@ -87,7 +87,7 @@ fun App() {
                     onSelectedTabChange = { newTab -> 
                         selectedTab = newTab
                     },
-                    onNavigateToDetail = { itemId ->
+                    onNavigateToDetail = { itemId, source ->
                         selectedItemId = itemId
                         currentScreen = Screen.Detail
                     },
@@ -104,6 +104,7 @@ fun App() {
                 selectedItemId?.let { itemId ->
                     DetailPage(
                         itemId = itemId,
+                        source = if (selectedTab == 1) "blog" else "recommendation",
                         onBackClick = {
                             currentScreen = Screen.Home
                         }
@@ -158,7 +159,7 @@ fun App() {
 fun Navigation(
     selectedTab: Int,
     onSelectedTabChange: (Int) -> Unit,
-    onNavigateToDetail: (String) -> Unit,
+    onNavigateToDetail: (String, String) -> Unit,
     isLoggedIn: Boolean,
     onLoginClick: () -> Unit,
     onLogout: () -> Unit
@@ -232,10 +233,12 @@ fun Navigation(
         // 内容区域
         Box(modifier = Modifier.weight(1f)) {
             when (selectedTab) {
-                0 -> RecommendationsPage(onNavigateToDetail)
+                0 -> RecommendationsPage { itemId, source ->
+                    onNavigateToDetail(itemId, source)
+                }
                 1 -> BlogPage(
                     onPostClick = { postId ->
-                        onNavigateToDetail(postId)
+                        onNavigateToDetail(postId, "blog")
                     }
                 )
                 2 -> BugsPage()
