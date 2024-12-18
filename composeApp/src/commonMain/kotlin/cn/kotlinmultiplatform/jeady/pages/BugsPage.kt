@@ -2,7 +2,6 @@ package cn.kotlinmultiplatform.jeady.pages
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +19,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -66,19 +64,20 @@ import cn.kotlinmultiplatform.jeady.utils.IdGenerator
 import kotlinx.datetime.Clock
 
 @Composable
-fun BugsPage() {
-    var bugs by remember { mutableStateOf(getSampleBugs()) }
-    var showAddDialog by remember { mutableStateOf(false) }
-    var selectedBug by remember { mutableStateOf<Bug?>(null) }
+fun BugsPage(
+    bugs: List<Bug>,
+    onEdit: (Bug) -> Unit,
+    onDelete: (String) -> Unit,
+    onAdd: () -> Unit,
+    onNavigateToBugDetail: (Bug) -> Unit
+) {
     var searchQuery by remember { mutableStateOf("") }
-    
-    // 添加排序和筛选状态
     var sortBy by remember { mutableStateOf(BugSortOption.CREATED_TIME) }
     var sortAscending by remember { mutableStateOf(false) }
     var filterStatus by remember { mutableStateOf<BugStatus?>(null) }
     var filterPriority by remember { mutableStateOf<BugPriority?>(null) }
     var showFilterMenu by remember { mutableStateOf(false) }
-    
+
     Column(modifier = Modifier.fillMaxSize()) {
         // 美化标题栏
         TopAppBar(
@@ -156,7 +155,7 @@ fun BugsPage() {
                 }
                 
                 IconButton(
-                    onClick = { showAddDialog = true },
+                    onClick = onAdd,
                     modifier = Modifier.size(40.dp)
                 ) {
                     Icon(
@@ -219,10 +218,9 @@ fun BugsPage() {
             items(filteredBugs) { bug ->
                 BugCard(
                     bug = bug,
-                    onEdit = { selectedBug = bug },
-                    onDelete = {
-                        bugs = bugs.filter { it.id != bug.id }
-                    }
+                    onEdit = { onEdit(bug) },
+                    onDelete = { onDelete(bug.id) },
+                    onSelect = { onNavigateToBugDetail(bug) }
                 )
             }
         }
@@ -240,46 +238,6 @@ fun BugsPage() {
                 filterPriority = priority
                 sortBy = sort
                 showFilterMenu = false
-            }
-        )
-    }
-
-    // 添加/编辑 Bug 对话框
-    if (showAddDialog || selectedBug != null) {
-        BugDialog(
-            bug = selectedBug,
-            onDismiss = {
-                showAddDialog = false
-                selectedBug = null
-            },
-            onSave = { title, description, priority, status, tags ->
-                if (selectedBug != null) {
-                    bugs = bugs.map { 
-                        if (it.id == selectedBug!!.id) {
-                            selectedBug!!.copy(
-                                title = title,
-                                description = description,
-                                priority = priority,
-                                status = status,
-                                tags = tags,
-                                updatedAt = Clock.System.now().toEpochMilliseconds()
-                            )
-                        } else it
-                    }
-                } else {
-                    bugs = bugs + Bug(
-                        id = IdGenerator.generateId(),
-                        title = title,
-                        description = description,
-                        priority = priority,
-                        status = status,
-                        tags = tags,
-                        createdAt = Clock.System.now().toEpochMilliseconds(),
-                        updatedAt = Clock.System.now().toEpochMilliseconds()
-                    )
-                }
-                showAddDialog = false
-                selectedBug = null
             }
         )
     }
@@ -451,12 +409,14 @@ fun BugPriority.toDisplayString() = when(this) {
 private fun BugCard(
     bug: Bug,
     onEdit: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onSelect: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onEdit),
+            .clickable(onClick = onSelect),
         elevation = 2.dp
     ) {
         Column(
@@ -469,8 +429,7 @@ private fun BugCard(
             ) {
                 Text(
                     text = bug.title,
-                    style = MaterialTheme.typography.h6,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.h6
                 )
                 Row {
                     IconButton(onClick = onEdit) {
@@ -544,7 +503,7 @@ private fun BugCard(
 }
 
 @Composable
-private fun BugDialog(
+fun BugDialog(
     bug: Bug?,
     onDismiss: () -> Unit,
     onSave: (String, String, BugPriority, BugStatus, List<String>) -> Unit
@@ -722,7 +681,7 @@ private fun BugDialog(
 }
 
 @Composable
-private fun PriorityChip(
+fun PriorityChip(
     priority: BugPriority,
     selected: Boolean,
     onClick: () -> Unit
@@ -766,7 +725,7 @@ private fun PriorityChip(
 }
 
 @Composable
-private fun StatusChip(
+fun StatusChip(
     status: BugStatus,
     selected: Boolean,
     onClick: () -> Unit
@@ -812,7 +771,7 @@ private fun StatusChip(
 private fun getSampleBugs(): List<Bug> = listOf(
     Bug(
         id = IdGenerator.generateId(),
-        title = "Kotlin Coroutines 内存泄漏问题",
+        title = "Kotlin Coroutines 存泄漏问题",
         description = """
             在 Android 应用中使用 Kotlin Coroutines 时，如果在 ViewModel 中启动协程但没有正确取消，
             会导致内存泄漏。特别是在使用 viewModelScope 时，需要确保所有协程在 ViewModel 清理时都被取消。
@@ -873,7 +832,7 @@ private fun getSampleBugs(): List<Bug> = listOf(
         id = IdGenerator.generateId(),
         title = "Compose 重组优化问题",
         description = """
-            在使用 Jetpack Compose 时，由于重组规则理解不当，导致不必要的重组，影响性能。
+            在使用 Jetpack Compose 时，由于重组规则理解不当��导致不必要的重组，影响性能。
             
             问题代码：
             @Composable

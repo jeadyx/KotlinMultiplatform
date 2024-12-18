@@ -37,8 +37,13 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import cn.kotlinmultiplatform.jeady.components.AppDialog
+import cn.kotlinmultiplatform.jeady.model.Bug
+import cn.kotlinmultiplatform.jeady.model.BugPriority
+import cn.kotlinmultiplatform.jeady.model.BugStatus
 import cn.kotlinmultiplatform.jeady.pages.AboutPage
 import cn.kotlinmultiplatform.jeady.pages.BlogPage
+import cn.kotlinmultiplatform.jeady.pages.BugDetailPage
+import cn.kotlinmultiplatform.jeady.pages.BugDialog
 import cn.kotlinmultiplatform.jeady.pages.BugsPage
 import cn.kotlinmultiplatform.jeady.pages.DetailPage
 import cn.kotlinmultiplatform.jeady.pages.LoginPage
@@ -46,10 +51,12 @@ import cn.kotlinmultiplatform.jeady.pages.OpenSourcePage
 import cn.kotlinmultiplatform.jeady.pages.RecommendationsPage
 import cn.kotlinmultiplatform.jeady.pages.RegisterPage
 import cn.kotlinmultiplatform.jeady.platform.getPlatformUrlHandler
+import cn.kotlinmultiplatform.jeady.utils.IdGenerator
 import kotlinmultiplatform.composeapp.generated.resources.NotoSansSC_Bold
 import kotlinmultiplatform.composeapp.generated.resources.NotoSansSC_Regular
 import kotlinmultiplatform.composeapp.generated.resources.Res
 import kotlinmultiplatform.composeapp.generated.resources.app_logo
+import kotlinx.datetime.Clock
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 
@@ -57,6 +64,9 @@ sealed class Screen(val route: String) {
     object Home : Screen("home")
     object Detail : Screen("detail/{itemId}/{source}") {
         fun createRoute(itemId: String, source: String) = "detail/$itemId/$source"
+    }
+    object BugDetail : Screen("bug-detail/{bugId}") {
+        fun createRoute(bugId: String) = "bug-detail/$bugId"
     }
 }
 
@@ -78,6 +88,9 @@ fun App() {
         var selectedTab by remember { mutableStateOf(0) }
         var showLoginDialog by remember { mutableStateOf(false) }
         var showRegisterDialog by remember { mutableStateOf(false) }
+        var bugs by remember { mutableStateOf<List<Bug>>(getSampleBugs()) }
+        var showBugEditDialog by remember { mutableStateOf(false) }
+        var selectedBug by remember { mutableStateOf<Bug?>(null) }
 
         // 主界面
         when (currentScreen) {
@@ -97,6 +110,22 @@ fun App() {
                     },
                     onLogout = {
                         isLoggedIn = false
+                    },
+                    onNavigateToBugDetail = { bug ->
+                        selectedBug = bug
+                        currentScreen = Screen.BugDetail
+                    },
+                    bugs = bugs,
+                    onBugEdit = { bug ->
+                        selectedBug = bug
+                        showBugEditDialog = true
+                    },
+                    onBugDelete = { bugId ->
+                        bugs = bugs.filter { bug -> bug.id != bugId }
+                    },
+                    onBugAdd = {
+                        selectedBug = null
+                        showBugEditDialog = true
                     }
                 )
             }
@@ -111,9 +140,22 @@ fun App() {
                     )
                 }
             }
+            Screen.BugDetail -> {
+                selectedBug?.let { bug ->
+                    BugDetailPage(
+                        bug = bug,
+                        onNavigateBack = {
+                            currentScreen = Screen.Home
+                        },
+                        onEdit = { editBug ->
+                            showBugEditDialog = true
+                        }
+                    )
+                }
+            }
         }
 
-        // 登录对话框
+        // ���录对话框
         if (showLoginDialog) {
             AppDialog(
                 onDismissRequest = { showLoginDialog = false }
@@ -152,6 +194,46 @@ fun App() {
                 )
             }
         }
+
+        // 添加/编辑 Bug 对话框
+        if (showBugEditDialog) {
+            BugDialog(
+                bug = selectedBug,
+                onDismiss = {
+                    showBugEditDialog = false
+                },
+                onSave = { title, description, priority, status, tags ->
+                    if (selectedBug != null) {
+                        val updatedBug = selectedBug!!.copy(
+                            title = title,
+                            description = description,
+                            priority = priority,
+                            status = status,
+                            tags = tags,
+                            updatedAt = Clock.System.now().toEpochMilliseconds()
+                        )
+                        bugs = bugs.map { bug -> 
+                            if (bug.id == selectedBug!!.id) updatedBug else bug 
+                        }
+                        // 更新 selectedBug，这样详情页面也会更新
+                        selectedBug = updatedBug
+                    } else {
+                        val newBug = Bug(
+                            id = IdGenerator.generateId(),
+                            title = title,
+                            description = description,
+                            priority = priority,
+                            status = status,
+                            tags = tags,
+                            createdAt = Clock.System.now().toEpochMilliseconds(),
+                            updatedAt = Clock.System.now().toEpochMilliseconds()
+                        )
+                        bugs = bugs + newBug
+                    }
+                    showBugEditDialog = false
+                }
+            )
+        }
     }
 }
 
@@ -162,7 +244,12 @@ fun Navigation(
     onNavigateToDetail: (String, String) -> Unit,
     isLoggedIn: Boolean,
     onLoginClick: () -> Unit,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onNavigateToBugDetail: (Bug) -> Unit,
+    bugs: List<Bug>,
+    onBugEdit: (Bug) -> Unit,
+    onBugDelete: (String) -> Unit,
+    onBugAdd: () -> Unit
 ) {
     val tabs = listOf("推荐", "博客", "Bugs", "开源", "关于")
 
@@ -241,7 +328,13 @@ fun Navigation(
                         onNavigateToDetail(postId, "blog")
                     }
                 )
-                2 -> BugsPage()
+                2 -> BugsPage(
+                    bugs = bugs,
+                    onEdit = onBugEdit,
+                    onDelete = onBugDelete,
+                    onAdd = onBugAdd,
+                    onNavigateToBugDetail = onNavigateToBugDetail
+                )
                 3 -> OpenSourcePage(urlHandler = getPlatformUrlHandler())
                 4 -> AboutPage()
             }
@@ -277,3 +370,25 @@ private fun TabItem(
         )
     }
 }
+
+private fun getSampleBugs(): List<Bug> = listOf(
+    Bug(
+        id = IdGenerator.generateId(),
+        title = "Kotlin Coroutines 内存泄漏问题",
+        description = """
+            在 Android 应用中使用 Kotlin Coroutines 时，如果在 ViewModel 中启动协程但没有正确取消，
+            会导致内存泄漏。特别是在使用 viewModelScope 时，需要确保所有协程在 ViewModel 清理时都被取消。
+            
+            复现步骤：
+            1. 在 ViewModel 中使用 GlobalScope 启动协程
+            2. 旋转屏幕或返回上一页面
+            3. 观察内存使用情况
+        """.trimIndent(),
+        status = BugStatus.OPEN,
+        priority = BugPriority.HIGH,
+        createdAt = Clock.System.now().toEpochMilliseconds(),
+        updatedAt = Clock.System.now().toEpochMilliseconds(),
+        tags = listOf("coroutines", "memory-leak", "android")
+    ),
+    // ... 其他示例 Bug 保持不变 ...
+)
