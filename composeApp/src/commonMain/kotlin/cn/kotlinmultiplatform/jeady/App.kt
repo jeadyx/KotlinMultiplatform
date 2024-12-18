@@ -155,7 +155,7 @@ fun App() {
             }
         }
 
-        // ���录对话框
+        // 登录对话框
         if (showLoginDialog) {
             AppDialog(
                 onDismissRequest = { showLoginDialog = false }
@@ -381,7 +381,7 @@ private fun getSampleBugs(): List<Bug> = listOf(
             
             复现步骤：
             1. 在 ViewModel 中使用 GlobalScope 启动协程
-            2. 旋转屏幕或返回上一页面
+            2. 旋转屏幕或返回上���页面
             3. 观察内存使用情况
         """.trimIndent(),
         status = BugStatus.OPEN,

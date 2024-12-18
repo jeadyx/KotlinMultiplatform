@@ -106,26 +106,37 @@ fun BugsPage(
             contentColor = Color.White,
             elevation = 4.dp,
             actions = {
-                // 搜索框美化
+                // 修改搜索框样式
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = { searchQuery = it },
-                    placeholder = { Text("搜索 Bug...", style = MaterialTheme.typography.body2) },
+                    placeholder = { 
+                        Text(
+                            "搜索 Bug...", 
+                            style = MaterialTheme.typography.body2,
+                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                        ) 
+                    },
                     modifier = Modifier
-                        .width(220.dp)
-                        .padding(vertical = 4.dp),
+                        .width(280.dp), // 增加宽度 // 调整内边距
                     singleLine = true,
                     leadingIcon = { 
                         Icon(
                             Icons.Filled.Search,
                             contentDescription = null,
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(20.dp),
+                            tint = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
                         )
                     },
-                    textStyle = MaterialTheme.typography.body2,
+                    textStyle = MaterialTheme.typography.body2.copy(
+                        color = MaterialTheme.colors.onSurface
+                    ),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        backgroundColor = MaterialTheme.colors.surface.copy(alpha = 0.9f),
-                        unfocusedBorderColor = MaterialTheme.colors.onSurface.copy(alpha = 0.2f)
+                        backgroundColor = MaterialTheme.colors.surface.copy(alpha = 0.95f),
+                        unfocusedBorderColor = MaterialTheme.colors.onSurface.copy(alpha = 0.1f),
+                        focusedBorderColor = MaterialTheme.colors.onSurface.copy(alpha = 0.2f),
+                        cursorColor = MaterialTheme.colors.onSurface,
+                        textColor = MaterialTheme.colors.onSurface
                     )
                 )
                 
@@ -811,7 +822,7 @@ private fun getSampleBugs(): List<Bug> = listOf(
     
     Bug(
         id = IdGenerator.generateId(),
-        title = "Flow collect 在 Android 上的生命周期问题",
+        title = "Flow collect 在 Android 上的生命��期问题",
         description = """
             使用 Flow.collect 收集数据时，如果在 Activity/Fragment 的 onCreate 中直接调用，
             可能会导致在配置更改（如屏幕旋转）时重复收集数据。
@@ -832,7 +843,7 @@ private fun getSampleBugs(): List<Bug> = listOf(
         id = IdGenerator.generateId(),
         title = "Compose 重组优化问题",
         description = """
-            在使用 Jetpack Compose 时，由于重组规则理解不当��导致不必要的重组，影响性能。
+            在使用 Jetpack Compose 时，由于重组规则理解不当导致不必要的重组，影响性能。
             
             问题代码：
             @Composable
