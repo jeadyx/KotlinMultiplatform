@@ -1,25 +1,27 @@
 package cn.kotlinmultiplatform.jeady.pages
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
@@ -27,10 +29,13 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -42,16 +47,25 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cn.kotlinmultiplatform.jeady.icons.Category
+import cn.kotlinmultiplatform.jeady.icons.Cloud
+import cn.kotlinmultiplatform.jeady.icons.NewReleases
+import cn.kotlinmultiplatform.jeady.icons.Psychology
+import cn.kotlinmultiplatform.jeady.icons.Web
+import cn.kotlinmultiplatform.jeady.icons.Whatshot
 import kotlinmultiplatform.composeapp.generated.resources.Res
 import kotlinmultiplatform.composeapp.generated.resources.compose_hero
 import kotlinmultiplatform.composeapp.generated.resources.flutter_hero
 import kotlinmultiplatform.composeapp.generated.resources.react_hero
-import kotlinmultiplatform.composeapp.generated.resources.swift_hero
 import kotlinmultiplatform.composeapp.generated.resources.tech_hero
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -60,11 +74,13 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
 data class RecommendItem(
+    val id: String,
     val title: String,
     val description: String,
     val category: String,
     val tags: List<String>,
     val iconRes: DrawableResource,
+    val isHot: Boolean = false,
     val onClick: () -> Unit
 )
 
@@ -74,6 +90,85 @@ data class CarouselItem(
     val iconRes: DrawableResource
 )
 
+data class TechCategory(
+    val id: String,
+    val name: String,
+    val icon: ImageVector,
+    val color: Color
+)
+
+private val techCategories = listOf(
+    TechCategory(
+        id = "mobile",
+        name = "移动开发",
+        icon = Icons.Filled.Phone,
+        color = Color(0xFF2196F3)
+    ),
+    TechCategory(
+        id = "web",
+        name = "Web开发",
+        icon = Icons.Filled.Web,
+        color = Color(0xFF4CAF50)
+    ),
+    TechCategory(
+        id = "ai",
+        name = "人工智能",
+        icon = Icons.Filled.Psychology,
+        color = Color(0xFFE91E63)
+    ),
+    TechCategory(
+        id = "cloud",
+        name = "云原生",
+        icon = Icons.Filled.Cloud,
+        color = Color(0xFF9C27B0)
+    )
+)
+
+// 添加 Kotlin 品牌色
+private object KotlinColors {
+    val Primary = Color(0xFF7F52FF)  // Kotlin 主色
+    val Secondary = Color(0xFF587EF7) // 辅助色
+    val Background = Color(0xFFF4F4F4) // 背景色
+    val Surface = Color.White
+    val Code = Color(0xFF27282C)  // 代码背景色
+    
+    // 添加渐变色
+    val GradientColors = listOf(
+        Color(0xFF7F52FF),  // 主色
+        Color(0xFF587EF7),  // 辅助色
+        Color(0xFF2196F3)   // 第三色
+    )
+}
+
+// 修改 CardDimensions 对象
+private object CardDimensions {
+    val Width = 260.dp
+    val Height = 180.dp  // 添加固定高度
+    val IconSize = 36.dp
+    val Padding = 16.dp
+    val Spacing = 12.dp
+    val CornerRadius = 4.dp
+    val Elevation = 1.dp
+}
+
+// 更新渐变色配置
+private object CarouselColors {
+    val Kotlin = listOf(
+        Color(0xFF1C1B1F),  // Kotlin 官网的深色背景
+        Color(0xFF2E2D30)   // 稍微浅一点的深色
+    )
+    
+    val Compose = listOf(
+        Color(0xFF23232B),  // 深蓝灰色
+        Color(0xFF2B2B35)   // 稍微带点蓝色的深色
+    )
+    
+    val OpenSource = listOf(
+        Color(0xFF1F1F24),  // 深色
+        Color(0xFF27272D)   // 稍微浅一点的深色
+    )
+}
+
 @OptIn(ExperimentalFoundationApi::class, ExperimentalResourceApi::class)
 @Composable
 fun RecommendationsPage(
@@ -81,262 +176,145 @@ fun RecommendationsPage(
 ) {
     val carouselItems = listOf(
         CarouselItem(
-            "Kotlin多平台开发",
-            "一次编写，到处运行",
-            Res.drawable.tech_hero
+            title = "Kotlin Multiplatform",
+            description = "一次编写，处处运行\n让跨平台开发更简单",
+            iconRes = Res.drawable.tech_hero
         ),
         CarouselItem(
-            "现代化UI框架",
-            "使用Compose构建跨平台应用",
-            Res.drawable.compose_hero
+            title = "Compose Multiplatform",
+            description = "现代化声明式UI\n为所有平台构建精美应用",
+            iconRes = Res.drawable.compose_hero
         ),
         CarouselItem(
-            "开源技术",
-            "拥抱开源，共建生态",
-            Res.drawable.flutter_hero
+            title = "开源生态系统",
+            description = "丰富的开源库和工具\n助力开发效率提升",
+            iconRes = Res.drawable.flutter_hero
         )
     )
     
     val recommendations = listOf(
+        // 移动开发分类
         RecommendItem(
+            id = "kmm",
             title = "Kotlin Multiplatform Mobile",
-            description = "使用 Kotlin 开发平台应用的现代解决方案",
-            category = "跨平台开发",
+            description = "使用 Kotlin 开发跨平台应用的现代解决方案",
+            category = "移动开发",
             tags = listOf("Kotlin", "Mobile", "跨平台"),
             iconRes = Res.drawable.tech_hero,
+            isHot = true,
             onClick = { onNavigateToDetail("kmm") }
         ),
         RecommendItem(
-            title = "Jetpack Compose",
-            description = "Android 现代化 UI 开发工具包",
-            category = "UI框架",
-            tags = listOf("Android", "UI", "声明式"),
-            iconRes = Res.drawable.compose_hero,
-            onClick = { onNavigateToDetail("compose") }
-        ),
-        RecommendItem(
+            id = "flutter",
             title = "Flutter",
-            description = "Google 的跨平台应用开发框架",
-            category = "跨平台开发",
+            description = "Google 跨平台应用开发框架",
+            category = "移动开发",
             tags = listOf("Dart", "Mobile", "跨平台"),
             iconRes = Res.drawable.flutter_hero,
+            isHot = true,
             onClick = { onNavigateToDetail("flutter") }
         ),
         RecommendItem(
-            title = "SwiftUI",
-            description = "Apple 原生的声明式 UI 框架",
-            category = "UI框架",
-            tags = listOf("Swift", "iOS", "声明式"),
-            iconRes = Res.drawable.swift_hero,
-            onClick = { onNavigateToDetail("swiftui") }
-        ),
-        RecommendItem(
+            id = "react-native",
             title = "React Native",
-            description = "使用 React 构建原生应用",
-            category = "跨平台开发",
+            description = "使用 React 建原生应用",
+            category = "移动开发",
             tags = listOf("JavaScript", "React", "跨平台"),
             iconRes = Res.drawable.react_hero,
             onClick = { onNavigateToDetail("react-native") }
         ),
+
+        // Web开发分类
         RecommendItem(
+            id = "nextjs",
+            title = "Next.js",
+            description = "React 应用开发框架",
+            category = "Web开发",
+            tags = listOf("React", "SSR", "前端"),
+            iconRes = Res.drawable.tech_hero,
+            isHot = true,
+            onClick = { onNavigateToDetail("nextjs") }
+        ),
+        RecommendItem(
+            id = "vue",
             title = "Vue.js",
             description = "渐进式 JavaScript 框架",
-            category = "前端开发",
+            category = "Web开发",
             tags = listOf("JavaScript", "Vue", "前端"),
             iconRes = Res.drawable.tech_hero,
+            isHot = true,
             onClick = { onNavigateToDetail("vue") }
         ),
         RecommendItem(
-            title = "Spring Boot",
-            description = "简化 Spring 应用开发的框架",
-            category = "后端开发",
-            tags = listOf("Java", "Spring", "后端"),
+            id = "svelte",
+            title = "Svelte",
+            description = "构建用户界面的编译器",
+            category = "Web开发",
+            tags = listOf("JavaScript", "编译器", "UI"),
             iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("spring-boot") }
+            onClick = { onNavigateToDetail("svelte") }
         ),
+
+        // 人工智能分类
         RecommendItem(
+            id = "tensorflow",
             title = "TensorFlow",
             description = "开源机器学习平台",
             category = "人工智能",
             tags = listOf("AI", "机器学习", "深度学习"),
             iconRes = Res.drawable.tech_hero,
+            isHot = true,
             onClick = { onNavigateToDetail("tensorflow") }
         ),
         RecommendItem(
-            title = "Docker",
-            description = "开发、部署和运行应用程序的开放平台",
-            category = "DevOps",
-            tags = listOf("容器化", "DevOps", "部署"),
-            iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("docker") }
-        ),
-        RecommendItem(
-            title = "GraphQL",
-            description = "API 查询语言和运行时",
-            category = "后端开发",
-            tags = listOf("API", "查询语言", "后端"),
-            iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("graphql") }
-        ),
-        RecommendItem(
-            title = "Next.js",
-            description = "React 应用开发框架",
-            category = "前端开发",
-            tags = listOf("React", "SSR", "前端"),
-            iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("nextjs") }
-        ),
-        RecommendItem(
-            title = "Kubernetes",
-            description = "容器编排平台",
-            category = "DevOps",
-            tags = listOf("容器编排", "DevOps", "云原生"),
-            iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("kubernetes") }
-        ),
-        RecommendItem(
+            id = "pytorch",
             title = "PyTorch",
-            description = "开源机器学习库",
+            description = "开源机器学习框架",
             category = "人工智能",
             tags = listOf("AI", "深度学习", "Python"),
             iconRes = Res.drawable.tech_hero,
+            isHot = true,
             onClick = { onNavigateToDetail("pytorch") }
         ),
         RecommendItem(
-            title = "Angular",
-            description = "TypeScript 开发平台",
-            category = "前端开发",
-            tags = listOf("TypeScript", "前端", "框架"),
+            id = "huggingface",
+            title = "Hugging Face",
+            description = "AI 模型和工具平台",
+            category = "人工智能",
+            tags = listOf("AI", "NLP", "模型库"),
             iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("angular") }
+            onClick = { onNavigateToDetail("huggingface") }
+        ),
+
+        // 云原生分类
+        RecommendItem(
+            id = "kubernetes",
+            title = "Kubernetes",
+            description = "容器编排平台",
+            category = "云原生",
+            tags = listOf("容器编排", "DevOps", "云原生"),
+            iconRes = Res.drawable.tech_hero,
+            isHot = true,
+            onClick = { onNavigateToDetail("kubernetes") }
         ),
         RecommendItem(
-            title = "Redis",
-            description = "开源内存数据存储",
-            category = "数据库",
-            tags = listOf("缓存", "数据库", "性能"),
+            id = "docker",
+            title = "Docker",
+            description = "开发、部署和运行应用程序的开放平台",
+            category = "云原生",
+            tags = listOf("容器化", "DevOps", "部署"),
             iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("redis") }
+            isHot = true,
+            onClick = { onNavigateToDetail("docker") }
         ),
         RecommendItem(
-            title = "Electron",
-            description = "构建跨平台桌面应用",
-            category = "桌面开发",
-            tags = listOf("JavaScript", "桌面", "跨平台"),
+            id = "istio",
+            title = "Istio",
+            description = "服务网格平台",
+            category = "云原生",
+            tags = listOf("微服务", "服务网格", "云原生"),
             iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("electron") }
-        ),
-        RecommendItem(
-            title = "FastAPI",
-            description = "现代、快速的 Web 框架",
-            category = "后端开发",
-            tags = listOf("Python", "API", "异步"),
-            iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("fastapi") }
-        ),
-        RecommendItem(
-            title = "Unity",
-            description = "跨平台游戏引擎",
-            category = "游戏开发",
-            tags = listOf("游戏", "C#", "3D"),
-            iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("unity") }
-        ),
-        RecommendItem(
-            title = "PostgreSQL",
-            description = "开源对象关系数据库",
-            category = "数据库",
-            tags = listOf("数据库", "SQL", "关系型"),
-            iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("postgresql") }
-        ),
-        RecommendItem(
-            title = "Rust",
-            description = "系统编程语言",
-            category = "系统开发",
-            tags = listOf("系统", "性能", "安全"),
-            iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("rust") }
-        ),
-        RecommendItem(
-            title = "Svelte",
-            description = "构建用户界面的编译器",
-            category = "前端开发",
-            tags = listOf("JavaScript", "编译器", "UI"),
-            iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("svelte") }
-        ),
-        RecommendItem(
-            title = "MongoDB",
-            description = "文档数据库",
-            category = "数据库",
-            tags = listOf("NoSQL", "文档", "数据库"),
-            iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("mongodb") }
-        ),
-        RecommendItem(
-            title = "Deno",
-            description = "JavaScript 和 TypeScript 运行时",
-            category = "后端开发",
-            tags = listOf("JavaScript", "TypeScript", "运行时"),
-            iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("deno") }
-        ),
-        RecommendItem(
-            title = "Unreal Engine",
-            description = "专业游戏引擎",
-            category = "游戏开发",
-            tags = listOf("游戏", "C++", "3D"),
-            iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("unreal") }
-        ),
-        RecommendItem(
-            title = "Tauri",
-            description = "构建跨平台应用的工具包",
-            category = "桌面开发",
-            tags = listOf("Rust", "跨平台", "桌面"),
-            iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("tauri") }
-        ),
-        RecommendItem(
-            title = "NestJS",
-            description = "Node.js 服务端框架",
-            category = "后端开发",
-            tags = listOf("TypeScript", "Node.js", "后端"),
-            iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("nestjs") }
-        ),
-        RecommendItem(
-            title = "Godot",
-            description = "开源游戏引擎",
-            category = "游戏开发",
-            tags = listOf("游戏", "开源", "2D/3D"),
-            iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("godot") }
-        ),
-        RecommendItem(
-            title = "Elasticsearch",
-            description = "分布式搜索引擎",
-            category = "数据库",
-            tags = listOf("搜索", "分析", "分布式"),
-            iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("elasticsearch") }
-        ),
-        RecommendItem(
-            title = "Astro",
-            description = "现代静态站点生成器",
-            category = "前端开发",
-            tags = listOf("静态站点", "性能", "前端"),
-            iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("astro") }
-        ),
-        RecommendItem(
-            title = "Go",
-            description = "云原生编程语言",
-            category = "后端开发",
-            tags = listOf("并发", "性能", "云原生"),
-            iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("go") }
+            onClick = { onNavigateToDetail("istio") }
         )
     )
     
@@ -356,79 +334,55 @@ fun RecommendationsPage(
     val totalPages = (recommendations.size + itemsPerPage - 1) / itemsPerPage
     val currentPageItems = recommendations.drop(currentPage * itemsPerPage).take(itemsPerPage)
     
+    var selectedCategory by remember { mutableStateOf<String?>(null) }
+    
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        state = listState
+        contentPadding = PaddingValues(bottom = 16.dp)
     ) {
+        // 轮播图部分
         item {
             ImageCarousel(carouselItems)
         }
         
+        // 技术领域分类
         item {
-            Spacer(modifier = Modifier.height(8.dp))
+            CategorySection(
+                categories = techCategories,
+                selectedCategory = selectedCategory,
+                onCategorySelected = { selectedCategory = it }
+            )
         }
         
-        items(currentPageItems) { item ->
-            RecommendationCard(item)
+        // 热门推荐
+        item {
+            HotSection(
+                items = recommendations.filter { it.isHot },
+                onItemClick = onNavigateToDetail
+            )
         }
         
+        // 最新发布
         item {
-            if (recommendations.size > itemsPerPage) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Surface(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(4.dp))
-                            .clickable(enabled = currentPage > 0) {
-                                if (currentPage > 0) currentPage--
-                            },
-                        color = if (currentPage > 0)
-                            MaterialTheme.colors.primary
-                        else
-                            MaterialTheme.colors.primary.copy(alpha = 0.5f)
-                    ) {
-                        Text(
-                            "上一页",
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                            color = MaterialTheme.colors.onPrimary
-                        )
-                    }
-                    
-                    Text(
-                        "${currentPage + 1} / $totalPages",
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-                    
-                    Surface(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(4.dp))
-                            .clickable(enabled = currentPage < totalPages - 1) {
-                                if (currentPage < totalPages - 1) currentPage++
-                            },
-                        color = if (currentPage < totalPages - 1)
-                            MaterialTheme.colors.primary
-                        else
-                            MaterialTheme.colors.primary.copy(alpha = 0.5f)
-                    ) {
-                        Text(
-                            "下一页",
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                            color = MaterialTheme.colors.onPrimary
-                        )
-                    }
-                }
+            NewReleaseSection(
+                items = recommendations.take(5),
+                onItemClick = onNavigateToDetail
+            )
+        }
+        
+        // 分类推荐
+        if (selectedCategory != null) {
+            item {
+                CategoryRecommendations(
+                    category = selectedCategory!!,
+                    items = recommendations.filter { it.category == selectedCategory },
+                    onItemClick = onNavigateToDetail
+                )
             }
         }
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ImageCarousel(items: List<CarouselItem>) {
     val pagerState = rememberPagerState(pageCount = { items.size })
@@ -455,7 +409,10 @@ private fun ImageCarousel(items: List<CarouselItem>) {
             state = pagerState,
             modifier = Modifier.fillMaxSize()
         ) { page ->
-            CarouselPage(items[page])
+            CarouselPage(
+                item = items[page],
+                index = page  // 传递页面索引
+            )
         }
         
         // 器
@@ -483,188 +440,196 @@ private fun ImageCarousel(items: List<CarouselItem>) {
 }
 
 @Composable
-private fun CarouselPage(item: CarouselItem) {
+private fun CarouselPage(
+    item: CarouselItem,
+    index: Int
+) {
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.horizontalGradient(
+                    colors = when (index) {
+                        0 -> CarouselColors.Kotlin
+                        1 -> CarouselColors.Compose
+                        else -> CarouselColors.OpenSource
+                    },
+                    startX = 0f,
+                    endX = Float.POSITIVE_INFINITY
+                )
+            )
     ) {
-        // 背景图片
-        Box(
+        Row(
             modifier = Modifier
                 .fillMaxSize()
-                .clip(RoundedCornerShape(16.dp))
-                .background(MaterialTheme.colors.primary.copy(alpha = 0.1f))
+                .padding(horizontal = 48.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(item.iconRes),
-                contentDescription = item.title,
+            // 左侧图标
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(32.dp),
-                contentScale = ContentScale.Fit
-            )
+                    .size(160.dp)
+                    .padding(end = 24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(item.iconRes),
+                    contentDescription = null,
+                    modifier = Modifier.size(120.dp),
+                    contentScale = ContentScale.Fit
+                )
+            }
+            
+            // 中间文本内容
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = item.title,
+                    style = MaterialTheme.typography.h4.copy(
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = (-0.5).sp
+                    ),
+                    color = Color.White
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = item.description,
+                    style = MaterialTheme.typography.subtitle1,
+                    color = Color.White.copy(alpha = 0.8f)
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                Surface(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(4.dp))
+                        .clickable { /* 处理点击 */ },
+                    color = KotlinColors.Primary,
+                    elevation = 0.dp
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "开始使用",
+                            color = Color.White,
+                            style = MaterialTheme.typography.button.copy(
+                                fontWeight = FontWeight.Medium
+                            )
+                        )
+                        Icon(
+                            imageVector = Icons.Default.ArrowForward,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                            tint = Color.White
+                        )
+                    }
+                }
+            }
+            
+            // 右侧图标
+            Box(
+                modifier = Modifier
+                    .size(160.dp)
+                    .padding(start = 24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(item.iconRes),
+                    contentDescription = null,
+                    modifier = Modifier.size(120.dp),
+                    contentScale = ContentScale.Fit
+                )
+            }
         }
-        
-        // 内容覆盖层
+
+        // 装饰性元素
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
-                    Brush.verticalGradient(
+                    brush = Brush.radialGradient(
                         colors = listOf(
-                            MaterialTheme.colors.surface.copy(alpha = 0.7f),
-                            MaterialTheme.colors.surface.copy(alpha = 0.85f)
-                        )
+                            Color.White.copy(alpha = 0.03f),
+                            Color.Transparent
+                        ),
+                        center = Offset(0f, 0f),
+                        radius = 1200f
                     )
                 )
         )
-        
-        // 文字内容
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = item.title,
-                style = MaterialTheme.typography.h5,
-                color = MaterialTheme.colors.primary
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = item.description,
-                style = MaterialTheme.typography.subtitle1
-            )
-        }
     }
 }
 
 @Composable
 private fun RecommendationCard(item: RecommendItem) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-    
-    Box(
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .clickable { item.onClick() },
+        color = KotlinColors.Surface,
+        elevation = 1.dp  // 降低阴影
     ) {
-        // 部大阴影
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .offset(y = if (isPressed) 6.dp else 8.dp),
-            shape = RoundedCornerShape(24.dp),
-            color = MaterialTheme.colors.primary.copy(alpha = if (isPressed) 0.1f else 0.08f),
-            elevation = if (isPressed) 3.dp else 2.dp
+        Column(
+            modifier = Modifier.padding(24.dp)
         ) {
-            Spacer(modifier = Modifier.height(100.dp))
-        }
-        
-        // 中间阴影
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .offset(y = if (isPressed) 3.dp else 4.dp),
-            shape = RoundedCornerShape(24.dp),
-            color = MaterialTheme.colors.primary.copy(alpha = if (isPressed) 0.12f else 0.1f),
-            elevation = if (isPressed) 4.dp else 3.dp
-        ) {
-            Spacer(modifier = Modifier.height(100.dp))
-        }
-        
-        // 主卡片
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .offset(y = if (isPressed) 2.dp else 0.dp)
-                .clip(RoundedCornerShape(24.dp))
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = null
-                ) { 
-                    item.onClick() 
-                },
-            elevation = if (isPressed) 5.dp else 4.dp,
-            backgroundColor = MaterialTheme.colors.surface,
-            shape = RoundedCornerShape(24.dp)
-        ) {
-            Box {
-                // 渐变背景装饰
-                Box(
-                    modifier = Modifier
-                        .size(160.dp)
-                        .align(Alignment.TopEnd)
-                        .offset(x = 40.dp, y = (-40).dp)
-                        .background(
-                            brush = Brush.radialGradient(
-                                colors = listOf(
-                                    MaterialTheme.colors.primary.copy(alpha = 0.08f),
-                                    MaterialTheme.colors.primary.copy(alpha = 0.04f),
-                                    MaterialTheme.colors.primary.copy(alpha = 0.01f)
-                                )
-                            ),
-                            shape = CircleShape
-                        )
-                )
-                
-                Row(
-                    modifier = Modifier.padding(20.dp),
-                    horizontalArrangement = Arrangement.spacedBy(20.dp)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // 图标
+                Surface(
+                    modifier = Modifier.size(48.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    color = KotlinColors.Primary.copy(alpha = 0.1f)
                 ) {
-                    // 图标部分 - 移除阴影
+                    Image(
+                        painter = painterResource(item.iconRes),
+                        contentDescription = null,
+                        modifier = Modifier.padding(12.dp)
+                    )
+                }
+                
+                // 标题和描述
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = item.title,
+                        style = MaterialTheme.typography.h6.copy(
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = (-0.5).sp
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = item.description,
+                        style = MaterialTheme.typography.body2,
+                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            // 标签
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                item.tags.forEach { tag ->
                     Surface(
-                        modifier = Modifier.size(64.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        color = MaterialTheme.colors.primary.copy(alpha = 0.1f)
+                        color = KotlinColors.Primary.copy(alpha = 0.1f),
+                        shape = RoundedCornerShape(4.dp)  // 更小的圆角
                     ) {
-                        Image(
-                            painter = painterResource(item.iconRes),
-                            contentDescription = item.title,
-                            modifier = Modifier
-                                .padding(16.dp)
-                                .size(32.dp)
-                        )
-                    }
-                    
-                    // 内容部分
-                    Column(
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        // 标题
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = item.title,
-                                style = MaterialTheme.typography.h6.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    letterSpacing = (-0.5).sp
-                                ),
-                                color = MaterialTheme.colors.primary
-                            )
-                            CategoryChip(item.category)
-                        }
-                        
-                        Spacer(modifier = Modifier.height(12.dp))
-                        
-                        // 描述
                         Text(
-                            text = item.description,
-                            style = MaterialTheme.typography.body1.copy(
-                                lineHeight = 22.sp
-                            ),
-                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.8f),
-                            modifier = Modifier.padding(end = 32.dp)
+                            text = tag,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            style = MaterialTheme.typography.caption,
+                            color = KotlinColors.Primary
                         )
-                        
-                        Spacer(modifier = Modifier.height(16.dp))
-                        
-                        // 标签
-                        TagsRow(item.tags)
                     }
                 }
             }
@@ -695,26 +660,421 @@ private fun CategoryChip(category: String) {
 }
 
 @Composable
-private fun TagsRow(tags: List<String>) {
+private fun TagsRow(
+    tags: List<String>,
+    modifier: Modifier = Modifier
+) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier.horizontalScroll(rememberScrollState())
+        modifier = modifier
+            .horizontalScroll(rememberScrollState())
+            .height(32.dp)  // 固定高度
     ) {
         tags.forEach { tag ->
             Surface(
-                color = MaterialTheme.colors.secondary.copy(alpha = 0.08f),
-                shape = RoundedCornerShape(12.dp)
+                color = KotlinColors.Primary.copy(alpha = 0.05f),
+                shape = RoundedCornerShape(2.dp),
+                border = BorderStroke(
+                    width = 1.dp,
+                    color = KotlinColors.Primary.copy(alpha = 0.1f)
+                )
             ) {
                 Text(
-                    text = "#$tag",
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                    color = MaterialTheme.colors.secondary,
+                    text = tag,
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                     style = MaterialTheme.typography.caption.copy(
-                        fontWeight = FontWeight.Medium,
-                        letterSpacing = 0.5.sp
-                    )
+                        fontWeight = FontWeight.Medium
+                    ),
+                    color = KotlinColors.Primary
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun CategorySection(
+    categories: List<TechCategory>,
+    selectedCategory: String?,
+    onCategorySelected: (String?) -> Unit
+) {
+    Column(
+        modifier = Modifier.padding(16.dp)
+    ) {
+        Text(
+            text = "技术领域",
+            style = MaterialTheme.typography.h6,
+            fontWeight = FontWeight.Bold
+        )
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        Row(
+            modifier = Modifier
+                .horizontalScroll(rememberScrollState())
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            categories.forEach { category ->
+                CategoryCard(
+                    category = category,
+                    selected = category.id == selectedCategory,
+                    onClick = { 
+                        onCategorySelected(
+                            if (category.id == selectedCategory) null 
+                            else category.id
+                        )
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun CategoryCard(
+    category: TechCategory,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .clip(RoundedCornerShape(8.dp))  // 更小的圆角
+            .clickable(onClick = onClick),
+        color = if (selected) KotlinColors.Primary else KotlinColors.Surface,
+        elevation = if (selected) 0.dp else 1.dp,  // 降低阴影
+        border = BorderStroke(
+            width = 1.dp,
+            color = if (selected) 
+                KotlinColors.Primary 
+            else 
+                KotlinColors.Primary.copy(alpha = 0.1f)
+        )
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(
+                imageVector = category.icon,
+                contentDescription = null,
+                tint = if (selected) Color.White else KotlinColors.Primary,
+                modifier = Modifier.size(20.dp)
+            )
+            Text(
+                text = category.name,
+                style = MaterialTheme.typography.button,
+                color = if (selected) Color.White else KotlinColors.Primary
+            )
+        }
+    }
+}
+
+@Composable
+private fun HotSection(
+    items: List<RecommendItem>,
+    onItemClick: (String) -> Unit
+) {
+    Column(
+        modifier = Modifier.padding(CardDimensions.Padding)
+    ) {
+        SectionHeader(
+            title = "热门推荐",
+            icon = Icons.Default.Whatshot
+        )
+        
+        Spacer(modifier = Modifier.height(CardDimensions.Spacing))
+        
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(CardDimensions.Spacing),
+            contentPadding = PaddingValues(horizontal = CardDimensions.Padding)
+        ) {
+            items(items) { item ->
+                HotItemCard(item = item, onClick = { onItemClick(item.id) })
+            }
+        }
+    }
+}
+
+@Composable
+private fun NewReleaseSection(
+    items: List<RecommendItem>,
+    onItemClick: (String) -> Unit
+) {
+    Column(
+        modifier = Modifier.padding(16.dp)
+    ) {
+        SectionHeader(
+            title = "最新发布",
+            icon = Icons.Default.NewReleases
+        )
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(horizontal = 8.dp)
+        ) {
+            items(items) { item ->
+                NewReleaseItemCard(item = item, onClick = { onItemClick(item.id) })
+            }
+        }
+    }
+}
+
+@Composable
+private fun CategoryRecommendations(
+    category: String,
+    items: List<RecommendItem>,
+    onItemClick: (String) -> Unit
+) {
+    Column(
+        modifier = Modifier.padding(16.dp)
+    ) {
+        SectionHeader(
+            title = "分类推荐",
+            icon = Icons.Default.Category
+        )
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(horizontal = 8.dp)
+        ) {
+            items(items) { item ->
+                CategoryRecommendationItemCard(item = item, onClick = { onItemClick(item.id) })
+            }
+        }
+    }
+}
+
+@Composable
+private fun SectionHeader(
+    title: String,
+    icon: ImageVector
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = MaterialTheme.colors.primary
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = title,
+            style = MaterialTheme.typography.h6,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+private fun HotItemCard(
+    item: RecommendItem,
+    onClick: () -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .width(CardDimensions.Width)
+            .height(CardDimensions.Height)  // 添加固定高度
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(CardDimensions.CornerRadius),
+        elevation = CardDimensions.Elevation,
+        border = BorderStroke(
+            width = 1.dp,
+            color = KotlinColors.Primary.copy(alpha = 0.1f)
+        ),
+        color = KotlinColors.Surface
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(CardDimensions.Padding)
+                .fillMaxHeight()  // 填充整个高度
+        ) {
+            // 头部信息
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.height(CardDimensions.IconSize + CardDimensions.Spacing)  // 固定头部高度
+            ) {
+                Surface(
+                    modifier = Modifier.size(CardDimensions.IconSize),
+                    shape = RoundedCornerShape(CardDimensions.CornerRadius),
+                    color = KotlinColors.Primary.copy(alpha = 0.05f)
+                ) {
+                    Image(
+                        painter = painterResource(item.iconRes),
+                        contentDescription = null,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(CardDimensions.Spacing))
+                Column {
+                    Text(
+                        text = item.title,
+                        style = MaterialTheme.typography.subtitle1.copy(
+                            fontWeight = FontWeight.Medium
+                        )
+                    )
+                    Text(
+                        text = "热门",
+                        style = MaterialTheme.typography.caption,
+                        color = KotlinColors.Primary
+                    )
+                }
+            }
+
+            // 描述文本
+            Text(
+                text = item.description,
+                style = MaterialTheme.typography.body2,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
+                modifier = Modifier.weight(1f)  // 使用剩余空间
+            )
+
+            // 标签行
+            TagsRow(
+                tags = item.tags,
+                modifier = Modifier.height(32.dp)  // 固定标签行高度
+            )
+        }
+    }
+}
+
+@Composable
+private fun NewReleaseItemCard(
+    item: RecommendItem,
+    onClick: () -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .width(CardDimensions.Width)
+            .height(CardDimensions.Height)  // 添加固定高度
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(CardDimensions.CornerRadius),
+        elevation = CardDimensions.Elevation,
+        border = BorderStroke(
+            width = 1.dp,
+            color = KotlinColors.Secondary.copy(alpha = 0.1f)
+        ),
+        color = KotlinColors.Surface
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(CardDimensions.Padding)
+                .fillMaxHeight()  // 填充整个高度
+        ) {
+            // 头部信息
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.height(CardDimensions.IconSize + CardDimensions.Spacing)  // 固定头部高度
+            ) {
+                Surface(
+                    modifier = Modifier.size(CardDimensions.IconSize),
+                    shape = RoundedCornerShape(CardDimensions.CornerRadius),
+                    color = KotlinColors.Secondary.copy(alpha = 0.05f)
+                ) {
+                    Image(
+                        painter = painterResource(item.iconRes),
+                        contentDescription = null,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(CardDimensions.Spacing))
+                Column {
+                    Text(
+                        text = item.title,
+                        style = MaterialTheme.typography.subtitle1.copy(
+                            fontWeight = FontWeight.Medium
+                        )
+                    )
+                    Text(
+                        text = "新发布",
+                        style = MaterialTheme.typography.caption,
+                        color = KotlinColors.Secondary
+                    )
+                }
+            }
+
+            // 描述文本
+            Text(
+                text = item.description,
+                style = MaterialTheme.typography.body2,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
+                modifier = Modifier.weight(1f)  // 使用剩余空间
+            )
+
+            // 标签行
+            TagsRow(
+                tags = item.tags,
+                modifier = Modifier.height(32.dp)  // 固定标签行高度
+            )
+        }
+    }
+}
+
+@Composable
+private fun CategoryRecommendationItemCard(
+    item: RecommendItem,
+    onClick: () -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .width(CardDimensions.Width)
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(CardDimensions.CornerRadius),
+        elevation = CardDimensions.Elevation,
+        border = BorderStroke(
+            width = 1.dp,
+            color = Color.Gray.copy(alpha = 0.1f)
+        ),
+        color = KotlinColors.Surface
+    ) {
+        Column(
+            modifier = Modifier.padding(CardDimensions.Padding)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Surface(
+                    modifier = Modifier.size(CardDimensions.IconSize),
+                    shape = RoundedCornerShape(CardDimensions.CornerRadius),
+                    color = KotlinColors.Primary.copy(alpha = 0.05f)
+                ) {
+                    Image(
+                        painter = painterResource(item.iconRes),
+                        contentDescription = null,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(CardDimensions.Spacing))
+                Column {
+                    Text(
+                        text = item.title,
+                        style = MaterialTheme.typography.subtitle1.copy(
+                            fontWeight = FontWeight.Medium
+                        )
+                    )
+                    CategoryChip(item.category)
+                }
+            }
+            Spacer(modifier = Modifier.height(CardDimensions.Spacing))
+            Text(
+                text = item.description,
+                style = MaterialTheme.typography.body2,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
+            )
+            Spacer(modifier = Modifier.height(CardDimensions.Spacing))
+            TagsRow(item.tags)
         }
     }
 } 

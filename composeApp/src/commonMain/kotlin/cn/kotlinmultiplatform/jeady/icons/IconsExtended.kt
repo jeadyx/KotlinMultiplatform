@@ -649,3 +649,264 @@ val Icons.Filled.ForkCount: ImageVector
         return _forkCount!!
     }
 private var _forkCount: ImageVector? = null
+
+val Icons.Filled.NewReleases: ImageVector
+    get() {
+        if (_newReleases != null) {
+            return _newReleases!!
+        }
+        _newReleases = materialIcon(name = "Filled.NewReleases") {
+            materialPath {
+                moveTo(23f, 12f)
+                lineToRelative(-2.44f, -2.78f)
+                lineToRelative(0.34f, -3.68f)
+                lineToRelative(-3.61f, -0.82f)
+                lineToRelative(-1.89f, -3.18f)
+                lineTo(12f, 3f)
+                lineTo(8.6f, 1.54f)
+                lineTo(6.71f, 4.72f)
+                lineToRelative(-3.61f, 0.81f)
+                lineToRelative(0.34f, 3.68f)
+                lineTo(1f, 12f)
+                lineToRelative(2.44f, 2.78f)
+                lineToRelative(-0.34f, 3.69f)
+                lineToRelative(3.61f, 0.82f)
+                lineToRelative(1.89f, 3.18f)
+                lineTo(12f, 21f)
+                lineToRelative(3.4f, 1.46f)
+                lineToRelative(1.89f, -3.18f)
+                lineToRelative(3.61f, -0.82f)
+                lineToRelative(-0.34f, -3.68f)
+                lineTo(23f, 12f)
+                close()
+                moveTo(13f, 17f)
+                horizontalLineToRelative(-2f)
+                verticalLineToRelative(-2f)
+                horizontalLineToRelative(2f)
+                verticalLineToRelative(2f)
+                close()
+                moveTo(13f, 13f)
+                horizontalLineToRelative(-2f)
+                verticalLineToRelative(-6f)
+                horizontalLineToRelative(2f)
+                verticalLineToRelative(6f)
+                close()
+            }
+        }
+        return _newReleases!!
+    }
+private var _newReleases: ImageVector? = null
+
+val Icons.Filled.Announcement: ImageVector
+    get() {
+        if (_announcement != null) {
+            return _announcement!!
+        }
+        _announcement = materialIcon(name = "Filled.Announcement") {
+            materialPath {
+                moveTo(20f, 2f)
+                horizontalLineTo(4f)
+                curveToRelative(-1.1f, 0f, -2f, 0.9f, -2f, 2f)
+                verticalLineTo(18f)
+                lineToRelative(4f, -4f)
+                horizontalLineTo(14f)
+                curveToRelative(1.1f, 0f, 2f, -0.9f, 2f, -2f)
+                verticalLineTo(4f)
+                curveToRelative(0f, -1.1f, -0.9f, -2f, -2f, -2f)
+                close()
+                moveTo(13f, 11f)
+                horizontalLineToRelative(-2f)
+                verticalLineTo(5f)
+                horizontalLineToRelative(2f)
+                verticalLineToRelative(6f)
+                close()
+                moveTo(13f, 15f)
+                horizontalLineToRelative(-2f)
+                verticalLineToRelative(-2f)
+                horizontalLineToRelative(2f)
+                verticalLineToRelative(2f)
+                close()
+            }
+        }
+        return _announcement!!
+    }
+private var _announcement: ImageVector? = null
+
+// 添加 Category 图标
+val Icons.Filled.Category: ImageVector
+    get() {
+        if (_category != null) {
+            return _category!!
+        }
+        _category = materialIcon(name = "Filled.Category") {
+            materialPath {
+                moveTo(12f, 2f)
+                lineTo(2f, 7f)
+                verticalLineTo(17f)
+                lineTo(12f, 22f)
+                lineTo(22f, 17f)
+                verticalLineTo(7f)
+                lineTo(12f, 2f)
+                close()
+                moveTo(12f, 4.28f)
+                lineTo(19.5f, 8f)
+                lineTo(12f, 11.72f)
+                lineTo(4.5f, 8f)
+                lineTo(12f, 4.28f)
+                close()
+                moveTo(4f, 15.57f)
+                verticalLineTo(9.86f)
+                lineTo(11f, 13.35f)
+                verticalLineTo(19.06f)
+                lineTo(4f, 15.57f)
+                close()
+                moveTo(13f, 19.06f)
+                verticalLineTo(13.35f)
+                lineTo(20f, 9.86f)
+                verticalLineTo(15.57f)
+                lineTo(13f, 19.06f)
+                close()
+            }
+        }
+        return _category!!
+    }
+private var _category: ImageVector? = null
+
+// 添加 Web 图标
+val Icons.Filled.Web: ImageVector
+    get() {
+        if (_web != null) {
+            return _web!!
+        }
+        _web = materialIcon(name = "Filled.Web") {
+            materialPath {
+                moveTo(20f, 4f)
+                horizontalLineTo(4f)
+                curveToRelative(-1.1f, 0f, -1.99f, 0.9f, -1.99f, 2f)
+                lineTo(2f, 18f)
+                curveToRelative(0f, 1.1f, 0.9f, 2f, 2f, 2f)
+                horizontalLineToRelative(16f)
+                curveToRelative(1.1f, 0f, 2f, -0.9f, 2f, -2f)
+                verticalLineTo(6f)
+                curveToRelative(0f, -1.1f, -0.9f, -2f, -2f, -2f)
+                close()
+                moveTo(15f, 18f)
+                horizontalLineTo(4f)
+                verticalLineTo(14f)
+                horizontalLineToRelative(11f)
+                verticalLineToRelative(4f)
+                close()
+                moveTo(15f, 13f)
+                horizontalLineTo(4f)
+                verticalLineTo(9f)
+                horizontalLineToRelative(11f)
+                verticalLineToRelative(4f)
+                close()
+                moveTo(20f, 18f)
+                horizontalLineToRelative(-4f)
+                verticalLineTo(9f)
+                horizontalLineToRelative(4f)
+                verticalLineToRelative(9f)
+                close()
+            }
+        }
+        return _web!!
+    }
+private var _web: ImageVector? = null
+
+// 添加 Whatshot 图标
+val Icons.Filled.Whatshot: ImageVector
+    get() {
+        if (_whatshot != null) {
+            return _whatshot!!
+        }
+        _whatshot = materialIcon(name = "Filled.Whatshot") {
+            materialPath {
+                moveTo(13.5f, 0.67f)
+                reflectiveCurveToRelative(0.74f, 2.65f, 0.74f, 4.8f)
+                quadToRelative(0f, 2.06f, -1.35f, 3.73f)
+                reflectiveCurveToRelative(-3.41f, 2.48f, -6.32f, 2.48f)
+                curveToRelative(-3.15f, 0f, -5.33f, -2.15f, -5.33f, -5.21f)
+                curveToRelative(0f, -1.86f, 0.91f, -4.01f, 2.78f, -5.21f)
+                curveToRelative(0.62f, 2.58f, 2.72f, 4.76f, 5.21f, 4.76f)
+                curveToRelative(1.21f, 0f, 2.3f, -0.47f, 3.14f, -1.24f)
+                curveToRelative(-0.35f, -1.72f, -1.21f, -3.35f, -2.5f, -4.64f)
+                curveTo(8.46f, -0.7f, 6.5f, -1.5f, 4.7f, -1.5f)
+                curveToRelative(-4.36f, 0f, -8.17f, 3.13f, -8.17f, 7.37f)
+                curveToRelative(0f, 4.49f, 3.51f, 8.24f, 8.17f, 8.24f)
+                curveToRelative(4.49f, 0f, 8.24f, -3.13f, 8.24f, -7.37f)
+                curveToRelative(0f, -1.93f, -0.77f, -3.84f, -2.21f, -5.21f)
+                close()
+            }
+        }
+        return _whatshot!!
+    }
+private var _whatshot: ImageVector? = null
+
+// 添加 Cloud 图标
+val Icons.Filled.Cloud: ImageVector
+    get() {
+        if (_cloud != null) {
+            return _cloud!!
+        }
+        _cloud = materialIcon(name = "Filled.Cloud") {
+            materialPath {
+                moveTo(19.35f, 10.04f)
+                curveTo(18.67f, 6.59f, 15.64f, 4f, 12f, 4f)
+                curveTo(9.11f, 4f, 6.6f, 5.64f, 5.35f, 8.04f)
+                curveTo(2.34f, 8.36f, 0f, 10.91f, 0f, 14f)
+                curveToRelative(0f, 3.31f, 2.69f, 6f, 6f, 6f)
+                horizontalLineToRelative(13f)
+                curveToRelative(2.76f, 0f, 5f, -2.24f, 5f, -5f)
+                curveToRelative(0f, -2.64f, -2.05f, -4.78f, -4.65f, -4.96f)
+                close()
+            }
+        }
+        return _cloud!!
+    }
+private var _cloud: ImageVector? = null
+
+// 添加 Psychology 图标
+val Icons.Filled.Psychology: ImageVector
+    get() {
+        if (_psychology != null) {
+            return _psychology!!
+        }
+        _psychology = materialIcon(name = "Filled.Psychology") {
+            materialPath {
+                moveTo(13f, 8.57f)
+                curveToRelative(-0.24f, 0f, -0.43f, 0.19f, -0.43f, 0.43f)
+                verticalLineToRelative(1.28f)
+                curveToRelative(0f, 0.24f, 0.19f, 0.43f, 0.43f, 0.43f)
+                reflectiveCurveToRelative(0.43f, -0.19f, 0.43f, -0.43f)
+                verticalLineTo(9f)
+                curveToRelative(0f, -0.24f, -0.19f, -0.43f, -0.43f, -0.43f)
+                close()
+                moveTo(11f, 6.57f)
+                verticalLineToRelative(1.28f)
+                curveToRelative(0f, 0.24f, -0.19f, 0.43f, -0.43f, 0.43f)
+                reflectiveCurveToRelative(-0.43f, -0.19f, -0.43f, -0.43f)
+                verticalLineTo(6.57f)
+                curveToRelative(0f, -0.24f, 0.19f, -0.43f, 0.43f, -0.43f)
+                reflectiveCurveToRelative(0.43f, 0.19f, 0.43f, 0.43f)
+                close()
+            }
+            materialPath {
+                moveTo(19.94f, 9.06f)
+                curveToRelative(-0.28f, -4.41f, -3.89f, -7.89f, -8.32f, -7.89f)
+                curveToRelative(-4.64f, 0f, -8.4f, 3.76f, -8.4f, 8.4f)
+                curveToRelative(0f, 2.06f, 0.74f, 3.95f, 1.97f, 5.41f)
+                lineToRelative(-1.93f, 1.93f)
+                curveToRelative(-0.39f, 0.39f, -0.39f, 1.02f, 0f, 1.41f)
+                lineToRelative(2.83f, 2.83f)
+                curveToRelative(0.39f, 0.39f, 1.02f, 0.39f, 1.41f, 0f)
+                lineToRelative(1.93f, -1.93f)
+                curveToRelative(1.46f, 1.23f, 3.35f, 1.97f, 5.41f, 1.97f)
+                curveToRelative(4.64f, 0f, 8.4f, -3.76f, 8.4f, -8.4f)
+                curveToRelative(0f, -0.85f, -0.13f, -1.67f, -0.36f, -2.44f)
+                close()
+            }
+        }
+        return _psychology!!
+    }
+private var _psychology: ImageVector? = null
