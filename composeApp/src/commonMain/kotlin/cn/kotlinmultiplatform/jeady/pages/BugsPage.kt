@@ -1,341 +1,463 @@
 package cn.kotlinmultiplatform.jeady.pages
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Card
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.RadioButton
+import androidx.compose.material.Surface
+import androidx.compose.material.Tab
+import androidx.compose.material.TabRow
+import androidx.compose.material.TabRowDefaults
+import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import cn.kotlinmultiplatform.jeady.icons.CustomBugReport
+import cn.kotlinmultiplatform.jeady.icons.ArrowDownward
+import cn.kotlinmultiplatform.jeady.icons.ArrowUpward
+import cn.kotlinmultiplatform.jeady.icons.BugReport
+import cn.kotlinmultiplatform.jeady.icons.FilterList
+import cn.kotlinmultiplatform.jeady.icons.Search
+import cn.kotlinmultiplatform.jeady.model.Bug
+import cn.kotlinmultiplatform.jeady.model.BugPriority
+import cn.kotlinmultiplatform.jeady.model.BugStatus
+import cn.kotlinmultiplatform.jeady.utils.IdGenerator
 import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-
-data class BugReport(
-    val id: String,
-    val title: String,
-    val description: String,
-    val status: BugStatus,
-    val priority: BugPriority,
-    val reportedAt: LocalDateTime,
-    val reportedBy: String
-)
-
-enum class BugStatus(val label: String, val color: Color) {
-    OPEN("待处理", Color(0xFFE57373)),
-    IN_PROGRESS("处理中", Color(0xFFFFB74D)),
-    FIXED("已修复", Color(0xFF81C784)),
-    CLOSED("已关闭", Color(0xFF90A4AE))
-}
-
-enum class BugPriority(val label: String, val color: Color) {
-    HIGH("高", Color(0xFFE57373)),
-    MEDIUM("中", Color(0xFFFFB74D)),
-    LOW("低", Color(0xFF81C784))
-}
 
 @Composable
 fun BugsPage() {
-    val bugs = remember {
-        listOf(
-            BugReport(
-                id = "BUG-001",
-                title = "Wasm 平台 Markdown 预览功能无法使用",
-                description = "在 Wasm 平台上，Markdown 预览功能出现依赖错误，需要重新设计实现方案。",
-                status = BugStatus.FIXED,
-                priority = BugPriority.HIGH,
-                reportedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                reportedBy = "张三"
-            ),
-            BugReport(
-                id = "BUG-002",
-                title = "博客编辑器保存按钮响应延迟",
-                description = "在编辑博客文章时，点击保存按钮后有明显的延迟，需要优化保存逻辑。",
-                status = BugStatus.IN_PROGRESS,
-                priority = BugPriority.MEDIUM,
-                reportedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                reportedBy = "李四"
-            ),
-            BugReport(
-                id = "BUG-003",
-                title = "移动端界面适配问题",
-                description = "在小屏幕设备上，部分界面元素显示不完整，需要优化响应式布局。",
-                status = BugStatus.OPEN,
-                priority = BugPriority.HIGH,
-                reportedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                reportedBy = "王五"
-            ),
-            BugReport(
-                id = "BUG-004",
-                title = "图片加载失败",
-                description = "在某些情况下，推荐页面的图片无法正常加载，需要添加错误处理和重试机制。",
-                status = BugStatus.IN_PROGRESS,
-                priority = BugPriority.HIGH,
-                reportedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                reportedBy = "赵六"
-            ),
-            BugReport(
-                id = "BUG-005",
-                title = "性能优化",
-                description = "页面首次加载时间过长，需要进行性能优化和资源压缩。",
-                status = BugStatus.OPEN,
-                priority = BugPriority.MEDIUM,
-                reportedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                reportedBy = "钱七"
-            ),
-            BugReport(
-                id = "BUG-006",
-                title = "字体显示异常",
-                description = "在某些平台上中文字体显示不正确，需要检查字体配置和加载逻辑。",
-                status = BugStatus.FIXED,
-                priority = BugPriority.LOW,
-                reportedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                reportedBy = "孙八"
-            ),
-            BugReport(
-                id = "BUG-007",
-                title = "内存泄漏",
-                description = "长时间使用后内存占用持续增加，需要排查内存泄漏问题。",
-                status = BugStatus.IN_PROGRESS,
-                priority = BugPriority.HIGH,
-                reportedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                reportedBy = "周九"
-            ),
-            BugReport(
-                id = "BUG-008",
-                title = "导航栈错误",
-                description = "在特定操作序列下导航栈状态错误，导致返回按钮行为异常。",
-                status = BugStatus.OPEN,
-                priority = BugPriority.MEDIUM,
-                reportedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                reportedBy = "吴十"
-            ),
-            BugReport(
-                id = "BUG-009",
-                title = "状态管理问题",
-                description = "多个组件之间的状态同步存在问题，需要重构状态管理逻辑。",
-                status = BugStatus.IN_PROGRESS,
-                priority = BugPriority.HIGH,
-                reportedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                reportedBy = "郑十一"
-            ),
-            BugReport(
-                id = "BUG-010",
-                title = "主题切换异常",
-                description = "动态切换主题时部分组件样式未更新，需要检查主题系统实现。",
-                status = BugStatus.FIXED,
-                priority = BugPriority.LOW,
-                reportedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                reportedBy = "王十二"
-            ),
-            BugReport(
-                id = "BUG-011",
-                title = "键盘处理问题",
-                description = "在移动端输入时键盘弹出导致布局错乱，需要优化键盘处理逻辑。",
-                status = BugStatus.OPEN,
-                priority = BugPriority.MEDIUM,
-                reportedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                reportedBy = "李十三"
-            ),
-            BugReport(
-                id = "BUG-012",
-                title = "动画卡顿",
-                description = "复杂列表滚动时动画卡顿，需要优化渲染性能。",
-                status = BugStatus.IN_PROGRESS,
-                priority = BugPriority.HIGH,
-                reportedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                reportedBy = "张十四"
-            ),
-            BugReport(
-                id = "BUG-013",
-                title = "数据持久化失败",
-                description = "在某些情况下本地数据保存失败，需要增加错误处理和重试机制。",
-                status = BugStatus.OPEN,
-                priority = BugPriority.HIGH,
-                reportedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                reportedBy = "刘十五"
-            ),
-            BugReport(
-                id = "BUG-014",
-                title = "路由参数丢失",
-                description = "页面刷新后路由参数丢失，需要优化路由状态保持机制。",
-                status = BugStatus.FIXED,
-                priority = BugPriority.MEDIUM,
-                reportedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                reportedBy = "陈十六"
-            ),
-            BugReport(
-                id = "BUG-015",
-                title = "搜索性能问题",
-                description = "大量数据时搜索响应缓慢，需要优化搜索算法和索引机制。",
-                status = BugStatus.IN_PROGRESS,
-                priority = BugPriority.HIGH,
-                reportedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                reportedBy = "杨十七"
-            ),
-            BugReport(
-                id = "BUG-016",
-                title = "图片缓存问题",
-                description = "图片缓存策略不当导致内存占用过高，需要优化缓存机制。",
-                status = BugStatus.OPEN,
-                priority = BugPriority.MEDIUM,
-                reportedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                reportedBy = "黄十八"
-            ),
-            BugReport(
-                id = "BUG-017",
-                title = "字体加载延迟",
-                description = "自定义字体加载时间过长，导致文字闪烁，需��优化字体加载策略。",
-                status = BugStatus.IN_PROGRESS,
-                priority = BugPriority.LOW,
-                reportedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                reportedBy = "赵十九"
-            ),
-            BugReport(
-                id = "BUG-018",
-                title = "暗色主题适配",
-                description = "部分组件在暗色主题下对比度不足，需要调整配色方案。",
-                status = BugStatus.OPEN,
-                priority = BugPriority.MEDIUM,
-                reportedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                reportedBy = "钱二十"
-            ),
-            BugReport(
-                id = "BUG-019",
-                title = "动画内存泄漏",
-                description = "反复播放动画导致内存泄漏，需要检查动画资源释放机制。",
-                status = BugStatus.IN_PROGRESS,
-                priority = BugPriority.HIGH,
-                reportedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                reportedBy = "孙二一"
-            ),
-            BugReport(
-                id = "BUG-020",
-                title = "滚动位置丢失",
-                description = "切换页面后返回，滚动位置未能正确恢复，需要实现滚动位置保持。",
-                status = BugStatus.FIXED,
-                priority = BugPriority.LOW,
-                reportedAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                reportedBy = "周二二"
-            )
-        )
-    }
-
-    var currentPage by remember { mutableStateOf(0) }
-    val itemsPerPage = 5
-    val totalPages = (bugs.size + itemsPerPage - 1) / itemsPerPage
-    val currentPageBugs = bugs.drop(currentPage * itemsPerPage).take(itemsPerPage)
-
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp)
-    ) {
-        Text(
-            text = "Bugs",
-            style = MaterialTheme.typography.h4,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
+    var bugs by remember { mutableStateOf(getSampleBugs()) }
+    var showAddDialog by remember { mutableStateOf(false) }
+    var selectedBug by remember { mutableStateOf<Bug?>(null) }
+    var searchQuery by remember { mutableStateOf("") }
+    
+    // 添加排序和筛选状态
+    var sortBy by remember { mutableStateOf(BugSortOption.CREATED_TIME) }
+    var sortAscending by remember { mutableStateOf(false) }
+    var filterStatus by remember { mutableStateOf<BugStatus?>(null) }
+    var filterPriority by remember { mutableStateOf<BugPriority?>(null) }
+    var showFilterMenu by remember { mutableStateOf(false) }
+    
+    Column(modifier = Modifier.fillMaxSize()) {
+        // 美化标题栏
+        TopAppBar(
+            title = { 
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(start = 4.dp)
+                ) {
+                    Icon(
+                        Icons.Filled.BugReport,
+                        contentDescription = null,
+                        modifier = Modifier.size(28.dp),
+                        tint = Color.White
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        "Bug 管理",
+                        style = MaterialTheme.typography.h6.copy(
+                            fontWeight = FontWeight.Medium
+                        ),
+                        color = Color.White
+                    )
+                }
+            },
+            backgroundColor = Color(0xFF2196F3),
+            contentColor = Color.White,
+            elevation = 4.dp,
+            actions = {
+                // 搜索框美化
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    placeholder = { Text("搜索 Bug...", style = MaterialTheme.typography.body2) },
+                    modifier = Modifier
+                        .width(220.dp)
+                        .padding(vertical = 4.dp),
+                    singleLine = true,
+                    leadingIcon = { 
+                        Icon(
+                            Icons.Filled.Search,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    },
+                    textStyle = MaterialTheme.typography.body2,
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        backgroundColor = MaterialTheme.colors.surface.copy(alpha = 0.9f),
+                        unfocusedBorderColor = MaterialTheme.colors.onSurface.copy(alpha = 0.2f)
+                    )
+                )
+                
+                Spacer(modifier = Modifier.width(8.dp))
+                
+                // 操作按钮美化
+                IconButton(
+                    onClick = { showFilterMenu = true },
+                    modifier = Modifier.size(40.dp)
+                ) {
+                    Icon(
+                        Icons.Filled.FilterList,
+                        contentDescription = "筛选",
+                        tint = MaterialTheme.colors.onPrimary
+                    )
+                }
+                
+                IconButton(
+                    onClick = { sortAscending = !sortAscending },
+                    modifier = Modifier.size(40.dp)
+                ) {
+                    Icon(
+                        if (sortAscending) Icons.Filled.ArrowUpward else Icons.Filled.ArrowDownward,
+                        contentDescription = "排序",
+                        tint = MaterialTheme.colors.onPrimary
+                    )
+                }
+                
+                IconButton(
+                    onClick = { showAddDialog = true },
+                    modifier = Modifier.size(40.dp)
+                ) {
+                    Icon(
+                        Icons.Filled.Add,
+                        contentDescription = "添加",
+                        tint = MaterialTheme.colors.onPrimary
+                    )
+                }
+            },
         )
 
+        // 筛选条件显示
+        AnimatedVisibility(
+            visible = filterStatus != null || filterPriority != null,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                if (filterStatus != null) {
+                    FilterChip(
+                        text = "状态: ${filterStatus!!.toDisplayString()}",
+                        onRemove = { filterStatus = null }
+                    )
+                }
+                if (filterPriority != null) {
+                    FilterChip(
+                        text = "优先级: ${filterPriority!!.toDisplayString()}",
+                        onRemove = { filterPriority = null }
+                    )
+                }
+            }
+        }
+
+        // Bug 列表
         LazyColumn(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(currentPageBugs) { bug ->
-                BugCard(bug)
+            val filteredBugs = bugs
+                .filter { 
+                    (searchQuery.isEmpty() || it.title.contains(searchQuery, ignoreCase = true) || 
+                     it.description.contains(searchQuery, ignoreCase = true)) &&
+                    (filterStatus == null || it.status == filterStatus) &&
+                    (filterPriority == null || it.priority == filterPriority)
+                }
+                .sortedWith(
+                    when (sortBy) {
+                        BugSortOption.CREATED_TIME -> compareBy<Bug> { it.createdAt }
+                        BugSortOption.UPDATED_TIME -> compareBy<Bug> { it.updatedAt }
+                        BugSortOption.PRIORITY -> compareBy<Bug> { it.priority.ordinal }
+                        BugSortOption.STATUS -> compareBy<Bug> { it.status.ordinal }
+                    }.let { if (sortAscending) it else it.reversed() }
+                )
+
+            items(filteredBugs) { bug ->
+                BugCard(
+                    bug = bug,
+                    onEdit = { selectedBug = bug },
+                    onDelete = {
+                        bugs = bugs.filter { it.id != bug.id }
+                    }
+                )
             }
         }
+    }
 
-        // 分页控制
+    // 筛选菜单
+    if (showFilterMenu) {
+        FilterDialog(
+            currentStatus = filterStatus,
+            currentPriority = filterPriority,
+            currentSortBy = sortBy,
+            onDismiss = { showFilterMenu = false },
+            onApply = { status, priority, sort ->
+                filterStatus = status
+                filterPriority = priority
+                sortBy = sort
+                showFilterMenu = false
+            }
+        )
+    }
+
+    // 添加/编辑 Bug 对话框
+    if (showAddDialog || selectedBug != null) {
+        BugDialog(
+            bug = selectedBug,
+            onDismiss = {
+                showAddDialog = false
+                selectedBug = null
+            },
+            onSave = { title, description, priority, status, tags ->
+                if (selectedBug != null) {
+                    bugs = bugs.map { 
+                        if (it.id == selectedBug!!.id) {
+                            selectedBug!!.copy(
+                                title = title,
+                                description = description,
+                                priority = priority,
+                                status = status,
+                                tags = tags,
+                                updatedAt = Clock.System.now().toEpochMilliseconds()
+                            )
+                        } else it
+                    }
+                } else {
+                    bugs = bugs + Bug(
+                        id = IdGenerator.generateId(),
+                        title = title,
+                        description = description,
+                        priority = priority,
+                        status = status,
+                        tags = tags,
+                        createdAt = Clock.System.now().toEpochMilliseconds(),
+                        updatedAt = Clock.System.now().toEpochMilliseconds()
+                    )
+                }
+                showAddDialog = false
+                selectedBug = null
+            }
+        )
+    }
+}
+
+// 排序选项
+enum class BugSortOption {
+    CREATED_TIME,
+    UPDATED_TIME,
+    PRIORITY,
+    STATUS
+}
+
+@Composable
+private fun FilterChip(
+    text: String,
+    onRemove: () -> Unit
+) {
+    Surface(
+        shape = MaterialTheme.shapes.small,
+        color = MaterialTheme.colors.primary.copy(alpha = 0.1f)
+    ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
-            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(start = 8.dp, end = 4.dp, top = 4.dp, bottom = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TextButton(
-                onClick = { if (currentPage > 0) currentPage-- },
-                enabled = currentPage > 0
+            Text(text)
+            IconButton(
+                onClick = onRemove,
+                modifier = Modifier.size(24.dp)
             ) {
-                Text("上一页")
-            }
-            
-            Text(
-                text = "${currentPage + 1} / $totalPages",
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-            
-            TextButton(
-                onClick = { if (currentPage < totalPages - 1) currentPage++ },
-                enabled = currentPage < totalPages - 1
-            ) {
-                Text("下一页")
+                Icon(
+                    Icons.Default.Close,
+                    contentDescription = "移除筛选",
+                    modifier = Modifier.size(16.dp)
+                )
             }
         }
     }
 }
 
 @Composable
-private fun BugStatistics(bugs: List<BugReport>) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+private fun FilterDialog(
+    currentStatus: BugStatus?,
+    currentPriority: BugPriority?,
+    currentSortBy: BugSortOption,
+    onDismiss: () -> Unit,
+    onApply: (BugStatus?, BugPriority?, BugSortOption) -> Unit
+) {
+    var status by remember { mutableStateOf(currentStatus) }
+    var priority by remember { mutableStateOf(currentPriority) }
+    var sortBy by remember { mutableStateOf(currentSortBy) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("筛选和排序") },
+        text = {
+            Column {
+                Text("状态", style = MaterialTheme.typography.subtitle1)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    BugStatus.values().forEach { s ->
+                        FilterOption(
+                            text = s.toDisplayString(),
+                            selected = status == s,
+                            onClick = { status = if (status == s) null else s }
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text("优先级", style = MaterialTheme.typography.subtitle1)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    BugPriority.values().forEach { p ->
+                        FilterOption(
+                            text = p.toDisplayString(),
+                            selected = priority == p,
+                            onClick = { priority = if (priority == p) null else p }
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text("排序", style = MaterialTheme.typography.subtitle1)
+                Column {
+                    BugSortOption.values().forEach { option ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { sortBy = option }
+                                .padding(vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = sortBy == option,
+                                onClick = { sortBy = option }
+                            )
+                            Text(
+                                text = when (option) {
+                                    BugSortOption.CREATED_TIME -> "创建时间"
+                                    BugSortOption.UPDATED_TIME -> "更新时间"
+                                    BugSortOption.PRIORITY -> "优先级"
+                                    BugSortOption.STATUS -> "状态"
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onApply(status, priority, sortBy) }) {
+                Text("应用")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("取消")
+            }
+        }
+    )
+}
+
+@Composable
+private fun FilterOption(
+    text: String,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    Surface(
+        shape = MaterialTheme.shapes.small,
+        color = if (selected) 
+            MaterialTheme.colors.primary 
+        else 
+            MaterialTheme.colors.primary.copy(alpha = 0.1f),
+        modifier = Modifier.clickable(onClick = onClick)
     ) {
-        BugStatus.values().forEach { status ->
-            val count = bugs.count { it.status == status }
-            StatCard(
-                label = status.label,
-                count = count,
-                color = status.color,
-                modifier = Modifier.weight(1f)
-            )
-        }
+        Text(
+            text = text,
+            color = if (selected) Color.White else MaterialTheme.colors.primary,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+        )
     }
 }
 
+// 扩展函数
+fun BugStatus.toDisplayString() = when(this) {
+    BugStatus.OPEN -> "待处理"
+    BugStatus.IN_PROGRESS -> "处理中"
+    BugStatus.RESOLVED -> "已解决"
+    BugStatus.CLOSED -> "已关闭"
+}
+
+fun BugPriority.toDisplayString() = when(this) {
+    BugPriority.LOW -> "低"
+    BugPriority.MEDIUM -> "中"
+    BugPriority.HIGH -> "高"
+    BugPriority.CRITICAL -> "紧急"
+}
+
 @Composable
-private fun StatCard(
-    label: String,
-    count: Int,
-    color: Color,
-    modifier: Modifier = Modifier
+private fun BugCard(
+    bug: Bug,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
 ) {
     Card(
-        modifier = modifier,
-        elevation = 2.dp,
-        backgroundColor = color.copy(alpha = 0.1f)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = count.toString(),
-                style = MaterialTheme.typography.h4,
-                color = color,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = label,
-                style = MaterialTheme.typography.body2,
-                color = color
-            )
-        }
-    }
-}
-
-@Composable
-private fun BugCard(bug: BugReport) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = 2.dp,
-        shape = RoundedCornerShape(16.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onEdit),
+        elevation = 2.dp
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -345,91 +467,450 @@ private fun BugCard(bug: BugReport) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        Icons.Filled.CustomBugReport,
-                        contentDescription = null,
-                        tint = MaterialTheme.colors.primary
-                    )
-                    Text(
-                        text = bug.id,
-                        style = MaterialTheme.typography.caption,
-                        color = MaterialTheme.colors.primary
-                    )
-                }
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    StatusChip(bug.status)
-                    PriorityChip(bug.priority)
+                Text(
+                    text = bug.title,
+                    style = MaterialTheme.typography.h6,
+                    fontWeight = FontWeight.Bold
+                )
+                Row {
+                    IconButton(onClick = onEdit) {
+                        Icon(Icons.Default.Edit, contentDescription = "编辑")
+                    }
+                    IconButton(onClick = onDelete) {
+                        Icon(Icons.Default.Delete, contentDescription = "删除")
+                    }
                 }
             }
-
+            
             Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = bug.title,
-                style = MaterialTheme.typography.h6,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
+            
             Text(
                 text = bug.description,
-                style = MaterialTheme.typography.body2,
-                color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                style = MaterialTheme.typography.body1
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = "报告人：${bug.reportedBy}",
-                    style = MaterialTheme.typography.caption
-                )
-                Text(
-                    text = "报告时间：${bug.reportedAt}",
-                    style = MaterialTheme.typography.caption
-                )
+                // 状态标签
+                Surface(
+                    color = when(bug.status) {
+                        BugStatus.OPEN -> Color(0xFFE57373)
+                        BugStatus.IN_PROGRESS -> Color(0xFF64B5F6)
+                        BugStatus.RESOLVED -> Color(0xFF81C784)
+                        BugStatus.CLOSED -> Color(0xFF90A4AE)
+                    },
+                    shape = MaterialTheme.shapes.small
+                ) {
+                    Text(
+                        text = when(bug.status) {
+                            BugStatus.OPEN -> "待处理"
+                            BugStatus.IN_PROGRESS -> "处理中"
+                            BugStatus.RESOLVED -> "已解决"
+                            BugStatus.CLOSED -> "已关闭"
+                        },
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        color = Color.White
+                    )
+                }
+                
+                // 优先级标签
+                Surface(
+                    color = when(bug.priority) {
+                        BugPriority.LOW -> Color(0xFF90A4AE)
+                        BugPriority.MEDIUM -> Color(0xFFFFA726)
+                        BugPriority.HIGH -> Color(0xFFEF5350)
+                        BugPriority.CRITICAL -> Color(0xFFD32F2F)
+                    },
+                    shape = MaterialTheme.shapes.small
+                ) {
+                    Text(
+                        text = when(bug.priority) {
+                            BugPriority.LOW -> "低"
+                            BugPriority.MEDIUM -> "中"
+                            BugPriority.HIGH -> "高"
+                            BugPriority.CRITICAL -> "紧急"
+                        },
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        color = Color.White
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-private fun StatusChip(status: BugStatus) {
+private fun BugDialog(
+    bug: Bug?,
+    onDismiss: () -> Unit,
+    onSave: (String, String, BugPriority, BugStatus, List<String>) -> Unit
+) {
+    var title by remember { mutableStateOf(bug?.title ?: "") }
+    var description by remember { mutableStateOf(bug?.description ?: "") }
+    var priority by remember { mutableStateOf(bug?.priority ?: BugPriority.MEDIUM) }
+    var status by remember { mutableStateOf(bug?.status ?: BugStatus.OPEN) }
+    var tags by remember { mutableStateOf(bug?.tags ?: listOf()) }
+    
+    var selectedTab by remember { mutableStateOf(0) }
+    val tabs = listOf("基本信息", "状态与优先级")
+
+    AlertDialog(
+        modifier = Modifier.width(400.dp),
+        onDismissRequest = onDismiss,
+        title = { 
+            Box(
+                modifier = Modifier.fillMaxWidth().height(100.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Text(
+                    if (bug == null) "添加 Bug" else "编辑 Bug",
+                    style = MaterialTheme.typography.h6
+                )
+            }
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(400.dp)
+                    .padding(top = 16.dp)
+            ) {
+                Surface(
+                    color = MaterialTheme.colors.surface,
+                    elevation = 1.dp
+                ) {
+                    TabRow(
+                        selectedTabIndex = selectedTab,
+                        backgroundColor = Color.Transparent,
+                        contentColor = MaterialTheme.colors.primary,
+                        indicator = { tabPositions ->
+                            TabRowDefaults.Indicator(
+                                modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
+                                color = MaterialTheme.colors.primary,
+                            )
+                        }
+                    ) {
+                        tabs.forEachIndexed { index, title ->
+                            Tab(
+                                selected = selectedTab == index,
+                                onClick = { selectedTab = index },
+                                text = { 
+                                    Text(
+                                        text = title,
+                                        style = MaterialTheme.typography.body1.copy(
+                                            fontWeight = if (selectedTab == index) 
+                                                FontWeight.Medium 
+                                            else 
+                                                FontWeight.Normal
+                                        ),
+                                        color = if (selectedTab == index)
+                                            MaterialTheme.colors.primary
+                                        else
+                                            MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
+                                    )
+                                }
+                            )
+                        }
+                    }
+                }
+                when (selectedTab) {
+                    0 -> {
+                        // 基本信息标签页
+                        Card(
+                            modifier = Modifier.fillMaxWidth().weight(1f),
+                            elevation = 0.dp,
+                            backgroundColor = MaterialTheme.colors.surface
+                        ) {
+                            Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                                OutlinedTextField(
+                                    value = title,
+                                    onValueChange = { title = it },
+                                    label = { Text("标题") },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    singleLine = true
+                                )
+                                
+                                Spacer(modifier = Modifier.height(16.dp))
+                                
+                                OutlinedTextField(
+                                    value = description,
+                                    onValueChange = { description = it },
+                                    label = { Text("描述") },
+                                    modifier = Modifier.fillMaxWidth().weight(1f),
+                                    minLines = 3
+                                )
+                            }
+                        }
+                    }
+                    1 -> {
+                        // 状态与优先级标签页
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            elevation = 0.dp,
+                            backgroundColor = MaterialTheme.colors.surface
+                        ) {
+                            Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                                Text("优先级", style = MaterialTheme.typography.subtitle1)
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    BugPriority.values().forEach { p ->
+                                        PriorityChip(
+                                            priority = p,
+                                            selected = priority == p,
+                                            onClick = { priority = p }
+                                        )
+                                    }
+                                }
+                                
+                                Spacer(modifier = Modifier.height(24.dp))
+                                
+                                Text("状态", style = MaterialTheme.typography.subtitle1)
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    BugStatus.values().forEach { s ->
+                                        StatusChip(
+                                            status = s,
+                                            selected = status == s,
+                                            onClick = { status = s }
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        buttons = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TextButton(onClick = onDismiss) {
+                    Text("取消")
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Button(
+                    onClick = { 
+                        if (title.isNotBlank()) {
+                            onSave(title, description, priority, status, tags)
+                        }
+                    },
+                    enabled = title.isNotBlank(),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = MaterialTheme.colors.primary
+                    )
+                ) {
+                    Text("保存")
+                }
+            }
+        }
+    )
+}
+
+@Composable
+private fun PriorityChip(
+    priority: BugPriority,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
     Surface(
-        color = status.color.copy(alpha = 0.1f),
-        shape = RoundedCornerShape(16.dp)
+        shape = MaterialTheme.shapes.small,
+        color = if (selected) {
+            when(priority) {
+                BugPriority.LOW -> Color(0xFF90A4AE)
+                BugPriority.MEDIUM -> Color(0xFFFFA726)
+                BugPriority.HIGH -> Color(0xFFEF5350)
+                BugPriority.CRITICAL -> Color(0xFFD32F2F)
+            }
+        } else {
+            MaterialTheme.colors.surface
+        },
+        border = BorderStroke(
+            1.dp,
+            when(priority) {
+                BugPriority.LOW -> Color(0xFF90A4AE)
+                BugPriority.MEDIUM -> Color(0xFFFFA726)
+                BugPriority.HIGH -> Color(0xFFEF5350)
+                BugPriority.CRITICAL -> Color(0xFFD32F2F)
+            }
+        ),
+        modifier = Modifier.clickable(onClick = onClick)
     ) {
         Text(
-            text = status.label,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-            style = MaterialTheme.typography.caption,
-            color = status.color
+            text = priority.toDisplayString(),
+            color = if (selected) Color.White else {
+                when(priority) {
+                    BugPriority.LOW -> Color(0xFF90A4AE)
+                    BugPriority.MEDIUM -> Color(0xFFFFA726)
+                    BugPriority.HIGH -> Color(0xFFEF5350)
+                    BugPriority.CRITICAL -> Color(0xFFD32F2F)
+                }
+            },
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
         )
     }
 }
 
 @Composable
-private fun PriorityChip(priority: BugPriority) {
+private fun StatusChip(
+    status: BugStatus,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
     Surface(
-        color = priority.color.copy(alpha = 0.1f),
-        shape = RoundedCornerShape(16.dp)
+        shape = MaterialTheme.shapes.small,
+        color = if (selected) {
+            when(status) {
+                BugStatus.OPEN -> Color(0xFFE57373)
+                BugStatus.IN_PROGRESS -> Color(0xFF64B5F6)
+                BugStatus.RESOLVED -> Color(0xFF81C784)
+                BugStatus.CLOSED -> Color(0xFF90A4AE)
+            }
+        } else {
+            MaterialTheme.colors.surface
+        },
+        border = BorderStroke(
+            1.dp,
+            when(status) {
+                BugStatus.OPEN -> Color(0xFFE57373)
+                BugStatus.IN_PROGRESS -> Color(0xFF64B5F6)
+                BugStatus.RESOLVED -> Color(0xFF81C784)
+                BugStatus.CLOSED -> Color(0xFF90A4AE)
+            }
+        ),
+        modifier = Modifier.clickable(onClick = onClick)
     ) {
         Text(
-            text = priority.label,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-            style = MaterialTheme.typography.caption,
-            color = priority.color
+            text = status.toDisplayString(),
+            color = if (selected) Color.White else {
+                when(status) {
+                    BugStatus.OPEN -> Color(0xFFE57373)
+                    BugStatus.IN_PROGRESS -> Color(0xFF64B5F6)
+                    BugStatus.RESOLVED -> Color(0xFF81C784)
+                    BugStatus.CLOSED -> Color(0xFF90A4AE)
+                }
+            },
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
         )
     }
-} 
+}
+
+private fun getSampleBugs(): List<Bug> = listOf(
+    Bug(
+        id = IdGenerator.generateId(),
+        title = "Kotlin Coroutines 内存泄漏问题",
+        description = """
+            在 Android 应用中使用 Kotlin Coroutines 时，如果在 ViewModel 中启动协程但没有正确取消，
+            会导致内存泄漏。特别是在使用 viewModelScope 时，需要确保所有协程在 ViewModel 清理时都被取消。
+            
+            复现步骤：
+            1. 在 ViewModel 中使用 GlobalScope 启动协程
+            2. 旋转屏幕或返回上一页面
+            3. 观察内存使用情况
+        """.trimIndent(),
+        status = BugStatus.OPEN,
+        priority = BugPriority.HIGH,
+        createdAt = Clock.System.now().toEpochMilliseconds(),
+        updatedAt = Clock.System.now().toEpochMilliseconds(),
+        tags = listOf("coroutines", "memory-leak", "android")
+    ),
+    
+    Bug(
+        id = IdGenerator.generateId(),
+        title = "Kotlin Multiplatform 编译错误",
+        description = """
+            在 Kotlin Multiplatform 项目中，iOS 目标平台编译失败，错误信息：
+            "Execution failed for task ':composeApp:linkDebugFrameworkIosX64'"
+            
+            环境信息：
+            - Kotlin 1.9.0
+            - Xcode 14.3
+            - macOS 13.4
+            
+            已尝试清理项目和重新构建，但问题仍然存在。
+        """.trimIndent(),
+        status = BugStatus.IN_PROGRESS,
+        priority = BugPriority.CRITICAL,
+        createdAt = Clock.System.now().toEpochMilliseconds(),
+        updatedAt = Clock.System.now().toEpochMilliseconds(),
+        tags = listOf("kotlin-multiplatform", "ios", "compilation")
+    ),
+    
+    Bug(
+        id = IdGenerator.generateId(),
+        title = "Flow collect 在 Android 上的生命周期问题",
+        description = """
+            使用 Flow.collect 收集数据时，如果在 Activity/Fragment 的 onCreate 中直接调用，
+            可能会导致在配置更改（如屏幕旋转）时重复收集数据。
+            
+            建议解决方案：
+            1. 使用 lifecycleScope.launch 
+            2. 在正确的生命周期阶段收集
+            3. 使用 repeatOnLifecycle 或 flowWithLifecycle
+        """.trimIndent(),
+        status = BugStatus.RESOLVED,
+        priority = BugPriority.MEDIUM,
+        createdAt = Clock.System.now().toEpochMilliseconds(),
+        updatedAt = Clock.System.now().toEpochMilliseconds(),
+        tags = listOf("flow", "android", "lifecycle")
+    ),
+    
+    Bug(
+        id = IdGenerator.generateId(),
+        title = "Compose 重组优化问题",
+        description = """
+            在使用 Jetpack Compose 时，由于重组规则理解不当，导致不必要的重组，影响性能。
+            
+            问题代码：
+            @Composable
+            fun MyComposable(items: List<Item>) {
+                items.forEach { item ->
+                    ItemRow(item)  // 每次重组都会重新创建所有项
+                }
+            }
+            
+            应该使用 LazyColumn 和 items API 来优化性能。
+        """.trimIndent(),
+        status = BugStatus.OPEN,
+        priority = BugPriority.MEDIUM,
+        createdAt = Clock.System.now().toEpochMilliseconds(),
+        updatedAt = Clock.System.now().toEpochMilliseconds(),
+        tags = listOf("compose", "performance", "recomposition")
+    ),
+    
+    Bug(
+        id = IdGenerator.generateId(),
+        title = "Kotlin 序列化问题",
+        description = """
+            使用 kotlinx.serialization 时，对于包含默认参数的数据类，序列化后再反序列化可能丢失默认值。
+            
+            示例代码：
+            @Serializable
+            data class User(
+                val name: String,
+                val age: Int = 0  // 默认值不能在某些情况下丢失
+            )
+            
+            需要确保正确使用 @Required 或 @Optional 注解。
+        """.trimIndent(),
+        status = BugStatus.CLOSED,
+        priority = BugPriority.LOW,
+        createdAt = Clock.System.now().toEpochMilliseconds(),
+        updatedAt = Clock.System.now().toEpochMilliseconds(),
+        tags = listOf("serialization", "data-class")
+    )
+) 

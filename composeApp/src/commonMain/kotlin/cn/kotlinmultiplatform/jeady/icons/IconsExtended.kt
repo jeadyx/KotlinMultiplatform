@@ -468,29 +468,13 @@ val Icons.Filled.CustomGitHub: ImageVector
     }
 private var _customGitHub: ImageVector? = null
 
-val Icons.Filled.CustomBugReport: ImageVector
+public val Icons.Filled.BugReport: ImageVector
     get() {
-        if (_customBugReport != null) {
-            return _customBugReport!!
+        if (_bugReport != null) {
+            return _bugReport!!
         }
-        _customBugReport = ImageVector.Builder(
-            name = "CustomBugReport",
-            defaultWidth = 24.0.dp,
-            defaultHeight = 24.0.dp,
-            viewportWidth = 24.0f,
-            viewportHeight = 24.0f
-        ).apply {
-            path(
-                fill = SolidColor(Color.Black),
-                fillAlpha = 1f,
-                stroke = null,
-                strokeAlpha = 1f,
-                strokeLineWidth = 1.0f,
-                strokeLineCap = StrokeCap.Butt,
-                strokeLineJoin = StrokeJoin.Miter,
-                strokeLineMiter = 1f,
-                pathFillType = PathFillType.NonZero
-            ) {
+        _bugReport = materialIcon(name = "Filled.BugReport") {
+            materialPath {
                 moveTo(20f, 8f)
                 horizontalLineTo(17.19f)
                 curveTo(16.74f, 7.22f, 16.12f, 6.55f, 15.37f, 6.04f)
@@ -498,7 +482,7 @@ val Icons.Filled.CustomBugReport: ImageVector
                 lineTo(15.59f, 3f)
                 lineTo(13.42f, 5.17f)
                 curveTo(12.96f, 5.06f, 12.49f, 5f, 12f, 5f)
-                curveTo(11.51f, 5f, 11.04f, 5.06f, 10.59f, 5.17f)
+                curveToRelative(-0.49f, 0f, -0.96f, 0.06f, -1.42f, 0.17f)
                 lineTo(8.41f, 3f)
                 lineTo(7f, 4.41f)
                 lineTo(8.62f, 6.04f)
@@ -506,28 +490,28 @@ val Icons.Filled.CustomBugReport: ImageVector
                 horizontalLineTo(4f)
                 verticalLineTo(10f)
                 horizontalLineTo(6.09f)
-                curveTo(6.04f, 10.33f, 6f, 10.66f, 6f, 11f)
+                curveToRelative(-0.05f, 0.33f, -0.09f, 0.66f, -0.09f, 1f)
                 verticalLineTo(12f)
                 horizontalLineTo(4f)
                 verticalLineTo(14f)
                 horizontalLineTo(6f)
                 verticalLineTo(15f)
-                curveTo(6f, 15.34f, 6.04f, 15.67f, 6.09f, 16f)
+                curveToRelative(0f, 0.34f, 0.04f, 0.67f, 0.09f, 1f)
                 horizontalLineTo(4f)
                 verticalLineTo(18f)
                 horizontalLineTo(6.81f)
-                curveTo(7.85f, 19.79f, 9.78f, 21f, 12f, 21f)
-                reflectiveCurveTo(16.15f, 19.79f, 17.19f, 18f)
+                curveToRelative(1.04f, 1.79f, 2.97f, 3f, 5.19f, 3f)
+                reflectiveCurveToRelative(4.15f, -1.21f, 5.19f, -3f)
                 horizontalLineTo(20f)
                 verticalLineTo(16f)
                 horizontalLineTo(17.91f)
-                curveTo(17.96f, 15.67f, 18f, 15.34f, 18f, 15f)
+                curveToRelative(0.05f, -0.33f, 0.09f, -0.66f, 0.09f, -1f)
                 verticalLineTo(14f)
                 horizontalLineTo(20f)
                 verticalLineTo(12f)
-                horizontalLineTo(18f)
+                horizontalLineTo(17.91f)
                 verticalLineTo(11f)
-                curveTo(18f, 10.66f, 17.96f, 10.33f, 17.91f, 10f)
+                curveToRelative(0f, -0.34f, -0.04f, -0.67f, -0.09f, -1f)
                 horizontalLineTo(20f)
                 verticalLineTo(8f)
                 close()
@@ -544,10 +528,10 @@ val Icons.Filled.CustomBugReport: ImageVector
                 verticalLineTo(12f)
                 close()
             }
-        }.build()
-        return _customBugReport!!
+        }
+        return _bugReport!!
     }
-private var _customBugReport: ImageVector? = null
+private var _bugReport: ImageVector? = null
 
 val Icons.Filled.CustomEmail: ImageVector
     get() {
@@ -910,3 +894,116 @@ val Icons.Filled.Psychology: ImageVector
         return _psychology!!
     }
 private var _psychology: ImageVector? = null
+
+public val Icons.Filled.FilterList: ImageVector
+    get() {
+        if (_filterList != null) {
+            return _filterList!!
+        }
+        _filterList = materialIcon(name = "Filled.FilterList") {
+            materialPath {
+                moveTo(10.0f, 18.0f)
+                horizontalLineToRelative(4.0f)
+                verticalLineToRelative(-2.0f)
+                horizontalLineToRelative(-4.0f)
+                verticalLineToRelative(2.0f)
+                close()
+                moveTo(3.0f, 6.0f)
+                verticalLineToRelative(2.0f)
+                horizontalLineToRelative(18.0f)
+                verticalLineToRelative(-2.0f)
+                horizontalLineToRelative(-18.0f)
+                close()
+                moveTo(6.0f, 13.0f)
+                horizontalLineToRelative(12.0f)
+                verticalLineToRelative(-2.0f)
+                horizontalLineToRelative(-12.0f)
+                verticalLineToRelative(2.0f)
+                close()
+            }
+        }
+        return _filterList!!
+    }
+private var _filterList: ImageVector? = null
+
+public val Icons.Filled.ArrowUpward: ImageVector
+    get() {
+        if (_arrowUpward != null) {
+            return _arrowUpward!!
+        }
+        _arrowUpward = materialIcon(name = "Filled.ArrowUpward") {
+            materialPath {
+                moveTo(4.0f, 12.0f)
+                lineTo(1.41f, 10.59f)
+                lineTo(11.0f, 1.0f)
+                verticalLineTo(20.0f)
+                horizontalLineTo(2.0f)
+                verticalLineTo(10.59f)
+                lineTo(5.59f, 12.0f)
+                lineToRelative(5.59f, 5.59f)
+                lineTo(20.0f, 12.0f)
+                lineToRelative(-8.0f, -8.0f)
+                lineToRelative(-8.0f, 8.0f)
+                close()
+            }
+        }
+        return _arrowUpward!!
+    }
+private var _arrowUpward: ImageVector? = null
+
+public val Icons.Filled.ArrowDownward: ImageVector
+    get() {
+        if (_arrowDownward != null) {
+            return _arrowDownward!!
+        }
+        _arrowDownward = materialIcon(name = "Filled.ArrowDownward") {
+            materialPath {
+                moveTo(20.0f, 12.0f)
+                lineTo(-1.41f, -10.59f)
+                lineTo(13.0f, 16.17f)
+                verticalLineTo(4.0f)
+                horizontalLineTo(-2.0f)
+                verticalLineTo(12.17f)
+                lineTo(5.59f, 12.0f)
+                lineToRelative(5.59f, -5.59f)
+                lineTo(20.0f, 12.0f)
+                lineToRelative(-8.0f, 8.0f)
+                lineToRelative(-8.0f, -8.0f)
+                close()
+            }
+        }
+        return _arrowDownward!!
+    }
+private var _arrowDownward: ImageVector? = null
+
+public val Icons.Filled.Search: ImageVector
+    get() {
+        if (_search != null) {
+            return _search!!
+        }
+        _search = materialIcon(name = "Filled.Search") {
+            materialPath {
+                moveTo(15.5f, 14.0f)
+                horizontalLineToRelative(-0.79f)
+                lineTo(-0.28f, -0.27f)
+                curveTo(15.41f, 12.59f, 16.0f, 11.11f, 16.0f, 9.5f)
+                curveTo(16.0f, 5.91f, 13.09f, 3.0f, 9.5f, 3.0f)
+                reflectiveCurveTo(3.0f, 5.91f, 3.0f, 9.5f)
+                reflectiveCurveTo(5.91f, 16.0f, 9.5f, 16.0f)
+                curveToRelative(1.61f, 0.0f, 3.09f, -0.59f, 4.23f, -1.57f)
+                lineToRelative(0.27f, 0.28f)
+                verticalLineToRelative(0.79f)
+                lineTo(20.49f, 19.0f)
+                lineTo(15.5f, 14.0f)
+                close()
+                moveTo(9.5f, 14.0f)
+                curveTo(7.01f, 14.0f, 5.0f, 11.99f, 5.0f, 9.5f)
+                reflectiveCurveTo(7.01f, 5.0f, 9.5f, 5.0f)
+                reflectiveCurveTo(14.0f, 7.01f, 14.0f, 9.5f)
+                reflectiveCurveTo(11.99f, 14.0f, 9.5f, 14.0f)
+                close()
+            }
+        }
+        return _search!!
+    }
+private var _search: ImageVector? = null
