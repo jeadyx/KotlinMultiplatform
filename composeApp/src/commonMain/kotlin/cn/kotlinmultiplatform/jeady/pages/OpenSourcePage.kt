@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,6 +20,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,7 +32,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import cn.kotlinmultiplatform.jeady.icons.CustomCode
 import cn.kotlinmultiplatform.jeady.icons.CustomGitHub
-import cn.kotlinmultiplatform.jeady.icons.CustomVisibility
+import cn.kotlinmultiplatform.jeady.icons.ForkCount
+import cn.kotlinmultiplatform.jeady.icons.StarCount
 import cn.kotlinmultiplatform.jeady.platform.UrlHandler
 
 data class OpenSourceProject(
@@ -350,14 +353,36 @@ private fun ProjectCard(project: OpenSourceProject, urlHandler: UrlHandler) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Text(
-                        text = "⭐ ${project.stars}",
-                        style = MaterialTheme.typography.body2
-                    )
-                    Text(
-                        text = "\uD83C\uDF74 ${project.forks}",
-                        style = MaterialTheme.typography.body2
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.StarCount,
+                            contentDescription = "Stars",
+                            tint = MaterialTheme.colors.primary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Text(
+                            text = "${project.stars}",
+                            style = MaterialTheme.typography.body2
+                        )
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.ForkCount,
+                            contentDescription = "Forks",
+                            tint = MaterialTheme.colors.primary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Text(
+                            text = "${project.forks}",
+                            style = MaterialTheme.typography.body2
+                        )
+                    }
                 }
 
                 Row(
@@ -365,16 +390,16 @@ private fun ProjectCard(project: OpenSourceProject, urlHandler: UrlHandler) {
                 ) {
                     IconButton(onClick = { urlHandler.openUrl(project.githubUrl) }) {
                         Icon(
-                            Icons.Filled.CustomGitHub,
-                            contentDescription = "GitHub",
+                            imageVector = Icons.Filled.CustomGitHub,
+                            contentDescription = "Github",
                             tint = MaterialTheme.colors.primary
                         )
                     }
                     if (project.demoUrl != null) {
                         IconButton(onClick = { urlHandler.openUrl(project.demoUrl) }) {
                             Icon(
-                                Icons.Filled.CustomVisibility,
-                                contentDescription = "Demo",
+                                imageVector = Icons.Filled.Star,
+                                contentDescription = "Stars",
                                 tint = MaterialTheme.colors.primary
                             )
                         }

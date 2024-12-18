@@ -132,7 +132,7 @@ fun LoginPage(
             onValueChange = { password = it },
             label = { Text("密码") },
             leadingIcon = {
-                Icon(Icons.Default.Lock, "密���图标")
+                Icon(Icons.Default.Lock, "密码图标")
             },
             trailingIcon = {
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
@@ -214,7 +214,7 @@ fun LoginPage(
             ) {
                 SocialLoginButton(
                     icon = Icons.Default.Person,
-                    text = "微���",
+                    text = "微信",
                     enabled = false
                 )
                 SocialLoginButton(
