@@ -50,6 +50,7 @@ import cn.kotlinmultiplatform.jeady.pages.LoginPage
 import cn.kotlinmultiplatform.jeady.pages.OpenSourcePage
 import cn.kotlinmultiplatform.jeady.pages.RecommendationsPage
 import cn.kotlinmultiplatform.jeady.pages.RegisterPage
+import cn.kotlinmultiplatform.jeady.pages.ToolboxPage
 import cn.kotlinmultiplatform.jeady.platform.getPlatformUrlHandler
 import cn.kotlinmultiplatform.jeady.utils.IdGenerator
 import kotlinmultiplatform.composeapp.generated.resources.NotoSansSC_Bold
@@ -251,7 +252,7 @@ fun Navigation(
     onBugDelete: (String) -> Unit,
     onBugAdd: () -> Unit
 ) {
-    val tabs = listOf("推荐", "博客", "Bugs", "开源", "关于")
+    val tabs = listOf("推荐", "博客", "Bugs", "工具箱", "开源", "关于")
 
     Column(modifier = Modifier.fillMaxSize()) {
         // 顶部栏
@@ -335,8 +336,9 @@ fun Navigation(
                     onAdd = onBugAdd,
                     onNavigateToBugDetail = onNavigateToBugDetail
                 )
-                3 -> OpenSourcePage(urlHandler = getPlatformUrlHandler())
-                4 -> AboutPage()
+                3 -> ToolboxPage(urlHandler = getPlatformUrlHandler())
+                4 -> OpenSourcePage(urlHandler = getPlatformUrlHandler())
+                5 -> AboutPage()
             }
         }
     }
@@ -381,7 +383,7 @@ private fun getSampleBugs(): List<Bug> = listOf(
             
             复现步骤：
             1. 在 ViewModel 中使用 GlobalScope 启动协程
-            2. 旋转屏幕或返回上���页面
+            2. 旋转屏幕或返回上一页面
             3. 观察内存使用情况
         """.trimIndent(),
         status = BugStatus.OPEN,
