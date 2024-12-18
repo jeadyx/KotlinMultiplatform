@@ -1,7 +1,9 @@
 package cn.kotlinmultiplatform.jeady.pages
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,19 +25,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Phone
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -43,35 +39,34 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cn.kotlinmultiplatform.jeady.icons.Category
-import cn.kotlinmultiplatform.jeady.icons.Cloud
 import cn.kotlinmultiplatform.jeady.icons.NewReleases
 import cn.kotlinmultiplatform.jeady.icons.Psychology
-import cn.kotlinmultiplatform.jeady.icons.Web
 import cn.kotlinmultiplatform.jeady.icons.Whatshot
 import kotlinmultiplatform.composeapp.generated.resources.Res
 import kotlinmultiplatform.composeapp.generated.resources.compose_hero
 import kotlinmultiplatform.composeapp.generated.resources.flutter_hero
-import kotlinmultiplatform.composeapp.generated.resources.react_hero
 import kotlinmultiplatform.composeapp.generated.resources.tech_hero
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import kotlin.math.abs
+import kotlin.math.min
 
 data class RecommendItem(
     val id: String,
@@ -99,28 +94,22 @@ data class TechCategory(
 
 private val techCategories = listOf(
     TechCategory(
-        id = "mobile",
-        name = "移动开发",
-        icon = Icons.Filled.Phone,
-        color = Color(0xFF2196F3)
-    ),
-    TechCategory(
-        id = "web",
-        name = "Web开发",
-        icon = Icons.Filled.Web,
-        color = Color(0xFF4CAF50)
-    ),
-    TechCategory(
-        id = "ai",
-        name = "人工智能",
-        icon = Icons.Filled.Psychology,
+        id = "popular_blogs",
+        name = "热门博客",
+        icon = Icons.Filled.Whatshot,
         color = Color(0xFFE91E63)
     ),
     TechCategory(
-        id = "cloud",
-        name = "云原生",
-        icon = Icons.Filled.Cloud,
-        color = Color(0xFF9C27B0)
+        id = "open_source",
+        name = "开源趋势",
+        icon = Icons.Filled.Category,
+        color = Color(0xFF4CAF50)
+    ),
+    TechCategory(
+        id = "ai_tools",
+        name = "AI工具",
+        icon = Icons.Filled.Psychology,
+        color = Color(0xFF2196F3)
     )
 )
 
@@ -154,18 +143,18 @@ private object CardDimensions {
 // 更新渐变色配置
 private object CarouselColors {
     val Kotlin = listOf(
-        Color(0xFF1C1B1F),  // Kotlin 官网的深色背景
-        Color(0xFF2E2D30)   // 稍微浅一点的深色
+        Color(0xFF1B1B3D),  // 深蓝色
+        Color(0xFF2E2D5C)   // 稍微浅一点的蓝色
     )
     
     val Compose = listOf(
-        Color(0xFF23232B),  // 深蓝灰色
-        Color(0xFF2B2B35)   // 稍微带点蓝色的深色
+        Color(0xFF1C3238),  // 深青色
+        Color(0xFF2B4850)   // 稍微浅一点的青色
     )
     
     val OpenSource = listOf(
-        Color(0xFF1F1F24),  // 深色
-        Color(0xFF27272D)   // 稍微浅一点的深色
+        Color(0xFF3B1F36),  // 深紫色
+        Color(0xFF4D2B47)   // 稍微浅一点的紫色
     )
 }
 
@@ -189,150 +178,113 @@ fun RecommendationsPage(
             title = "开源生态系统",
             description = "丰富的开源库和工具\n助力开发效率提升",
             iconRes = Res.drawable.flutter_hero
+        ),
+        CarouselItem(
+            title = "跨平台开发",
+            description = "Android、iOS、Desktop\n一套代码，多端运行",
+            iconRes = Res.drawable.tech_hero
+        ),
+        CarouselItem(
+            title = "原生性能",
+            description = "编译为原生代码\n获得最佳运行性能",
+            iconRes = Res.drawable.compose_hero
         )
     )
     
     val recommendations = listOf(
-        // 移动开发分类
+        // 热门博客分类
         RecommendItem(
-            id = "kmm",
-            title = "Kotlin Multiplatform Mobile",
-            description = "使用 Kotlin 开发跨平台应用的现代解决方案",
-            category = "移动开发",
-            tags = listOf("Kotlin", "Mobile", "跨平台"),
+            id = "kotlin-blog",
+            title = "Kotlin 官方博客",
+            description = "Kotlin 语言最新动态和技术分享",
+            category = "热门博客",
+            tags = listOf("Kotlin", "官方", "技术"),
             iconRes = Res.drawable.tech_hero,
             isHot = true,
-            onClick = { onNavigateToDetail("kmm", "recommendation") }
+            onClick = { onNavigateToDetail("kotlin-blog", "recommendation") }
         ),
         RecommendItem(
-            id = "flutter",
-            title = "Flutter",
-            description = "Google 跨平台应用开发框架",
-            category = "移动开发",
-            tags = listOf("Dart", "Mobile", "跨平台"),
-            iconRes = Res.drawable.flutter_hero,
+            id = "jetbrains-blog",
+            title = "JetBrains 博客",
+            description = "JetBrains 工具和技术更新",
+            category = "热门博客",
+            tags = listOf("JetBrains", "工具", "IDE"),
+            iconRes = Res.drawable.tech_hero,
             isHot = true,
-            onClick = { onNavigateToDetail("flutter", "recommendation") }
+            onClick = { onNavigateToDetail("jetbrains-blog", "recommendation") }
         ),
         RecommendItem(
-            id = "react-native",
-            title = "React Native",
-            description = "使用 React 建原生应用",
-            category = "移动开发",
-            tags = listOf("JavaScript", "React", "跨平台"),
-            iconRes = Res.drawable.react_hero,
-            onClick = { onNavigateToDetail("react-native", "recommendation") }
+            id = "android-blog",
+            title = "Android 开发者博客",
+            description = "Android 平台最新资讯",
+            category = "热门博客",
+            tags = listOf("Android", "移动开发", "Google"),
+            iconRes = Res.drawable.tech_hero,
+            onClick = { onNavigateToDetail("android-blog", "recommendation") }
         ),
 
-        // Web开发分类
+        // 源趋势分类
         RecommendItem(
-            id = "nextjs",
-            title = "Next.js",
-            description = "React 应用开发框架",
-            category = "Web开发",
-            tags = listOf("React", "SSR", "前端"),
+            id = "compose-multiplatform",
+            title = "Compose Multiplatform",
+            description = "跨平台 UI 框架",
+            category = "开源趋势",
+            tags = listOf("UI", "跨平台", "Kotlin"),
             iconRes = Res.drawable.tech_hero,
             isHot = true,
-            onClick = { onNavigateToDetail("nextjs", "recommendation") }
+            onClick = { onNavigateToDetail("compose-multiplatform", "recommendation") }
         ),
         RecommendItem(
-            id = "vue",
-            title = "Vue.js",
-            description = "渐进式 JavaScript 框架",
-            category = "Web开发",
-            tags = listOf("JavaScript", "Vue", "前端"),
+            id = "ktor",
+            title = "Ktor",
+            description = "Kotlin 异步 Web 框架",
+            category = "开源趋势",
+            tags = listOf("Web", "异步", "服务器"),
             iconRes = Res.drawable.tech_hero,
             isHot = true,
-            onClick = { onNavigateToDetail("vue", "recommendation") }
+            onClick = { onNavigateToDetail("ktor", "recommendation") }
         ),
         RecommendItem(
-            id = "svelte",
-            title = "Svelte",
-            description = "构建用户界面的编译器",
-            category = "Web开发",
-            tags = listOf("JavaScript", "编译器", "UI"),
+            id = "arrow-kt",
+            title = "Arrow",
+            description = "Kotlin 函数式编程库",
+            category = "开源趋势",
+            tags = listOf("FP", "函数式", "工具库"),
             iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("svelte", "recommendation") }
+            onClick = { onNavigateToDetail("arrow-kt", "recommendation") }
         ),
 
-        // 人工智能分类
+        // AI工具分类
         RecommendItem(
-            id = "tensorflow",
-            title = "TensorFlow",
-            description = "开源机器学习平台",
-            category = "人工智能",
-            tags = listOf("AI", "机器学习", "深度学习"),
+            id = "cursor",
+            title = "Cursor",
+            description = "AI 驱动的代码编辑器",
+            category = "AI工具",
+            tags = listOf("IDE", "AI", "编程"),
             iconRes = Res.drawable.tech_hero,
             isHot = true,
-            onClick = { onNavigateToDetail("tensorflow", "recommendation") }
+            onClick = { onNavigateToDetail("cursor", "recommendation") }
         ),
         RecommendItem(
-            id = "pytorch",
-            title = "PyTorch",
-            description = "开源机器学习框架",
-            category = "人工智能",
-            tags = listOf("AI", "深度学习", "Python"),
+            id = "github-copilot",
+            title = "GitHub Copilot",
+            description = "AI 配对编程助手",
+            category = "AI工具",
+            tags = listOf("AI", "编程", "自动完成"),
             iconRes = Res.drawable.tech_hero,
             isHot = true,
-            onClick = { onNavigateToDetail("pytorch", "recommendation") }
+            onClick = { onNavigateToDetail("github-copilot", "recommendation") }
         ),
         RecommendItem(
-            id = "huggingface",
-            title = "Hugging Face",
-            description = "AI 模型和工具平台",
-            category = "人工智能",
-            tags = listOf("AI", "NLP", "模型库"),
+            id = "tabnine",
+            title = "Tabnine",
+            description = "AI 代码补全工具",
+            category = "AI工具",
+            tags = listOf("AI", "补全", "效率"),
             iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("huggingface", "recommendation") }
-        ),
-
-        // 云原生分类
-        RecommendItem(
-            id = "kubernetes",
-            title = "Kubernetes",
-            description = "容器编排平台",
-            category = "云原生",
-            tags = listOf("容器编排", "DevOps", "云原生"),
-            iconRes = Res.drawable.tech_hero,
-            isHot = true,
-            onClick = { onNavigateToDetail("kubernetes", "recommendation") }
-        ),
-        RecommendItem(
-            id = "docker",
-            title = "Docker",
-            description = "开发、部署和运行应用程序的开放平台",
-            category = "云原生",
-            tags = listOf("容器化", "DevOps", "部署"),
-            iconRes = Res.drawable.tech_hero,
-            isHot = true,
-            onClick = { onNavigateToDetail("docker", "recommendation") }
-        ),
-        RecommendItem(
-            id = "istio",
-            title = "Istio",
-            description = "服务网格平台",
-            category = "云原生",
-            tags = listOf("微服务", "服务网格", "云原生"),
-            iconRes = Res.drawable.tech_hero,
-            onClick = { onNavigateToDetail("istio", "recommendation") }
+            onClick = { onNavigateToDetail("tabnine", "recommendation") }
         )
     )
-    
-    val listState = rememberLazyListState()
-    
-    // 监听滚位置变化
-    LaunchedEffect(listState) {
-        snapshotFlow { listState.firstVisibleItemIndex }
-            .collect { index ->
-                // 保存滚动位置到本地
-                // 这里可以使用其他方式保存状态
-            }
-    }
-    
-    var currentPage by remember { mutableStateOf(0) }
-    val itemsPerPage = 10
-    val totalPages = (recommendations.size + itemsPerPage - 1) / itemsPerPage
-    val currentPageItems = recommendations.drop(currentPage * itemsPerPage).take(itemsPerPage)
     
     var selectedCategory by remember { mutableStateOf<String?>(null) }
     
@@ -340,18 +292,9 @@ fun RecommendationsPage(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(bottom = 16.dp)
     ) {
-        // 轮播图部分
+        // 轮播图分
         item {
             ImageCarousel(carouselItems)
-        }
-        
-        // 技术领域分类
-        item {
-            CategorySection(
-                categories = techCategories,
-                selectedCategory = selectedCategory,
-                onCategorySelected = { selectedCategory = it }
-            )
         }
         
         // 热门推荐
@@ -365,202 +308,199 @@ fun RecommendationsPage(
         // 最新发布
         item {
             NewReleaseSection(
-                items = recommendations.take(5),
+                items = recommendations.take(3),
                 onItemClick = { id -> onNavigateToDetail(id, "recommendation") }
             )
-        }
-        
-        // 分类推荐
-        if (selectedCategory != null) {
-            item {
-                CategoryRecommendations(
-                    category = selectedCategory!!,
-                    items = recommendations.filter { it.category == selectedCategory },
-                    onItemClick = { id -> onNavigateToDetail(id, "recommendation") }
-                )
-            }
         }
     }
 }
 
 @Composable
 private fun ImageCarousel(items: List<CarouselItem>) {
-    val pagerState = rememberPagerState(pageCount = { items.size })
-    val coroutineScope = rememberCoroutineScope()
+    val currentIndex = remember { mutableStateOf(0) }
+    val scope = rememberCoroutineScope()
+    
+    // 添加动画状态
+    val animatedIndex = remember { Animatable(0f) }
+    // 主tab的透明度动画状态
+    val mainCardAlpha = remember { Animatable(0f) }
+    
+    // 初始动画 - 只为主tab添加
+    LaunchedEffect(Unit) {
+        mainCardAlpha.animateTo(
+            targetValue = 1f,
+            animationSpec = tween(
+                durationMillis = 800,
+                easing = FastOutSlowInEasing
+            )
+        )
+    }
     
     // 自动轮播
     LaunchedEffect(Unit) {
         while (true) {
-            delay(3000)
-            coroutineScope.launch {
-                pagerState.animateScrollToPage(
-                    page = (pagerState.currentPage + 1) % items.size
+            delay(4000)
+            val nextIndex = (currentIndex.value + 1) % items.size
+            animatedIndex.animateTo(
+                targetValue = nextIndex.toFloat(),
+                animationSpec = tween(
+                    durationMillis = 600,
+                    easing = FastOutSlowInEasing
                 )
-            }
+            )
+            currentIndex.value = nextIndex
         }
     }
-    
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
+            .height(300.dp)
     ) {
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.fillMaxSize()
-        ) { page ->
-            CarouselPage(
-                item = items[page],
-                index = page  // 传递页面索引
-            )
-        }
-        
-        // 器
         Row(
-            Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.fillMaxSize(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            repeat(items.size) { index ->
-                Box(
+            // 显示三个卡片：当前、前一个和后一个
+            for (offset in -1..1) {
+                val index = (currentIndex.value + offset + items.size) % items.size
+                val item = items[index]
+                
+                val animatedOffset = (animatedIndex.value - currentIndex.value + offset)
+                val scale = 0.7f + (1f - min(1f, abs(animatedOffset))) * 0.3f
+                // 只有主卡片使用动画透明度，其他卡片使用固定透明度
+                val alpha = if (offset == 0) {
+                    0.3f + (1f - min(1f, abs(animatedOffset))) * 0.7f * mainCardAlpha.value
+                } else {
+                    0.3f + (1f - min(1f, abs(animatedOffset))) * 0.7f
+                }
+                
+                CarouselCard(
+                    item = item,
+                    isCurrent = offset == 0,
+                    animatedScale = scale,
+                    animatedAlpha = alpha,
+                    animatedOffset = animatedOffset,
+                    colors = when(index % 3) {
+                        0 -> CarouselColors.Kotlin
+                        1 -> CarouselColors.Compose
+                        else -> CarouselColors.OpenSource
+                    },
                     modifier = Modifier
-                        .size(8.dp)
-                        .clip(CircleShape)
-                        .background(
-                            if (pagerState.currentPage == index)
-                                MaterialTheme.colors.primary
-                            else
-                                MaterialTheme.colors.primary.copy(alpha = 0.5f)
-                        )
+                        .weight(1f)
+                        .padding(horizontal = 4.dp)
+                        .clickable {
+                            scope.launch {
+                                animatedIndex.animateTo(
+                                    targetValue = index.toFloat(),
+                                    animationSpec = tween(
+                                        durationMillis = 600,
+                                        easing = FastOutSlowInEasing
+                                    )
+                                )
+                                currentIndex.value = index
+                            }
+                        }
                 )
+            }
+        }
+
+        // 指示器部分保持不变...
+    }
+}
+
+@Composable
+private fun CarouselCard(
+    item: CarouselItem,
+    isCurrent: Boolean,
+    animatedScale: Float,
+    animatedAlpha: Float,
+    animatedOffset: Float,
+    colors: List<Color>,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxHeight()
+            .padding(vertical = 16.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .scale(if(isCurrent) 1f else 0.8f)
+            .graphicsLayer {
+                shadowElevation = if (isCurrent) 8f else 2f
+                shape = RoundedCornerShape(16.dp)
+                clip = true
+                ambientShadowColor = Color.Black.copy(alpha = 0.1f)
+                spotShadowColor = Color.Black.copy(alpha = 0.1f)
+            }
+            .background(
+                brush = Brush.verticalGradient(colors)
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(horizontal = if (isCurrent) 32.dp else 16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Category,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(if (isCurrent) 48.dp else 32.dp)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = item.title,
+                style = if (isCurrent) MaterialTheme.typography.h5 else MaterialTheme.typography.h6,
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = item.description,
+                style = if (isCurrent) MaterialTheme.typography.body1 else MaterialTheme.typography.body2,
+                color = Color.White.copy(alpha = 0.8f),
+                textAlign = TextAlign.Center,
+                maxLines = if (isCurrent) 2 else 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(4.dp),
+                    color = KotlinColors.Primary,
+                    modifier = Modifier.clickable { /* TODO: Add action */ }
+                ) {
+                    Text(
+                        text = "开始使用",
+                        color = Color.White,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                }
+                Surface(
+                    shape = RoundedCornerShape(4.dp),
+                    color = Color.White.copy(alpha = 0.15f),
+                    modifier = Modifier.clickable { /* TODO: Add action */ }
+                ) {
+                    Text(
+                        text = "了解更多",
+                        color = Color.White,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                }
             }
         }
     }
 }
 
-@Composable
-private fun CarouselPage(
-    item: CarouselItem,
-    index: Int
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.horizontalGradient(
-                    colors = when (index) {
-                        0 -> CarouselColors.Kotlin
-                        1 -> CarouselColors.Compose
-                        else -> CarouselColors.OpenSource
-                    },
-                    startX = 0f,
-                    endX = Float.POSITIVE_INFINITY
-                )
-            )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 48.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // 左侧图标
-            Box(
-                modifier = Modifier
-                    .size(160.dp)
-                    .padding(end = 24.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(item.iconRes),
-                    contentDescription = null,
-                    modifier = Modifier.size(120.dp),
-                    contentScale = ContentScale.Fit
-                )
-            }
-            
-            // 中间文本内容
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = item.title,
-                    style = MaterialTheme.typography.h4.copy(
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = (-0.5).sp
-                    ),
-                    color = Color.White
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = item.description,
-                    style = MaterialTheme.typography.subtitle1,
-                    color = Color.White.copy(alpha = 0.8f)
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-                Surface(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(4.dp))
-                        .clickable { /* 处理点击 */ },
-                    color = KotlinColors.Primary,
-                    elevation = 0.dp
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "开始使用",
-                            color = Color.White,
-                            style = MaterialTheme.typography.button.copy(
-                                fontWeight = FontWeight.Medium
-                            )
-                        )
-                        Icon(
-                            imageVector = Icons.Default.ArrowForward,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                            tint = Color.White
-                        )
-                    }
-                }
-            }
-            
-            // 右侧图标
-            Box(
-                modifier = Modifier
-                    .size(160.dp)
-                    .padding(start = 24.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(item.iconRes),
-                    contentDescription = null,
-                    modifier = Modifier.size(120.dp),
-                    contentScale = ContentScale.Fit
-                )
-            }
-        }
-
-        // 装饰性元素
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
-                            Color.White.copy(alpha = 0.03f),
-                            Color.Transparent
-                        ),
-                        center = Offset(0f, 0f),
-                        radius = 1200f
-                    )
-                )
-        )
-    }
+// 添加辅助函数
+private fun lerp(start: Float, stop: Float, fraction: Float): Float {
+    return start + (stop - start) * fraction
 }
 
 @Composable
@@ -994,7 +934,7 @@ private fun NewReleaseItemCard(
                         )
                     )
                     Text(
-                        text = "新发布",
+                        text = "发布",
                         style = MaterialTheme.typography.caption,
                         color = KotlinColors.Secondary
                     )
@@ -1077,4 +1017,4 @@ private fun CategoryRecommendationItemCard(
             TagsRow(item.tags)
         }
     }
-} 
+}
