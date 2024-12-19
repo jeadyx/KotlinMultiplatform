@@ -74,7 +74,7 @@ fun DetailPage(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .padding(horizontal = 16.dp),
+                    .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 // 文章头部信息
@@ -83,12 +83,6 @@ fun DetailPage(
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Text(
-                            text = detailInfo!!.title,
-                            style = MaterialTheme.typography.h4,
-                            fontWeight = FontWeight.Bold
-                        )
-                        
                         // 分类和标签
                         if (detailInfo!!.category.isNotEmpty() || detailInfo!!.tags.isNotEmpty()) {
                             Row(
@@ -135,7 +129,7 @@ fun DetailPage(
                                 ) {
                                     Icon(
                                         Icons.Default.DateRange,
-                                        contentDescription = "���布日期",
+                                        contentDescription = "发布日期",
                                         modifier = Modifier.size(16.dp),
                                         tint = MaterialTheme.colors.primary
                                     )
@@ -333,7 +327,7 @@ private suspend fun fetchRecommendationDetailInfo(itemId: String): DetailInfo {
     // 这里返回推荐内容的详细信息
     return DetailInfo(
         title = "Kotlin Multiplatform 详情",
-        description = "使用 Kotlin 开发跨平台应用的现代解决方案",
+        description = "用 Kotlin 开发跨平台��用的现代解决方案",
         content = """
             # Kotlin Multiplatform
             

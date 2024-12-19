@@ -54,6 +54,7 @@ fun BlogPage(
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf<BlogCategory?>(null) }
+    var selectedTag by remember { mutableStateOf<String?>(null) }
     var isEditorVisible by remember { mutableStateOf(false) }
     var currentEditPost by remember { mutableStateOf<BlogPost?>(null) }
     
@@ -108,7 +109,10 @@ fun BlogPage(
                     // 搜索栏
                     SearchBar(
                         query = searchQuery,
-                        onQueryChange = { searchQuery = it }
+                        onQueryChange = { 
+                            searchQuery = it
+                            selectedTag = null // 清除标签选择
+                        }
                     )
                     
                     Spacer(modifier = Modifier.height(16.dp))
@@ -117,14 +121,45 @@ fun BlogPage(
                     CategorySelector(
                         categories = categories,
                         selectedCategory = selectedCategory,
-                        onCategorySelect = { selectedCategory = it }
+                        onCategorySelect = { 
+                            selectedCategory = it
+                            selectedTag = null // 清除标签选择
+                        }
                     )
+
+                    // 显示选中的标签
+                    if (selectedTag != null) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Surface(
+                            color = MaterialTheme.colors.primary.copy(alpha = 0.1f),
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "标签: $selectedTag",
+                                    style = MaterialTheme.typography.body2,
+                                    color = MaterialTheme.colors.primary
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                TextButton(
+                                    onClick = { selectedTag = null }
+                                ) {
+                                    Text("清除", color = MaterialTheme.colors.primary)
+                                }
+                            }
+                        }
+                    }
                     
                     Spacer(modifier = Modifier.height(24.dp))
                     
                     // 博客列表
                     val filteredPosts = posts.filter {
                         (selectedCategory == null || it.category == selectedCategory?.name) &&
+                        (selectedTag == null || it.tags.contains(selectedTag)) &&
                         (searchQuery.isEmpty() || it.title.contains(searchQuery, ignoreCase = true) ||
                             it.summary.contains(searchQuery, ignoreCase = true))
                     }
@@ -135,6 +170,11 @@ fun BlogPage(
                         onEditClick = { post ->
                             currentEditPost = post
                             isEditorVisible = true
+                        },
+                        onTagClick = { tag ->
+                            selectedTag = tag
+                            searchQuery = "" // 清除搜索
+                            selectedCategory = null // 清除分类选择
                         }
                     )
                 }
@@ -227,7 +267,8 @@ private fun CategoryChip(
 private fun BlogList(
     posts: List<BlogPost>,
     onPostClick: (String) -> Unit,
-    onEditClick: (BlogPost) -> Unit
+    onEditClick: (BlogPost) -> Unit,
+    onTagClick: (String) -> Unit
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -236,7 +277,8 @@ private fun BlogList(
             BlogCard(
                 post = post,
                 onClick = { onPostClick(post.id) },
-                onEditClick = { onEditClick(post) }
+                onEditClick = { onEditClick(post) },
+                onTagClick = onTagClick
             )
         }
     }
@@ -246,51 +288,23 @@ private fun BlogList(
 private fun BlogCard(
     post: BlogPost,
     onClick: () -> Unit,
-    onEditClick: () -> Unit
+    onEditClick: () -> Unit,
+    onTagClick: (String) -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
         elevation = 4.dp
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = post.title,
-                    style = MaterialTheme.typography.h6,
-                    fontWeight = FontWeight.Bold
-                )
-                
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    TextButton(
-                        onClick = { 
-                            onEditClick()
-                        },
-                        modifier = Modifier.clickable(
-                            enabled = true,
-                            onClickLabel = "Edit",
-                            onClick = {
-                                onEditClick()
-                            },
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() }
-                        )
-                    ) {
-                        Text("编辑")
-                    }
-                    CategoryLabel(post.category)
-                }
-            }
+            Text(
+                text = post.title,
+                style = MaterialTheme.typography.h6,
+                fontWeight = FontWeight.Bold
+            )
             
             Spacer(modifier = Modifier.height(8.dp))
             
@@ -307,50 +321,40 @@ private fun BlogCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // 标签列表
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     post.tags.take(3).forEach { tag ->
-                        TagChip(tag)
+                        Surface(
+                            color = MaterialTheme.colors.primary.copy(alpha = 0.1f),
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier.clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) { onTagClick(tag) }
+                        ) {
+                            Text(
+                                text = tag,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                style = MaterialTheme.typography.caption,
+                                color = MaterialTheme.colors.primary
+                            )
+                        }
+                    }
+                    if (post.tags.size > 3) {
+                        Text(
+                            text = "+${post.tags.size - 3}",
+                            style = MaterialTheme.typography.caption,
+                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                        )
                     }
                 }
                 
-                Text(
-                    text = "${post.readingTime} min read",
-                    style = MaterialTheme.typography.caption,
-                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
-                )
+                TextButton(onClick = onEditClick) {
+                    Text("编辑")
+                }
             }
         }
-    }
-}
-
-@Composable
-private fun CategoryLabel(category: String) {
-    Surface(
-        color = MaterialTheme.colors.primary.copy(alpha = 0.1f),
-        shape = RoundedCornerShape(12.dp)
-    ) {
-        Text(
-            text = category,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-            style = MaterialTheme.typography.caption,
-            color = MaterialTheme.colors.primary
-        )
-    }
-}
-
-@Composable
-private fun TagChip(tag: String) {
-    Surface(
-        color = MaterialTheme.colors.secondary.copy(alpha = 0.1f),
-        shape = RoundedCornerShape(8.dp)
-    ) {
-        Text(
-            text = "#$tag",
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            style = MaterialTheme.typography.caption,
-            color = MaterialTheme.colors.secondary
-        )
     }
 } 
