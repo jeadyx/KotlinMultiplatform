@@ -46,6 +46,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import cn.kotlinmultiplatform.jeady.icons.action.Publish
 import cn.kotlinmultiplatform.jeady.platform.UrlHandler
+import cn.kotlinmultiplatform.jeady.service.ProductService
 import kotlinmultiplatform.composeapp.generated.resources.Res
 import kotlinmultiplatform.composeapp.generated.resources.app_logo
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -108,29 +109,7 @@ fun ProductsPage(
         )
     }
 
-    val products = remember {
-        listOf(
-            Product(
-                name = "Kotlin Multiplatform 助手",
-                description = "一个帮助开发者快速上手 Kotlin Multiplatform 的工具，提供丰富的示例代码和最佳实践。",
-                type = ProductType.APP,
-                imageUrl = "app_logo",
-                url = "https://github.com/JetBrains/kotlin",
-                tags = listOf("Kotlin", "Multiplatform", "开发工具"),
-                category = "开发工具"
-            ),
-            Product(
-                name = "KMP 开发者社区",
-                description = "专注于 Kotlin Multiplatform 技术的开发者社区，分享经验、解决问题、共同成长。",
-                type = ProductType.WEBSITE,
-                imageUrl = "app_logo",
-                url = "https://kotlinlang.org/docs/multiplatform.html",
-                tags = listOf("社区", "技术交流", "资源分享"),
-                category = "社区网站"
-            ),
-            // Add more products here
-        )
-    }
+    val products = remember { ProductService.getInstance().getAllProducts() }
 
     Row(modifier = Modifier.fillMaxSize()) {
         // Left sidebar
