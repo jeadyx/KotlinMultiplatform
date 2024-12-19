@@ -52,11 +52,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import cn.kotlinmultiplatform.jeady.icons.ArrowDownward
-import cn.kotlinmultiplatform.jeady.icons.ArrowUpward
 import cn.kotlinmultiplatform.jeady.icons.BugReport
 import cn.kotlinmultiplatform.jeady.icons.FilterList
 import cn.kotlinmultiplatform.jeady.icons.Search
+import cn.kotlinmultiplatform.jeady.icons.SortAscending
+import cn.kotlinmultiplatform.jeady.icons.SortDescending
 import cn.kotlinmultiplatform.jeady.model.Bug
 import cn.kotlinmultiplatform.jeady.model.BugPriority
 import cn.kotlinmultiplatform.jeady.model.BugStatus
@@ -159,7 +159,7 @@ fun BugsPage(
                     modifier = Modifier.size(40.dp)
                 ) {
                     Icon(
-                        if (sortAscending) Icons.Filled.ArrowUpward else Icons.Filled.ArrowDownward,
+                        if (sortAscending) Icons.Filled.SortAscending else Icons.Filled.SortDescending,
                         contentDescription = "排序",
                         tint = MaterialTheme.colors.onPrimary
                     )

@@ -38,6 +38,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -48,8 +50,6 @@ import cn.kotlinmultiplatform.jeady.icons.CustomGitHub
 import cn.kotlinmultiplatform.jeady.icons.ForkCount
 import cn.kotlinmultiplatform.jeady.icons.StarCount
 import cn.kotlinmultiplatform.jeady.platform.UrlHandler
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 
 data class OpenSourceProject(
     val id: String,
@@ -279,7 +279,7 @@ fun OpenSourcePage(urlHandler: UrlHandler) {
             OpenSourceProject(
                 id = "ksp",
                 name = "Kotlin Symbol Processing",
-                description = "Kotlin 的符号��理 API，用于生成代码。",
+                description = "Kotlin 的符号处理 API，用于生成代码。",
                 language = "Kotlin",
                 stars = 3200,
                 forks = 280,

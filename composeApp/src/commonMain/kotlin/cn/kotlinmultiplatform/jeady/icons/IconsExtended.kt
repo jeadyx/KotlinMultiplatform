@@ -664,15 +664,15 @@ val Icons.Filled.NewReleases: ImageVector
                 close()
                 moveTo(13f, 17f)
                 horizontalLineToRelative(-2f)
-                verticalLineToRelative(-2f)
-                horizontalLineToRelative(2f)
-                verticalLineToRelative(2f)
+                verticalLineTo(15f)
+                horizontalLineTo(13f)
+                verticalLineTo(17f)
                 close()
                 moveTo(13f, 13f)
                 horizontalLineToRelative(-2f)
-                verticalLineToRelative(-6f)
-                horizontalLineToRelative(2f)
-                verticalLineToRelative(6f)
+                verticalLineTo(7f)
+                horizontalLineTo(13f)
+                verticalLineTo(13f)
                 close()
             }
         }
@@ -708,9 +708,9 @@ val Icons.Filled.Announcement: ImageVector
                 close()
                 moveTo(13f, 15f)
                 horizontalLineToRelative(-2f)
-                verticalLineToRelative(-2f)
-                horizontalLineToRelative(2f)
-                verticalLineToRelative(2f)
+                verticalLineTo(13f)
+                horizontalLineTo(13f)
+                verticalLineTo(15f)
                 close()
             }
         }
@@ -868,7 +868,7 @@ val Icons.Filled.Psychology: ImageVector
         _psychology = materialIcon(name = "Filled.Psychology") {
             materialPath {
                 moveTo(13f, 8.57f)
-                curveToRelative(-0.24f, 0f, -0.43f, 0.19f, -0.43f, 0.43f)
+                curveToRelative(0f, 0f, -0.24f, 0.19f, -0.43f, 0.43f)
                 verticalLineToRelative(1.28f)
                 curveToRelative(0f, 0.24f, 0.19f, 0.43f, 0.43f, 0.43f)
                 reflectiveCurveToRelative(0.43f, -0.19f, 0.43f, -0.43f)
@@ -1059,8 +1059,8 @@ public val Icons.Filled.Transform: ImageVector
                 verticalLineTo(8.0f)
                 horizontalLineTo(2.0f)
                 verticalLineTo(2.0f)
-                horizontalLineTo(18.0f)
-                verticalLineTo(10.0f)
+                horizontalLineToRelative(18.0f)
+                verticalLineToRelative(10.0f)
                 close()
                 moveTo(14.0f, 22.0f)
                 horizontalLineToRelative(-2.0f)
@@ -1086,7 +1086,7 @@ public val Icons.Filled.Transform: ImageVector
                 horizontalLineTo(2.0f)
                 verticalLineTo(6.0f)
                 horizontalLineTo(14.0f)
-                verticalLineTo(10.0f)
+                verticalLineToRelative(10.0f)
                 close()
                 moveTo(10.0f, 22.0f)
                 horizontalLineTo(8.0f)
@@ -1425,15 +1425,15 @@ public val Icons.Filled.Link: ImageVector
             materialPath {
                 moveTo(3.9f, 12f)
                 curveToRelative(0f, -1.71f, 1.39f, -3.1f, 3.1f, -3.1f)
-                horizontalLineToRelative(4f)
+                horizontalLineTo(4f)
                 verticalLineTo(7f)
                 horizontalLineTo(7f)
-                curveToRelative(-2.76f, 0f, -5f, 2.24f, -5f, 5f)
-                reflectiveCurveToRelative(2.24f, 5f, 5f, 5f)
-                horizontalLineToRelative(4f)
-                verticalLineTo(-1.9f)
+                curveTo(4.24f, 7f, 2f, 9.24f, 2f, 12f)
+                reflectiveCurveTo(4.24f, 17f, 7f, 17f)
+                horizontalLineTo(11f)
+                verticalLineTo(15.1f)
                 horizontalLineTo(7f)
-                curveToRelative(-1.71f, 0f, -3.1f, -1.39f, -3.1f, -3.1f)
+                curveTo(5.29f, 15.1f, 3.9f, 13.71f, 3.9f, 12f)
                 close()
                 moveTo(8f, 13f)
                 horizontalLineTo(16f)
@@ -1661,7 +1661,7 @@ public val Icons.Filled.PhotoLibrary: ImageVector
                 curveToRelative(0f, -1.1f, -0.9f, -2f, -2f, -2f)
                 horizontalLineTo(8f)
                 curveToRelative(-1.1f, 0f, -2f, 0.9f, -2f, 2f)
-                verticalLineToRelative(12f)
+                verticalLineTo(12f)
                 curveToRelative(0f, 1.1f, 0.9f, 2f, 2f, 2f)
                 horizontalLineToRelative(12f)
                 curveToRelative(1.1f, 0f, 2f, -0.9f, 2f, -2f)
@@ -1673,12 +1673,11 @@ public val Icons.Filled.PhotoLibrary: ImageVector
                 lineTo(12f, 11f)
                 lineTo(20f, 6f)
                 verticalLineTo(8f)
-                close()
                 moveTo(2f, 6f)
-                verticalLineToRelative(14f)
+                verticalLineTo(14f)
                 curveToRelative(0f, 1.1f, 0.9f, 2f, 2f, 2f)
                 horizontalLineToRelative(14f)
-                verticalLineToRelative(-2f)
+                verticalLineTo(-2f)
                 horizontalLineTo(4f)
                 verticalLineTo(6f)
                 horizontalLineTo(2f)
@@ -1701,7 +1700,7 @@ public val Icons.Filled.PictureAsPdf: ImageVector
                 curveToRelative(0f, -1.1f, -0.9f, -2f, -2f, -2f)
                 horizontalLineTo(12f)
                 curveToRelative(1.1f, 0f, 2f, 0.9f, 2f, 2f)
-                verticalLineToRelative(12f)
+                verticalLineTo(12f)
                 curveToRelative(0f, 1.1f, 0.9f, 2f, 2f, 2f)
                 horizontalLineToRelative(12f)
                 curveToRelative(1.1f, 0f, 2f, -0.9f, 2f, -2f)
@@ -1716,7 +1715,7 @@ public val Icons.Filled.PictureAsPdf: ImageVector
                 verticalLineTo(7f)
                 horizontalLineTo(10f)
                 curveToRelative(0.83f, 0f, 1.5f, 0.67f, 1.5f, 1.5f)
-                verticalLineToRelative(1f)
+                verticalLineTo(1f)
                 close()
                 moveTo(13f, 11.5f)
                 horizontalLineTo(11.5f)
@@ -1724,7 +1723,7 @@ public val Icons.Filled.PictureAsPdf: ImageVector
                 horizontalLineTo(10f)
                 verticalLineTo(7f)
                 horizontalLineTo(3f)
-                verticalLineToRelative(1.5f)
+                verticalLineTo(1.5f)
                 horizontalLineTo(11.5f)
                 verticalLineTo(1.5f)
                 horizontalLineTo(13f)
@@ -1738,14 +1737,14 @@ public val Icons.Filled.PictureAsPdf: ImageVector
                 verticalLineTo(7f)
                 horizontalLineTo(3f)
                 curveToRelative(0.83f, 0f, 1.5f, 0.67f, 1.5f, 1.5f)
-                verticalLineToRelative(2f)
+                verticalLineTo(2f)
                 close()
                 moveTo(4f, 6f)
                 horizontalLineTo(2f)
                 verticalLineTo(14f)
                 curveToRelative(0f, 1.1f, 0.9f, 2f, 2f, 2f)
                 horizontalLineToRelative(14f)
-                verticalLineToRelative(-2f)
+                verticalLineTo(-2f)
                 horizontalLineTo(4f)
                 verticalLineTo(6f)
                 horizontalLineTo(2f)
@@ -1765,9 +1764,9 @@ public val Icons.Filled.TextFields: ImageVector
             materialPath {
                 moveTo(2.5f, 4f)
                 verticalLineToRelative(3f)
-                horizontalLineToRelative(5f)
+                horizontalLineTo(5f)
                 verticalLineToRelative(12f)
-                horizontalLineToRelative(3f)
+                horizontalLineTo(3f)
                 verticalLineTo(7f)
                 horizontalLineTo(5f)
                 verticalLineTo(4f)
@@ -1776,11 +1775,11 @@ public val Icons.Filled.TextFields: ImageVector
                 moveTo(21.5f, 9f)
                 horizontalLineToRelative(-9f)
                 verticalLineToRelative(3f)
-                horizontalLineToRelative(3f)
+                horizontalLineTo(3f)
                 verticalLineToRelative(7f)
-                horizontalLineToRelative(3f)
+                horizontalLineTo(3f)
                 verticalLineTo(-7f)
-                horizontalLineToRelative(3f)
+                horizontalLineTo(3f)
                 verticalLineTo(9f)
                 close()
             }
@@ -1829,22 +1828,22 @@ public val Icons.Filled.Video: ImageVector
                 curveToRelative(0f, -0.55f, -0.45f, -1f, -1f, -1f)
                 horizontalLineTo(4f)
                 curveToRelative(-0.55f, 0f, -1f, 0.45f, -1f, 1f)
-                verticalLineToRelative(10f)
+                verticalLineTo(10f)
                 curveToRelative(0f, 0.55f, 0.45f, 1f, 1f, 1f)
                 horizontalLineToRelative(12f)
                 curveToRelative(0.55f, 0f, 1f, -0.45f, 1f, -1f)
-                verticalLineToRelative(-3.5f)
+                verticalLineTo(-3.5f)
                 lineTo(21f, 14f)
                 lineTo(17f, 14f)
                 lineToRelative(-4f, 4f)
-                verticalLineToRelative(-11f)
+                verticalLineTo(-11f)
                 lineTo(4f, 6f)
                 lineTo(8.6f, 1.54f)
                 lineTo(6.71f, 4.72f)
                 lineToRelative(-3.61f, 0.81f)
                 lineToRelative(0.34f, 3.68f)
                 lineTo(1f, 12f)
-                lineToRelative(2.44f, 2.78f)
+                lineTo(2.44f, 2.78f)
                 lineToRelative(-0.34f, 3.69f)
                 lineTo(3.61f, 21f)
                 lineTo(1.89f, 3.18f)
@@ -1872,7 +1871,7 @@ public val Icons.Filled.Mic: ImageVector
                 lineTo(15f, 5f)
                 curveToRelative(0f, -1.66f, -1.34f, -3f, -3f, -3f)
                 reflectiveCurveToRelative(-3f, 1.34f, -3f, 3f)
-                verticalLineToRelative(6f)
+                verticalLineTo(6f)
                 curveToRelative(0f, 1.66f, 1.34f, 3f, 3f, 3f)
                 close()
                 moveTo(17.3f, 11f)
@@ -1882,7 +1881,7 @@ public val Icons.Filled.Mic: ImageVector
                 curveToRelative(0f, 3.41f, 2.72f, 6.23f, 6f, 6.72f)
                 verticalLineTo(21f)
                 horizontalLineTo(19f)
-                verticalLineToRelative(-3.28f)
+                verticalLineTo(-3.28f)
                 curveToRelative(3.28f, -0.48f, 6f, -3.3f, 6f, -6.72f)
                 horizontalLineToRelative(-1.7f)
                 close()
@@ -1900,14 +1899,14 @@ public val Icons.Filled.Slideshow: ImageVector
         _slideshow = materialIcon(name = "Slideshow") {
             materialPath {
                 moveTo(10f, 8f)
-                verticalLineToRelative(8f)
+                verticalLineTo(8f)
                 lineToRelative(5f, -4f)
                 lineToRelative(-5f, -4f)
                 close()
                 moveTo(19f, 3f)
                 horizontalLineTo(5f)
                 curveToRelative(-1.1f, 0f, -2f, 0.9f, -2f, 2f)
-                verticalLineToRelative(14f)
+                verticalLineTo(14f)
                 curveToRelative(0f, 1.1f, 0.9f, 2f, 2f, 2f)
                 horizontalLineToRelative(14f)
                 curveToRelative(1.1f, 0f, 2f, -0.9f, 2f, -2f)
@@ -2018,17 +2017,150 @@ public val Icons.Filled.Music: ImageVector
         _music = materialIcon(name = "Music") {
             materialPath {
                 moveTo(12f, 3f)
-                verticalLineToRelative(10.55f)
+                verticalLineTo(10.55f)
                 curveToRelative(-0.59f, -0.34f, -1.27f, -0.55f, -2f, -0.55f)
                 curveToRelative(-2.21f, 0f, -4f, 1.79f, -4f, 4f)
                 reflectiveCurveToRelative(1.79f, 4f, 4f, 4f)
                 reflectiveCurveToRelative(4f, -1.79f, 4f, -4f)
                 verticalLineTo(7f)
-                horizontalLineTo(4f)
-                verticalLineTo(-6f)
+                horizontalLineTo(-6f)
                 close()
             }
         }
         return _music!!
     }
 private var _music: ImageVector? = null
+
+val Icons.Filled.BrokenImage: ImageVector
+    get() {
+        if (_brokenImage != null) {
+            return _brokenImage!!
+        }
+        _brokenImage = materialIcon(name = "Filled.BrokenImage") {
+            materialPath {
+                moveTo(21.0f, 5.0f)
+                verticalLineToRelative(6.59f)
+                lineToRelative(-3.0f, -3.0f)
+                lineToRelative(-4.0f, 4.0f)
+                lineToRelative(-4.0f, -4.0f)
+                lineToRelative(-4.0f, 4.0f)
+                verticalLineTo(-6.59f)
+                curveToRelative(0.0f, -0.55f, 0.45f, -1.0f, 1.0f, -1.0f)
+                horizontalLineToRelative(13.0f)
+                curveToRelative(0.55f, 0.0f, 1.0f, 0.45f, 1.0f, 1.0f)
+                close()
+                moveTo(21.0f, 15.0f)
+                verticalLineToRelative(2.0f)
+                curveToRelative(0.0f, 0.55f, -0.45f, 1.0f, -1.0f, 1.0f)
+                horizontalLineToRelative(-13.0f)
+                curveToRelative(-0.55f, 0.0f, -1.0f, -0.45f, -1.0f, -1.0f)
+                verticalLineTo(-2.0f)
+                lineToRelative(4.0f, -4.0f)
+                lineToRelative(4.0f, 4.0f)
+                lineToRelative(4.0f, -4.0f)
+                lineToRelative(3.0f, 3.0f)
+                close()
+            }
+        }
+        return _brokenImage!!
+    }
+private var _brokenImage: ImageVector? = null
+
+val Icons.Filled.Security: ImageVector
+    get() {
+        if (_security != null) {
+            return _security!!
+        }
+        _security = materialIcon(name = "Filled.Security") {
+            materialPath {
+                moveTo(12.0f, 1.0f)
+                lineTo(3.0f, 5.0f)
+                verticalLineToRelative(6.0f)
+                curveToRelative(0.0f, 5.55f, 3.84f, 10.74f, 9.0f, 12.0f)
+                curveToRelative(5.16f, -1.26f, 9.0f, -6.45f, 9.0f, -12.0f)
+                verticalLineTo(5f)
+                lineTo(12.0f, 1.0f)
+                close()
+                moveTo(12.0f, 11.99f)
+                horizontalLineToRelative(7.0f)
+                curveToRelative(-0.53f, 4.12f, -3.28f, 7.79f, -7.0f, 8.94f)
+                verticalLineTo(12f)
+                horizontalLineTo(5.0f)
+                verticalLineTo(6.3f)
+                lineTo(7.0f, 12.0f)
+                lineToRelative(5.0f, -3.11f)
+                verticalLineTo(8.8f)
+                close()
+            }
+        }
+        return _security!!
+    }
+private var _security: ImageVector? = null
+
+public val Icons.Filled.SortAscending: ImageVector
+    get() {
+        if (_sortAscending != null) {
+            return _sortAscending!!
+        }
+        _sortAscending = materialIcon(name = "Filled.SortAscending") {
+            materialPath {
+                // Modern ascending sort icon with three bars increasing in length
+                moveTo(4f, 18f)
+                horizontalLineTo(16f)
+                verticalLineTo(16f)
+                horizontalLineTo(4f)
+                verticalLineTo(18f)
+                close()
+
+                moveTo(4f, 13f)
+                horizontalLineTo(13f)
+                verticalLineTo(11f)
+                horizontalLineTo(4f)
+                verticalLineTo(13f)
+                close()
+
+                moveTo(4f, 8f)
+                horizontalLineTo(10f)
+                verticalLineTo(6f)
+                horizontalLineTo(4f)
+                verticalLineTo(8f)
+                close()
+            }
+        }
+        return _sortAscending!!
+    }
+private var _sortAscending: ImageVector? = null
+
+public val Icons.Filled.SortDescending: ImageVector
+    get() {
+        if (_sortDescending != null) {
+            return _sortDescending!!
+        }
+        _sortDescending = materialIcon(name = "Filled.SortDescending") {
+            materialPath {
+                // Modern descending sort icon with three bars decreasing in length
+                moveTo(4f, 18f)
+                horizontalLineTo(10f)
+                verticalLineTo(16f)
+                horizontalLineTo(4f)
+                verticalLineTo(18f)
+                close()
+
+                moveTo(4f, 13f)
+                horizontalLineTo(13f)
+                verticalLineTo(11f)
+                horizontalLineTo(4f)
+                verticalLineTo(13f)
+                close()
+
+                moveTo(4f, 8f)
+                horizontalLineTo(16f)
+                verticalLineTo(6f)
+                horizontalLineTo(4f)
+                verticalLineTo(8f)
+                close()
+            }
+        }
+        return _sortDescending!!
+    }
+private var _sortDescending: ImageVector? = null

@@ -38,8 +38,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import cn.kotlinmultiplatform.jeady.components.AppDialog
 import cn.kotlinmultiplatform.jeady.model.Bug
-import cn.kotlinmultiplatform.jeady.model.BugPriority
-import cn.kotlinmultiplatform.jeady.model.BugStatus
 import cn.kotlinmultiplatform.jeady.pages.AboutPage
 import cn.kotlinmultiplatform.jeady.pages.BlogPage
 import cn.kotlinmultiplatform.jeady.pages.BugDetailPage
@@ -52,6 +50,7 @@ import cn.kotlinmultiplatform.jeady.pages.RecommendationsPage
 import cn.kotlinmultiplatform.jeady.pages.RegisterPage
 import cn.kotlinmultiplatform.jeady.pages.ToolboxPage
 import cn.kotlinmultiplatform.jeady.platform.getPlatformUrlHandler
+import cn.kotlinmultiplatform.jeady.service.BugService
 import cn.kotlinmultiplatform.jeady.utils.IdGenerator
 import kotlinmultiplatform.composeapp.generated.resources.NotoSansSC_Bold
 import kotlinmultiplatform.composeapp.generated.resources.NotoSansSC_Regular
@@ -89,9 +88,11 @@ fun App() {
         var selectedTab by remember { mutableStateOf(0) }
         var showLoginDialog by remember { mutableStateOf(false) }
         var showRegisterDialog by remember { mutableStateOf(false) }
-        var bugs by remember { mutableStateOf<List<Bug>>(getSampleBugs()) }
         var showBugEditDialog by remember { mutableStateOf(false) }
         var selectedBug by remember { mutableStateOf<Bug?>(null) }
+        
+        val bugService = remember { BugService.getInstance() }
+        var bugs by remember { mutableStateOf(bugService.getAllBugs()) }
 
         // 主界面
         when (currentScreen) {
@@ -122,7 +123,8 @@ fun App() {
                         showBugEditDialog = true
                     },
                     onBugDelete = { bugId ->
-                        bugs = bugs.filter { bug -> bug.id != bugId }
+                        bugService.deleteBug(bugId)
+                        bugs = bugService.getAllBugs()
                     },
                     onBugAdd = {
                         selectedBug = null
@@ -213,9 +215,7 @@ fun App() {
                             tags = tags,
                             updatedAt = Clock.System.now().toEpochMilliseconds()
                         )
-                        bugs = bugs.map { bug -> 
-                            if (bug.id == selectedBug!!.id) updatedBug else bug 
-                        }
+                        bugService.updateBug(updatedBug)
                         // 更新 selectedBug，这样详情页面也会更新
                         selectedBug = updatedBug
                     } else {
@@ -229,8 +229,9 @@ fun App() {
                             createdAt = Clock.System.now().toEpochMilliseconds(),
                             updatedAt = Clock.System.now().toEpochMilliseconds()
                         )
-                        bugs = bugs + newBug
+                        bugService.addBug(newBug)
                     }
+                    bugs = bugService.getAllBugs()
                     showBugEditDialog = false
                 }
             )
@@ -372,25 +373,3 @@ private fun TabItem(
         )
     }
 }
-
-private fun getSampleBugs(): List<Bug> = listOf(
-    Bug(
-        id = IdGenerator.generateId(),
-        title = "Kotlin Coroutines 内存泄漏问题",
-        description = """
-            在 Android 应用中使用 Kotlin Coroutines 时，如果在 ViewModel 中启动协程但没有正确取消，
-            会导致内存泄漏。特别是在使用 viewModelScope 时，需要确保所有协程在 ViewModel 清理时都被取消。
-            
-            复现步骤：
-            1. 在 ViewModel 中使用 GlobalScope 启动协程
-            2. 旋转屏幕或返回上一页面
-            3. 观察内存使用情况
-        """.trimIndent(),
-        status = BugStatus.OPEN,
-        priority = BugPriority.HIGH,
-        createdAt = Clock.System.now().toEpochMilliseconds(),
-        updatedAt = Clock.System.now().toEpochMilliseconds(),
-        tags = listOf("coroutines", "memory-leak", "android")
-    ),
-    // ... 其他示例 Bug 保持不变 ...
-)
