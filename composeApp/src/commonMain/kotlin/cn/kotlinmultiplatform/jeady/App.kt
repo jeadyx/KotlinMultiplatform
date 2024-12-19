@@ -240,7 +240,7 @@ fun App() {
                 )
             }
             Screen.About -> {
-                AboutPage()
+                AboutPage(urlHandler)
             }
         }
 
@@ -498,7 +498,7 @@ fun Navigation(
                         }
                     )
                 }
-                4 -> AboutPage()
+                4 -> AboutPage(urlHandler)
             }
         }
     }

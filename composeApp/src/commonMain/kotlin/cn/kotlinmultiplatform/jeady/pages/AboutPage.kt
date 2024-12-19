@@ -1,6 +1,5 @@
 package cn.kotlinmultiplatform.jeady.pages
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,14 +20,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -39,12 +38,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import cn.kotlinmultiplatform.jeady.components.PlatformImage
-import cn.kotlinmultiplatform.jeady.icons.CustomCode
 import cn.kotlinmultiplatform.jeady.icons.social.SocialIcons
+import cn.kotlinmultiplatform.jeady.icons.tech.TechIcons
+import cn.kotlinmultiplatform.jeady.platform.UrlHandler
 import kotlinmultiplatform.composeapp.generated.resources.Res
 import kotlinmultiplatform.composeapp.generated.resources.composemultiplatform
+import kotlinmultiplatform.composeapp.generated.resources.github
+import org.jetbrains.compose.resources.painterResource
 
 data class TeamMember(
     val name: String,
@@ -68,7 +73,7 @@ data class AppVersion(
 )
 
 @Composable
-fun AboutPage() {
+fun AboutPage(urlHandler: UrlHandler) {
     val teamMembers = remember {
         listOf(
             TeamMember(
@@ -133,7 +138,7 @@ fun AboutPage() {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(280.dp)
+                .height(320.dp)
         ) {
             // 渐变背景
             Box(
@@ -191,7 +196,6 @@ fun AboutPage() {
                         modifier = Modifier.fillMaxSize()
                     )
                 }
-
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
@@ -208,78 +212,94 @@ fun AboutPage() {
                     modifier = Modifier.padding(top = 8.dp)
                 )
 
-                // 版本信息
-                VersionBadgeCompact(appVersion)
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    // GitHub 链接
+                    Button(
+                        onClick = {
+                            urlHandler.openUrl("https://github.com/jeadyx/kotlinmultiplatform.cn")
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color.Black.copy(alpha = 0.9f),
+                            contentColor = Color.White
+                        ),
+                        modifier = Modifier
+                            .padding(top = 16.dp)
+                            .height(40.dp),
+                        shape = RoundedCornerShape(20.dp),
+                        elevation = ButtonDefaults.elevation(
+                            defaultElevation = 0.dp,
+                            pressedElevation = 0.dp
+                        )
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(Res.drawable.github),
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Text(
+                                text = "GitHub",
+                                style = MaterialTheme.typography.button
+                            )
+                        }
+                    }
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("v${appVersion.version}", color = Color.White, fontSize = 12.sp)
+                        Box(Modifier.size(4.dp).background(Color.White, CircleShape))
+                        when (appVersion.status) {
+                            "Alpha" -> {
+                                Text(
+                                    text = "Alpha",
+                                    color = Color.Red,
+                                    fontSize = 12.sp
+                                )
+                            }
+                            "Beta" -> {
+                                Text(
+                                    text = "Beta",
+                                    color = Color.Yellow,
+                                    fontSize = 12.sp
+                                )
+                            }
+
+                            "Stable" -> {
+                                Text(
+                                    text = "Stable",
+                                    color = Color.Green,
+                                    fontSize = 12.sp
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
 
         // 主要内容区域
         Column(
             modifier = Modifier
-                .offset(y = (-30).dp)
                 .fillMaxWidth()
+                .offset { IntOffset(0, 30) }
                 .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
                 .background(MaterialTheme.colors.surface)
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // 关于本站
-            AboutSection()
+            // 技术栈
+            TechnologySection(technologies)
             
             // 社交媒体
             SocialSection()
             
-            // 技术栈
-            TechnologySection(technologies)
-            
             // 团队成员
             TeamSection(teamMembers)
-        }
-    }
-}
-
-@Composable
-private fun VersionBadgeCompact(version: AppVersion) {
-    Card(
-        modifier = Modifier
-            .padding(top = 16.dp),
-        shape = RoundedCornerShape(24.dp),
-        backgroundColor = Color.White.copy(alpha = 0.15f),
-        elevation = 0.dp
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Info,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size(16.dp)
-            )
-            
-            Text(
-                text = "v${version.version}",
-                color = Color.White,
-                style = MaterialTheme.typography.subtitle2
-            )
-            
-            Text(
-                text = "•",
-                color = Color.White.copy(alpha = 0.5f)
-            )
-            
-            Text(
-                text = version.status,
-                color = when(version.status) {
-                    "Beta" -> Color(0xFFFFA726)
-                    "Alpha" -> Color(0xFFEF5350)
-                    else -> Color(0xFF66BB6A)
-                },
-                style = MaterialTheme.typography.caption,
-                fontWeight = FontWeight.Medium
-            )
         }
     }
 }
@@ -315,7 +335,7 @@ private fun AboutSection() {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    BulletPoint("跨平台博客系统")
+                    BulletPoint("跨平台客系统")
                     BulletPoint("支持 Android、iOS、Desktop 和 Web")
                     BulletPoint("现代化的 Material Design 3 界面")
                     BulletPoint("响应式设计，适配多种屏幕尺寸")
@@ -399,39 +419,53 @@ private fun TechnologyCard(
     technology: Technology,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier,
-        elevation = 2.dp,
-        backgroundColor = technology.color.copy(alpha = 0.1f)
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(12.dp))
+            .background(technology.color.copy(alpha = 0.1f))
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+        // 图标容器
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(CircleShape)
+                .background(Color.White.copy(alpha = 0.5f)),
+            contentAlignment = Alignment.Center
         ) {
             Icon(
-                Icons.Filled.CustomCode,
+                painter = when(technology.name) {
+                    "Kotlin Multiplatform" -> TechIcons.kotlin()
+                    "Jetpack Compose" -> TechIcons.compose()
+                    else -> TechIcons.material()
+                },
                 contentDescription = null,
                 tint = technology.color,
-                modifier = Modifier.size(32.dp)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = technology.name,
-                style = MaterialTheme.typography.subtitle1,
-                fontWeight = FontWeight.Bold,
-                color = technology.color
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = technology.description,
-                style = MaterialTheme.typography.caption,
-                color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                modifier = Modifier.size(24.dp)
             )
         }
+        
+        Spacer(modifier = Modifier.height(12.dp))
+        
+        Text(
+            text = technology.name,
+            style = MaterialTheme.typography.subtitle2,
+            fontWeight = FontWeight.Medium,
+            textAlign = TextAlign.Center,
+            color = technology.color
+        )
+        
+        Spacer(modifier = Modifier.height(4.dp))
+        
+        Text(
+            text = technology.description,
+            style = MaterialTheme.typography.caption,
+            color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+            modifier = Modifier.padding(horizontal = 4.dp)
+        )
     }
 }
 
@@ -547,125 +581,6 @@ private fun ContactInfo(
             style = MaterialTheme.typography.caption,
             color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
         )
-    }
-}
-
-@Composable
-private fun VersionBadge(version: AppVersion) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        shape = RoundedCornerShape(16.dp),
-        backgroundColor = MaterialTheme.colors.surface,
-        elevation = 0.dp,
-        border = BorderStroke(1.dp, MaterialTheme.colors.primary.copy(alpha = 0.1f))
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            // 版本号和状态行
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // 版本号部分
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Info,
-                        contentDescription = null,
-                        tint = MaterialTheme.colors.primary,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Text(
-                        text = "版本信息",
-                        style = MaterialTheme.typography.subtitle1,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colors.onSurface
-                    )
-                }
-
-                // 状态标签
-                Card(
-                    shape = RoundedCornerShape(12.dp),
-                    backgroundColor = when(version.status) {
-                        "Beta" -> Color(0xFFFFA726).copy(alpha = 0.1f)
-                        "Alpha" -> Color(0xFFEF5350).copy(alpha = 0.1f)
-                        else -> Color(0xFF66BB6A).copy(alpha = 0.1f)
-                    },
-                    elevation = 0.dp
-                ) {
-                    Text(
-                        text = version.status,
-                        style = MaterialTheme.typography.caption,
-                        color = when(version.status) {
-                            "Beta" -> Color(0xFFFFA726)
-                            "Alpha" -> Color(0xFFEF5350)
-                            else -> Color(0xFF66BB6A)
-                        },
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // 详细信息行
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                // 版本号
-                Column {
-                    Text(
-                        text = "版本号",
-                        style = MaterialTheme.typography.caption,
-                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
-                    )
-                    Text(
-                        text = "v${version.version}",
-                        style = MaterialTheme.typography.subtitle2,
-                        color = MaterialTheme.colors.primary,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-
-                // 构建号
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = "构建号",
-                        style = MaterialTheme.typography.caption,
-                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
-                    )
-                    Text(
-                        text = "#${version.buildNumber}",
-                        style = MaterialTheme.typography.subtitle2,
-                        color = MaterialTheme.colors.primary,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-
-                // 更新日期
-                Column(horizontalAlignment = Alignment.End) {
-                    Text(
-                        text = "最后更新",
-                        style = MaterialTheme.typography.caption,
-                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
-                    )
-                    Text(
-                        text = version.lastUpdated,
-                        style = MaterialTheme.typography.subtitle2,
-                        color = MaterialTheme.colors.onSurface,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-            }
-        }
     }
 }
 
