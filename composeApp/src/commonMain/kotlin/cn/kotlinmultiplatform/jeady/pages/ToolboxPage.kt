@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -17,6 +18,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -34,14 +37,19 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import cn.kotlinmultiplatform.jeady.icons.Brush
 import cn.kotlinmultiplatform.jeady.icons.Chat
@@ -440,6 +448,7 @@ fun ToolboxPage(urlHandler: UrlHandler) {
 
     var showSearch by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
+    val focusRequester = remember { FocusRequester() }
 
     // Group tools by category
     val filteredTools = if (searchQuery.isEmpty()) {
@@ -561,20 +570,25 @@ fun ToolboxPage(urlHandler: UrlHandler) {
                 .align(Alignment.TopEnd)
                 .padding(16.dp),
             elevation = if (showSearch) 8.dp else 0.dp,
-            shape = RoundedCornerShape(8.dp)
+            shape = RoundedCornerShape(24.dp),
+            color = MaterialTheme.colors.surface
         ) {
             Row(
                 modifier = Modifier
-                    .padding(4.dp)
-                    .width(if (showSearch) 320.dp else 40.dp),
+                    .padding(horizontal = if (showSearch) 8.dp else 0.dp)
+                    .width(if (showSearch) 320.dp else 48.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 IconButton(
                     onClick = { 
                         showSearch = !showSearch
-                        if (!showSearch) searchQuery = ""
-                    }
+                        if (!showSearch) {
+                            searchQuery = ""
+                        }
+                    },
+                    modifier = Modifier
+                        .size(48.dp)
                 ) {
                     Icon(
                         imageVector = if (showSearch) Icons.Default.Close else Icons.Default.Search,
@@ -587,15 +601,38 @@ fun ToolboxPage(urlHandler: UrlHandler) {
                     TextField(
                         value = searchQuery,
                         onValueChange = { searchQuery = it },
-                        modifier = Modifier.weight(1f),
-                        placeholder = { Text("搜索工具...") },
+                        modifier = Modifier
+                            .weight(1f)
+                            .focusRequester(focusRequester),
+                        placeholder = { 
+                            Text(
+                                "搜索工具...",
+                                color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                            ) 
+                        },
                         singleLine = true,
                         colors = TextFieldDefaults.textFieldColors(
-                            backgroundColor = MaterialTheme.colors.surface,
+                            backgroundColor = Color.Transparent,
                             focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent
+                            unfocusedIndicatorColor = Color.Transparent,
+                            cursorColor = MaterialTheme.colors.primary
+                        ),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = { 
+                                showSearch = false
+                            }
                         )
                     )
+
+                    LaunchedEffect(showSearch) {
+                        if (showSearch) {
+                            focusRequester.requestFocus()
+                        }
+                    }
                 }
             }
         }
