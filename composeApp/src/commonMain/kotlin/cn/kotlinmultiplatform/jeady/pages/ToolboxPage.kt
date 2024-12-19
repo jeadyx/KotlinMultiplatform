@@ -8,17 +8,24 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Lock
@@ -48,6 +55,7 @@ import cn.kotlinmultiplatform.jeady.icons.Music
 import cn.kotlinmultiplatform.jeady.icons.Palette
 import cn.kotlinmultiplatform.jeady.icons.PhotoLibrary
 import cn.kotlinmultiplatform.jeady.icons.PictureAsPdf
+import cn.kotlinmultiplatform.jeady.icons.Psychology
 import cn.kotlinmultiplatform.jeady.icons.Schedule
 import cn.kotlinmultiplatform.jeady.icons.Slideshow
 import cn.kotlinmultiplatform.jeady.icons.Speed
@@ -466,10 +474,6 @@ fun ToolboxPage(
                 }
             }
 
-            if (showSearch) {
-                // ... existing code ...
-            }
-
             // Main content
             LazyColumn(
                 modifier = Modifier
@@ -489,7 +493,84 @@ fun ToolboxPage(
                 }) { (category, toolsInCategory) ->
                     if (toolsInCategory.isNotEmpty()) {
                         Column {
-                            // ... existing code ...
+                            // Category header with accent color
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = when(category) {
+                                    ToolCategory.DEVELOPMENT -> Color(0xFF2196F3).copy(alpha = 0.1f)
+                                    ToolCategory.DESIGN -> Color(0xFFE91E63).copy(alpha = 0.1f)
+                                    ToolCategory.PRODUCTIVITY -> Color(0xFF4CAF50).copy(alpha = 0.1f)
+                                    ToolCategory.UTILITY -> Color(0xFFFF9800).copy(alpha = 0.1f)
+                                    ToolCategory.AI -> Color(0xFF9C27B0).copy(alpha = 0.1f)
+                                },
+                                modifier = Modifier.padding(bottom = 12.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        val categoryColor = when(category) {
+                                            ToolCategory.DEVELOPMENT -> Color(0xFF2196F3)
+                                            ToolCategory.DESIGN -> Color(0xFFE91E63)
+                                            ToolCategory.PRODUCTIVITY -> Color(0xFF4CAF50)
+                                            ToolCategory.UTILITY -> Color(0xFFFF9800)
+                                            ToolCategory.AI -> Color(0xFF9C27B0)
+                                        }
+                                        
+                                        Icon(
+                                            imageVector = when(category) {
+                                                ToolCategory.DEVELOPMENT -> Icons.Default.Code
+                                                ToolCategory.DESIGN -> Icons.Default.Brush
+                                                ToolCategory.PRODUCTIVITY -> Icons.Default.Speed
+                                                ToolCategory.UTILITY -> Icons.Default.Build
+                                                ToolCategory.AI -> Icons.Default.Psychology
+                                            },
+                                            contentDescription = null,
+                                            tint = categoryColor,
+                                            modifier = Modifier.padding(end = 4.dp)
+                                        )
+
+                                        Text(
+                                            text = when(category) {
+                                                ToolCategory.DEVELOPMENT -> "开发工具"
+                                                ToolCategory.DESIGN -> "设计工具"
+                                                ToolCategory.PRODUCTIVITY -> "生产力工具"
+                                                ToolCategory.UTILITY -> "实用工具"
+                                                ToolCategory.AI -> "AI工具"
+                                            },
+                                            style = MaterialTheme.typography.h6,
+                                            color = categoryColor
+                                        )
+                                    }
+
+                                    Text(
+                                        text = "${toolsInCategory.size}",
+                                        style = MaterialTheme.typography.caption,
+                                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                                    )
+                                }
+                            }
+
+                            // Tools grid for this category
+                            LazyVerticalGrid(
+                                columns = GridCells.Adaptive(minSize = 160.dp),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(16.dp),
+                                modifier = Modifier.heightIn(50.dp, 350.dp),
+                                userScrollEnabled = true,
+                                contentPadding = PaddingValues(horizontal = 16.dp)
+                            ) {
+                                items(toolsInCategory) { tool ->
+                                    ToolCard(tool = tool, onClick = { urlHandler.openUrl(tool.url) })
+                                }
+                            }
                         }
                     }
                 }
