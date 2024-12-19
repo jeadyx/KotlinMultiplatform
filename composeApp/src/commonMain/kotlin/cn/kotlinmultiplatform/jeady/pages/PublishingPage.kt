@@ -44,6 +44,7 @@ import cn.kotlinmultiplatform.jeady.icons.action.Help
 import cn.kotlinmultiplatform.jeady.icons.device.Android
 import cn.kotlinmultiplatform.jeady.icons.device.Apple
 import cn.kotlinmultiplatform.jeady.platform.UrlHandler
+import cn.kotlinmultiplatform.jeady.service.ProductService
 
 data class AppInfo(
     val name: String = "",
@@ -69,6 +70,8 @@ fun PublishingPage(
 ) {
     var selectedPlatform by remember { mutableStateOf<String?>(null) }
     var appInfo by remember { mutableStateOf(AppInfo()) }
+
+    val productService = remember { ProductService.getInstance() }
 
     Scaffold(
         topBar = {
@@ -141,7 +144,19 @@ fun PublishingPage(
 
                 item {
                     Button(
-                        onClick = { /* TODO: Implement publishing logic */ },
+                        onClick = {
+                            val product = Product(
+                                name = appInfo.name,
+                                description = appInfo.description,
+                                type = if (selectedPlatform == "android") ProductType.APP else ProductType.APP,
+                                imageUrl = appInfo.icon,
+                                url = appInfo.website,
+                                tags = listOf(selectedPlatform ?: ""),
+                                category = appInfo.category
+                            )
+                            productService.addProduct(product)
+                            onClose()
+                        },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text("发布应用")
@@ -245,7 +260,7 @@ private fun AppInfoForm(
         OutlinedTextField(
             value = appInfo.website,
             onValueChange = { onAppInfoChange(appInfo.copy(website = it)) },
-            label = { Text("网站") },
+            label = { Text("网") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             keyboardOptions = KeyboardOptions(

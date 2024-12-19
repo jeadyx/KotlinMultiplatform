@@ -11,27 +11,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,11 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import cn.kotlinmultiplatform.jeady.icons.CustomCode
 import cn.kotlinmultiplatform.jeady.icons.CustomGitHub
@@ -64,7 +53,10 @@ data class OpenSourceProject(
 )
 
 @Composable
-fun OpenSourcePage(urlHandler: UrlHandler) {
+fun OpenSourcePage(
+    urlHandler: UrlHandler,
+    onBackClick: () -> Unit
+) {
     val allProjects = remember {
         listOf(
             OpenSourceProject(
@@ -202,7 +194,7 @@ fun OpenSourcePage(urlHandler: UrlHandler) {
             OpenSourceProject(
                 id = "decompose",
                 name = "Decompose",
-                description = "Kotlin Multiplatform 导航和生命周期库。",
+                description = "Kotlin Multiplatform 导��和生命周期库。",
                 language = "Kotlin",
                 stars = 2900,
                 forks = 180,
@@ -315,8 +307,30 @@ fun OpenSourcePage(urlHandler: UrlHandler) {
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp)
+            modifier = Modifier.fillMaxSize()
         ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = onBackClick) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "返回")
+                }
+                
+                if (!showSearch) {
+                    IconButton(onClick = { showSearch = true }) {
+                        Icon(Icons.Default.Search, contentDescription = "搜索")
+                    }
+                }
+            }
+
+            if (showSearch) {
+                // ... existing code ...
+            }
+
             LazyColumn(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -331,112 +345,6 @@ fun OpenSourcePage(urlHandler: UrlHandler) {
                             currentPage = 0
                         }
                     )
-                }
-            }
-
-            // 分页控制
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextButton(
-                    onClick = { 
-                        currentPage = 0  // Reset to first page when search changes
-                        if (currentPage > 0) currentPage-- 
-                    },
-                    enabled = currentPage > 0
-                ) {
-                    Text("上一页")
-                }
-                
-                Text(
-                    text = "${currentPage + 1} / $totalPages",
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-                
-                TextButton(
-                    onClick = { if (currentPage < totalPages - 1) currentPage++ },
-                    enabled = currentPage < totalPages - 1
-                ) {
-                    Text("下一页")
-                }
-            }
-        }
-
-        // Floating search button and search box
-        Surface(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(16.dp),
-            elevation = if (showSearch) 8.dp else 0.dp,
-            shape = RoundedCornerShape(24.dp),
-            color = MaterialTheme.colors.surface
-        ) {
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = if (showSearch) 8.dp else 0.dp)
-                    .width(if (showSearch) 320.dp else 48.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                IconButton(
-                    onClick = { 
-                        showSearch = !showSearch
-                        if (!showSearch) {
-                            searchQuery = ""
-                            currentPage = 0
-                        }
-                    },
-                    modifier = Modifier
-                        .size(48.dp)
-                ) {
-                    Icon(
-                        imageVector = if (showSearch) Icons.Default.Close else Icons.Default.Search,
-                        contentDescription = if (showSearch) "关闭搜索" else "搜索",
-                        tint = MaterialTheme.colors.primary
-                    )
-                }
-
-                if (showSearch) {
-                    TextField(
-                        value = searchQuery,
-                        onValueChange = { 
-                            searchQuery = it
-                            currentPage = 0
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .focusRequester(focusRequester),
-                        placeholder = { 
-                            Text(
-                                "搜索项目...",
-                                color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
-                            ) 
-                        },
-                        singleLine = true,
-                        colors = TextFieldDefaults.textFieldColors(
-                            backgroundColor = Color.Transparent,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            cursorColor = MaterialTheme.colors.primary
-                        ),
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Text,
-                            imeAction = ImeAction.Done
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onDone = { 
-                                showSearch = false
-                            }
-                        )
-                    )
-
-                    LaunchedEffect(showSearch) {
-                        if (showSearch) {
-                            focusRequester.requestFocus()
-                        }
-                    }
                 }
             }
         }

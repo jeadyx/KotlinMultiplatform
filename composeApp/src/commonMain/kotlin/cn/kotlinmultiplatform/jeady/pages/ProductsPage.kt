@@ -31,6 +31,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -78,119 +79,142 @@ enum class ProductType {
 @Composable
 fun ProductsPage(
     urlHandler: UrlHandler,
-    onPublishClick: () -> Unit
+    onShowPublishingPageChange: (Boolean) -> Unit,
+    onBackClick: () -> Unit
 ) {
     var selectedCategory by remember { mutableStateOf<Category?>(null) }
     var expandedCategory by remember { mutableStateOf<Category?>(null) }
 
-    val categories = remember {
-        listOf(
-            Category("全部"),
-            Category("应用", ProductType.APP, listOf(
-                Category("开发工具"),
-                Category("效率工具"),
-                Category("学习工具")
-            )),
-            Category("网站", ProductType.WEBSITE, listOf(
-                Category("官方网站"),
-                Category("社区网站"),
-                Category("学习网站")
-            )),
-            Category("库", ProductType.LIBRARY, listOf(
-                Category("UI库"),
-                Category("网络库"),
-                Category("工具库")
-            )),
-            Category("工具", ProductType.TOOL, listOf(
-                Category("命令行工具"),
-                Category("IDE插件"),
-                Category("构建工具")
-            ))
-        )
-    }
-
-    val products = remember { ProductService.getInstance().getAllProducts() }
-
-    Row(modifier = Modifier.fillMaxSize()) {
-        // Left sidebar
-        Surface(
+    Column(modifier = Modifier.fillMaxSize()) {
+        Row(
             modifier = Modifier
-                .width(200.dp)
-                .fillMaxHeight(),
-            elevation = 1.dp,
-            color = MaterialTheme.colors.surface
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            LazyColumn(
-                modifier = Modifier.padding(vertical = 8.dp)
-            ) {
-                items(categories) { category ->
-                    CategoryItem(
-                        category = category,
-                        selectedCategory = selectedCategory,
-                        expandedCategory = expandedCategory,
-                        onCategoryClick = { selectedCategory = it },
-                        onExpandClick = { expandedCategory = if (expandedCategory == it) null else it }
-                    )
-                }
+            IconButton(onClick = onBackClick) {
+                Icon(Icons.Default.ArrowBack, contentDescription = "返回")
+            }
+            
+            IconButton(onClick = {
+                onShowPublishingPageChange(true)
+            }) {
+                Icon(Icons.Default.Publish, contentDescription = "发布")
             }
         }
 
-        // Right content
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(16.dp)
-        ) {
-            // Header
-            Row(
+        val categories = remember {
+            listOf(
+                Category("全部"),
+                Category("应用", ProductType.APP, listOf(
+                    Category("开发工具"),
+                    Category("效率工具"),
+                    Category("学习工具")
+                )),
+                Category("网站", ProductType.WEBSITE, listOf(
+                    Category("官方网站"),
+                    Category("社区网站"),
+                    Category("学习网站")
+                )),
+                Category("库", ProductType.LIBRARY, listOf(
+                    Category("UI库"),
+                    Category("网络库"),
+                    Category("工具库")
+                )),
+                Category("工具", ProductType.TOOL, listOf(
+                    Category("命令行工具"),
+                    Category("IDE插件"),
+                    Category("构建工具")
+                ))
+            )
+        }
+
+        val products = remember { ProductService.getInstance().getAllProducts() }
+
+        Row(modifier = Modifier.fillMaxSize()) {
+            // Left sidebar
+            Surface(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .width(200.dp)
+                    .fillMaxHeight(),
+                elevation = 1.dp,
+                color = MaterialTheme.colors.surface
             ) {
-                Text(
-                    text = selectedCategory?.name ?: "全部",
-                    style = MaterialTheme.typography.h6,
-                    fontWeight = FontWeight.Bold
-                )
-                
-                Button(
-                    onClick = onPublishClick,
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = MaterialTheme.colors.primary
-                    ),
-                    shape = RoundedCornerShape(4.dp)
+                LazyColumn(
+                    modifier = Modifier.padding(vertical = 8.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Filled.Publish,
-                        contentDescription = "发布",
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(Modifier.width(4.dp))
-                    Text("发布")
+                    items(categories) { category ->
+                        CategoryItem(
+                            category = category,
+                            selectedCategory = selectedCategory,
+                            expandedCategory = expandedCategory,
+                            onCategoryClick = { selectedCategory = it },
+                            onExpandClick = { expandedCategory = if (expandedCategory == it) null else it }
+                        )
+                    }
                 }
             }
 
-            // Products grid
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 240.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+            // Right content
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(16.dp)
             ) {
-                val filteredProducts = products.filter { product ->
-                    when {
-                        selectedCategory == null || selectedCategory?.name == "全部" -> true
-                        selectedCategory?.type != null -> product.type == selectedCategory?.type
-                        else -> product.category == selectedCategory?.name
+                // Header
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = selectedCategory?.name ?: "全部",
+                        style = MaterialTheme.typography.h6,
+                        fontWeight = FontWeight.Bold
+                    )
+                    
+                    Button(
+                        onClick = {
+                            onShowPublishingPageChange(true)
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = MaterialTheme.colors.primary
+                        ),
+                        shape = RoundedCornerShape(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Publish,
+                            contentDescription = "发布",
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        Text("发布")
                     }
                 }
-                
-                items(filteredProducts) { product ->
-                    ProductCard(
-                        product = product,
-                        onClick = { urlHandler.openUrl(product.url) }
-                    )
+
+                // Products grid
+                LazyVerticalGrid(
+                    columns = GridCells.Adaptive(minSize = 240.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    val filteredProducts = products.filter { product ->
+                        when {
+                            selectedCategory == null || selectedCategory?.name == "全部" -> true
+                            selectedCategory?.type != null -> product.type == selectedCategory?.type
+                            else -> product.category == selectedCategory?.name
+                        }
+                    }
+                    
+                    items(filteredProducts) { product ->
+                        ProductCard(
+                            product = product,
+                            onClick = { urlHandler.openUrl(product.url) }
+                        )
+                    }
                 }
             }
         }

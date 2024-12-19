@@ -1,5 +1,6 @@
 package cn.kotlinmultiplatform.jeady.pages
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,14 +30,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import cn.kotlinmultiplatform.jeady.components.PlatformImage
 import cn.kotlinmultiplatform.jeady.icons.CustomCode
 import cn.kotlinmultiplatform.jeady.icons.CustomEmail
 import cn.kotlinmultiplatform.jeady.icons.CustomGitHub
+import cn.kotlinmultiplatform.jeady.icons.social.SocialIcons
 import kotlinmultiplatform.composeapp.generated.resources.Res
 import kotlinmultiplatform.composeapp.generated.resources.composemultiplatform
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Person
 
 data class TeamMember(
     val name: String,
@@ -132,6 +138,27 @@ fun AboutPage() {
                     fontWeight = FontWeight.Bold
                 )
 
+                Row(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp)),
+                        backgroundColor = MaterialTheme.colors.primary.copy(alpha = 0.1f),
+                        elevation = 0.dp
+                    ) {
+                        Text(
+                            text = "Version 1.0",
+                            style = MaterialTheme.typography.caption,
+                            color = MaterialTheme.colors.primary,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
+
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
@@ -142,26 +169,85 @@ fun AboutPage() {
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                // 社交媒体和联系方式
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Button(
-                        onClick = { /* TODO: 打开GitHub */ },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color(0xFFe4e9fE)
-                        )
+                    // 主要按钮行
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        Icon(Icons.Filled.CustomGitHub, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("GitHub")
+                        Button(
+                            onClick = { /* TODO: 打开GitHub */ },
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Color(0xFF24292E)
+                            )
+                        ) {
+                            Icon(
+                                Icons.Filled.CustomGitHub,
+                                contentDescription = null,
+                                tint = Color.White
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("GitHub", color = Color.White)
+                        }
+
+                        OutlinedButton(
+                            onClick = { /* TODO: 发送邮件 */ }
+                        ) {
+                            Icon(Icons.Filled.CustomEmail, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("联系我们")
+                        }
                     }
 
-                    OutlinedButton(
-                        onClick = { /* TODO: 发送邮件 */ }
+                    // 社交媒体链接行
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        Icon(Icons.Filled.CustomEmail, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("联系我们")
+                        SocialButton(
+                            painter = SocialIcons.wechat(),
+                            label = "微信",
+                            color = Color(0xFF07C160),
+                            onClick = { /* TODO: 显示微信二维码 */ }
+                        )
+                        
+                        SocialButton(
+                            painter = SocialIcons.qq(),
+                            label = "QQ群",
+                            color = Color(0xFF12B7F5),
+                            onClick = { /* TODO: 显示QQ群 */ }
+                        )
+                        
+                        SocialButton(
+                            painter = SocialIcons.bilibili(),
+                            label = "Bilibili",
+                            color = Color(0xFFFF6699),
+                            onClick = { /* TODO: 打开Bilibili主页 */ }
+                        )
+
+                        SocialButton(
+                            painter = SocialIcons.juejin(),
+                            label = "掘金",
+                            color = Color(0xFF1E80FF),
+                            onClick = { /* TODO: 打开掘金主页 */ }
+                        )
+                    }
+
+                    // 联系信息行
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(24.dp),
+                        modifier = Modifier.padding(top = 8.dp)
+                    ) {
+                        ContactInfo(
+                            painter = SocialIcons.wechat(),
+                            text = "WeChat: kmp-support"
+                        )
+                        ContactInfo(
+                            painter = SocialIcons.qq(),
+                            text = "support@example.com"
+                        )
                     }
                 }
             }
@@ -284,12 +370,12 @@ private fun TeamMemberCard(member: TeamMember) {
                     IconButton(
                         onClick = { /* TODO: 打开GitHub */ }
                     ) {
-                        Icon(Icons.Filled.CustomGitHub, contentDescription = "GitHub")
+                        Icon(SocialIcons.wechat(), contentDescription = "GitHub")
                     }
                     IconButton(
                         onClick = { /* TODO: 发送邮件 */ }
                     ) {
-                        Icon(Icons.Filled.CustomEmail, contentDescription = "Email")
+                        Icon(SocialIcons.qq(), contentDescription = "Email")
                     }
                 }
             }
@@ -302,5 +388,51 @@ private fun TeamMemberCard(member: TeamMember) {
                 color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
             )
         }
+    }
+}
+
+@Composable
+private fun SocialButton(
+    painter: Painter,
+    label: String,
+    color: Color,
+    onClick: () -> Unit
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = Modifier
+            .clip(CircleShape)
+            .background(color.copy(alpha = 0.1f))
+            .size(40.dp)
+    ) {
+        Icon(
+            painter = painter,
+            contentDescription = label,
+            tint = color,
+            modifier = Modifier.size(20.dp)
+        )
+    }
+}
+
+@Composable
+private fun ContactInfo(
+    painter: Painter,
+    text: String
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Icon(
+            painter = painter,
+            contentDescription = null,
+            modifier = Modifier.size(16.dp),
+            tint = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+        )
+        Text(
+            text = text,
+            style = MaterialTheme.typography.caption,
+            color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+        )
     }
 } 

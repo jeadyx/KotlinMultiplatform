@@ -221,7 +221,7 @@ class ProductService private constructor() {
                 type = ProductType.LIBRARY,
                 imageUrl = "app_logo",
                 url = "https://github.com/ktorio/ktor",
-                tags = listOf("网络", "HTTP", "��步"),
+                tags = listOf("网络", "HTTP", "异步"),
                 category = "网络库",
                 downloadCount = "2M+",
                 rating = 4.8f
@@ -287,7 +287,7 @@ class ProductService private constructor() {
                 imageUrl = "app_logo",
                 url = "https://plugins.gradle.org/plugin/org.jetbrains.kotlin.multiplatform",
                 tags = listOf("Gradle", "构建", "插件"),
-                category = "命令行工具",
+                category = "命令行��具",
                 downloadCount = "2M+",
                 rating = 4.8f
             ),
@@ -350,6 +350,10 @@ class ProductService private constructor() {
     }
 
     fun getAllProducts(): List<Product> = products.toList()
+
+    fun addProduct(product: Product) {
+        products.add(product)
+    }
 
     companion object {
         private var instance: ProductService? = null

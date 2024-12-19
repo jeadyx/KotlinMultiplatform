@@ -1,8 +1,16 @@
 package cn.kotlinmultiplatform.jeady
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -10,9 +18,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -33,6 +43,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -50,6 +64,8 @@ import cn.kotlinmultiplatform.jeady.pages.OpenSourcePage
 import cn.kotlinmultiplatform.jeady.pages.ProductsPage
 import cn.kotlinmultiplatform.jeady.pages.PublishingPage
 import cn.kotlinmultiplatform.jeady.pages.RecommendationsPage
+import cn.kotlinmultiplatform.jeady.pages.ReferencePage
+import cn.kotlinmultiplatform.jeady.pages.ReferenceSection
 import cn.kotlinmultiplatform.jeady.pages.RegisterPage
 import cn.kotlinmultiplatform.jeady.pages.ToolboxPage
 import cn.kotlinmultiplatform.jeady.platform.getPlatformUrlHandler
@@ -72,6 +88,10 @@ sealed class Screen(val route: String) {
         fun createRoute(bugId: String) = "bug-detail/$bugId"
     }
     object Help : Screen("help")
+    object Reference : Screen("reference")
+    object OpenSource : Screen("reference/opensource")
+    object Toolbox : Screen("reference/toolbox")
+    object Products : Screen("reference/products")
 }
 
 @Composable
@@ -86,6 +106,7 @@ fun App() {
             defaultFontFamily = notoSansSCFamily
         )
     ) {
+        var currentPage by remember { mutableStateOf(0) }
         var currentScreen by remember { mutableStateOf<Screen>(Screen.Home) }
         var selectedItemId by remember { mutableStateOf<String?>(null) }
         var isLoggedIn by remember { mutableStateOf(false) }
@@ -94,12 +115,12 @@ fun App() {
         var showRegisterDialog by remember { mutableStateOf(false) }
         var showBugEditDialog by remember { mutableStateOf(false) }
         var selectedBug by remember { mutableStateOf<Bug?>(null) }
+        var showPublishingPage by remember { mutableStateOf(false) }
         
         val bugService = remember { BugService.getInstance() }
         var bugs by remember { mutableStateOf(bugService.getAllBugs()) }
         val urlHandler = getPlatformUrlHandler()
 
-        // 主界面
         when (currentScreen) {
             Screen.Home -> {
                 Navigation(
@@ -137,6 +158,10 @@ fun App() {
                     },
                     onNavigateToHelp = {
                         currentScreen = Screen.Help
+                    },
+                    showPublishingPage = showPublishingPage,
+                    onShowPublishingPageChange = { newShowPublishingPage ->
+                        showPublishingPage = newShowPublishingPage
                     }
                 )
             }
@@ -166,12 +191,52 @@ fun App() {
             }
             Screen.Help -> {
                 HelpPage(
-                    urlHandler = urlHandler
+                    urlHandler = urlHandler,
+                    onBackClick = {
+                        currentScreen = Screen.Home
+                    }
+                )
+            }
+            Screen.Reference -> {
+                ReferencePage(
+                    urlHandler = urlHandler,
+                    onSectionClick = { section ->
+                        when (section) {
+                            ReferenceSection.OPEN_SOURCE -> currentScreen = Screen.OpenSource
+                            ReferenceSection.TOOLBOX -> currentScreen = Screen.Toolbox
+                            ReferenceSection.PRODUCTS -> currentScreen = Screen.Products
+                        }
+                    }
+                )
+            }
+            Screen.OpenSource -> {
+                OpenSourcePage(
+                    urlHandler = urlHandler,
+                    onBackClick = {
+                        currentScreen = Screen.Reference
+                    }
+                )
+            }
+            Screen.Toolbox -> {
+                ToolboxPage(
+                    urlHandler = urlHandler,
+                    onBackClick = {
+                        currentScreen = Screen.Reference
+                    }
+                )
+            }
+            Screen.Products -> {
+                ProductsPage(
+                    urlHandler = urlHandler,
+                    onShowPublishingPageChange = { newShowPublishingPage ->
+                        showPublishingPage = newShowPublishingPage
+                    },
+                    onBackClick = { currentScreen = Screen.Reference }
                 )
             }
         }
 
-        // 登录对话框
+        // Login dialog
         if (showLoginDialog) {
             AppDialog(
                 onDismissRequest = { showLoginDialog = false }
@@ -189,7 +254,7 @@ fun App() {
             }
         }
 
-        // 注册对话框
+        // Register dialog
         if (showRegisterDialog) {
             AppDialog(
                 onDismissRequest = { showRegisterDialog = false },
@@ -211,7 +276,7 @@ fun App() {
             }
         }
 
-        // 添加/编辑 Bug 对话框
+        // Bug edit dialog
         if (showBugEditDialog) {
             BugDialog(
                 bug = selectedBug,
@@ -229,7 +294,6 @@ fun App() {
                             updatedAt = Clock.System.now().toEpochMilliseconds()
                         )
                         bugService.updateBug(updatedBug)
-                        // 更新 selectedBug，这样详情页面也会更新
                         selectedBug = updatedBug
                     } else {
                         val newBug = Bug(
@@ -265,17 +329,19 @@ fun Navigation(
     onBugEdit: (Bug) -> Unit,
     onBugDelete: (String) -> Unit,
     onBugAdd: () -> Unit,
-    onNavigateToHelp: () -> Unit
+    onNavigateToHelp: () -> Unit,
+    showPublishingPage: Boolean,
+    onShowPublishingPageChange: (Boolean) -> Unit
 ) {
     var currentPage by remember { mutableStateOf(0) }
+    var currentScreen by remember { mutableStateOf<Screen>(Screen.Home) }
     val urlHandler = getPlatformUrlHandler()
-    var showPublishingPage by remember { mutableStateOf(false) }
 
     if (showPublishingPage) {
         PublishingPage(
             urlHandler = urlHandler,
             onNavigateToHelp = onNavigateToHelp,
-            onClose = { showPublishingPage = false }
+            onClose = { onShowPublishingPageChange(false) }
         )
         return
     }
@@ -283,148 +349,148 @@ fun Navigation(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Header
+        // Combined Header and Navigation with max width constraint
         Surface(
             elevation = 4.dp,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
             ) {
                 Row(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .widthIn(max = 1200.dp), // 限制最大宽度
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Image(
-                        painter = painterResource(Res.drawable.app_logo),
-                        contentDescription = "Logo",
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Text(
-                        text = "Kotlin Multiplatform",
-                        style = MaterialTheme.typography.h6,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    if (isLoggedIn) {
-                        IconButton(onClick = onLogout) {
-                            Icon(Icons.Default.ExitToApp, contentDescription = "退出登录")
+                    // Logo and (conditional) title
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(0.2f, fill = false)
+                    ) {
+                        Image(
+                            painter = painterResource(Res.drawable.app_logo),
+                            contentDescription = "Logo",
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                        )
+                        
+                        BoxWithConstraints {
+                            if (maxWidth > 600.dp) {
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Text(
+                                    text = "Kotlin Multiplatform",
+                                    style = MaterialTheme.typography.subtitle1,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
                         }
-                    } else {
-                        Button(
-                            onClick = onLoginClick,
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = MaterialTheme.colors.primary
-                            )
-                        ) {
-                            Text("登录")
+                    }
+
+                    // Navigation tabs in the middle
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.weight(0.6f),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        TabItem("推荐", currentPage == 0) { currentPage = 0 }
+                        TabItem("博客", currentPage == 1) { currentPage = 1 }
+                        TabItem("问题", currentPage == 2) { currentPage = 2 }
+                        TabItem("参考", currentPage == 3) { currentPage = 3 }
+                        TabItem("关于", currentPage == 4) { currentPage = 4 }
+                    }
+
+                    // Login/Logout button
+                    Row(
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(0.2f, fill = false)
+                    ) {
+                        if (isLoggedIn) {
+                            IconButton(
+                                onClick = onLogout,
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    Icons.Default.ExitToApp,
+                                    contentDescription = "退出登录",
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                        } else {
+                            Button(
+                                onClick = onLoginClick,
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = MaterialTheme.colors.primary
+                                ),
+                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
+                                modifier = Modifier.height(32.dp)
+                            ) {
+                                Text("登录", style = MaterialTheme.typography.button)
+                            }
                         }
                     }
                 }
             }
         }
 
-        // Navigation Tabs
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            TextButton(
-                onClick = { currentPage = 0 },
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = if (currentPage == 0) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface
-                )
-            ) {
-                Text("工具箱")
-            }
-            TextButton(
-                onClick = { currentPage = 1 },
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = if (currentPage == 1) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface
-                )
-            ) {
-                Text("博客")
-            }
-            TextButton(
-                onClick = { currentPage = 2 },
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = if (currentPage == 2) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface
-                )
-            ) {
-                Text("开源")
-            }
-            TextButton(
-                onClick = { currentPage = 3 },
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = if (currentPage == 3) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface
-                )
-            ) {
-                Text("推荐")
-            }
-            TextButton(
-                onClick = { currentPage = 4 },
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = if (currentPage == 4) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface
-                )
-            ) {
-                Text("问题")
-            }
-            TextButton(
-                onClick = { currentPage = 5 },
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = if (currentPage == 5) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface
-                )
-            ) {
-                Text("成品")
-            }
-            TextButton(
-                onClick = { currentPage = 6 },
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = if (currentPage == 6) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface
-                )
-            ) {
-                Text("关于")
-            }
-        }
-
         // Content
-        Box(modifier = Modifier.weight(1f)) {
+        Box(
+            modifier = Modifier.weight(1f)
+        ) {
             when (currentPage) {
-                0 -> ToolboxPage(urlHandler = urlHandler)
+                0 -> RecommendationsPage(
+                    urlHandler = urlHandler,
+                    onNavigateToDetail = onNavigateToDetail)
                 1 -> BlogPage(
                     onPostClick = { postId -> onNavigateToDetail(postId, "blog") }
                 )
-                2 -> OpenSourcePage(
-                    urlHandler
-                )
-                3 -> RecommendationsPage(
-                    urlHandler = urlHandler,
-                    onNavigateToDetail = onNavigateToDetail)
-                4 -> BugsPage(
+                2 -> BugsPage(
                     bugs = bugs,
                     onEdit = onBugEdit,
                     onDelete = onBugDelete,
                     onAdd = onBugAdd,
                     onNavigateToBugDetail = onNavigateToBugDetail
                 )
-                5 -> ProductsPage(
-                    urlHandler = urlHandler,
-                    onPublishClick = { showPublishingPage = true }
-                )
-                6 -> AboutPage()
+                3 -> when (currentScreen) {
+                    Screen.Reference -> ReferencePage(
+                        urlHandler = urlHandler,
+                        onSectionClick = { section ->
+                            when (section) {
+                                ReferenceSection.OPEN_SOURCE -> currentScreen = Screen.OpenSource
+                                ReferenceSection.TOOLBOX -> currentScreen = Screen.Toolbox
+                                ReferenceSection.PRODUCTS -> currentScreen = Screen.Products
+                            }
+                        }
+                    )
+                    Screen.OpenSource -> OpenSourcePage(
+                        urlHandler = urlHandler,
+                        onBackClick = { currentScreen = Screen.Reference }
+                    )
+                    Screen.Toolbox -> ToolboxPage(
+                        urlHandler = urlHandler,
+                        onBackClick = { currentScreen = Screen.Reference }
+                    )
+                    Screen.Products -> ProductsPage(
+                        urlHandler = urlHandler,
+                        onShowPublishingPageChange = { onShowPublishingPageChange(true) },
+                        onBackClick = { currentScreen = Screen.Reference }
+                    )
+                    else -> ReferencePage(
+                        urlHandler = urlHandler,
+                        onSectionClick = { section ->
+                            when (section) {
+                                ReferenceSection.OPEN_SOURCE -> currentScreen = Screen.OpenSource
+                                ReferenceSection.TOOLBOX -> currentScreen = Screen.Toolbox
+                                ReferenceSection.PRODUCTS -> currentScreen = Screen.Products
+                            }
+                        }
+                    )
+                }
+                4 -> AboutPage()
             }
         }
     }
@@ -438,23 +504,26 @@ private fun TabItem(
 ) {
     TextButton(
         onClick = onClick,
-        modifier = Modifier.height(32.dp),
+        modifier = Modifier
+            .height(32.dp)
+            .padding(horizontal = 2.dp),
         contentPadding = PaddingValues(horizontal = 12.dp),
-        shape = RoundedCornerShape(16.dp),
         colors = ButtonDefaults.textButtonColors(
-            backgroundColor = if (selected) 
-                MaterialTheme.colors.primary.copy(alpha = 0.1f)
-            else 
-                MaterialTheme.colors.surface,
             contentColor = if (selected) 
-                MaterialTheme.colors.primary
+                MaterialTheme.colors.primary 
             else 
-                MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
-        )
+                MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
+            backgroundColor = if (selected)
+                MaterialTheme.colors.primary.copy(alpha = 0.1f)
+            else
+                MaterialTheme.colors.surface
+        ),
+        shape = RoundedCornerShape(16.dp)
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.button
+            style = MaterialTheme.typography.button,
+            fontWeight = if (selected) FontWeight.Medium else FontWeight.Normal
         )
     }
 }

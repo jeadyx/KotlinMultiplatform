@@ -8,36 +8,22 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,11 +31,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import cn.kotlinmultiplatform.jeady.icons.Brush
 import cn.kotlinmultiplatform.jeady.icons.Chat
@@ -65,7 +48,6 @@ import cn.kotlinmultiplatform.jeady.icons.Music
 import cn.kotlinmultiplatform.jeady.icons.Palette
 import cn.kotlinmultiplatform.jeady.icons.PhotoLibrary
 import cn.kotlinmultiplatform.jeady.icons.PictureAsPdf
-import cn.kotlinmultiplatform.jeady.icons.Psychology
 import cn.kotlinmultiplatform.jeady.icons.Schedule
 import cn.kotlinmultiplatform.jeady.icons.Slideshow
 import cn.kotlinmultiplatform.jeady.icons.Speed
@@ -92,7 +74,10 @@ enum class ToolCategory {
 }
 
 @Composable
-fun ToolboxPage(urlHandler: UrlHandler) {
+fun ToolboxPage(
+    urlHandler: UrlHandler,
+    onBackClick: () -> Unit
+) {
     val tools = listOf(
         Tool(
             "JSON 格式化",
@@ -241,7 +226,7 @@ fun ToolboxPage(urlHandler: UrlHandler) {
         Tool("Stable Diffusion", "开源AI图像生成模型", "https://stability.ai", Icons.Default.Image, ToolCategory.AI),
         Tool("Gemini", "Google的AI模型", "https://gemini.google.com", Icons.Default.Code, ToolCategory.AI),
         Tool("Copy.ai", "AI文案写作助手", "https://www.copy.ai", Icons.Default.Edit, ToolCategory.AI),
-        Tool("Jasper", "AI内容创作平台", "https://www.jasper.ai", Icons.Default.Edit, ToolCategory.AI),
+        Tool("Jasper", "AI内容创作平��", "https://www.jasper.ai", Icons.Default.Edit, ToolCategory.AI),
         Tool("Notion AI", "集成AI功能的笔记工具", "https://www.notion.so", Icons.Default.Edit, ToolCategory.AI),
         Tool("Grammarly", "AI写作纠错工具", "https://www.grammarly.com", Icons.Default.Edit, ToolCategory.AI),
         Tool("Synthesia", "AI视频生成平台", "https://www.synthesia.io", Icons.Default.Video, ToolCategory.AI),
@@ -264,7 +249,7 @@ fun ToolboxPage(urlHandler: UrlHandler) {
         Tool("Perplexity AI", "AI搜索引擎", "https://www.perplexity.ai", Icons.Default.Search, ToolCategory.AI),
         Tool("You.com", "AI搜索助手", "https://you.com", Icons.Default.Search, ToolCategory.AI),
         Tool("Poe", "AI聊天工具集合", "https://poe.com", Icons.Default.Chat, ToolCategory.AI),
-        Tool("Character.ai", "AI角色扮演对话", "https://character.ai", Icons.Default.Chat, ToolCategory.AI),
+        Tool("Character.ai", "AI角色扮���对话", "https://character.ai", Icons.Default.Chat, ToolCategory.AI),
         Tool("Replika", "AI伴侣聊天", "https://replika.ai", Icons.Default.Chat, ToolCategory.AI),
         Tool("AutoDraw", "Google的AI绘画工具", "https://www.autodraw.com", Icons.Default.Brush, ToolCategory.AI),
         Tool("Lensa", "AI头像生成器", "https://prisma-ai.com/lensa", Icons.Default.Image, ToolCategory.AI),
@@ -462,175 +447,49 @@ fun ToolboxPage(urlHandler: UrlHandler) {
     val groupedTools = filteredTools.groupBy { it.category }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // Main content
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(32.dp),
-            contentPadding = PaddingValues(vertical = 16.dp)
-        ) {
-            items(groupedTools.entries.toList().sortedBy { (category, _) ->
-                when(category) {
-                    ToolCategory.AI -> 0
-                    ToolCategory.DEVELOPMENT -> 1
-                    ToolCategory.DESIGN -> 2
-                    ToolCategory.PRODUCTIVITY -> 3
-                    ToolCategory.UTILITY -> 4
+        Column(modifier = Modifier.fillMaxSize()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = onBackClick) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "返回")
                 }
-            }) { (category, toolsInCategory) ->
-                if (toolsInCategory.isNotEmpty()) {
-                    Column {
-                        // Category header with accent color
-                        Surface(
-                            shape = RoundedCornerShape(8.dp),
-                            color = when(category) {
-                                ToolCategory.DEVELOPMENT -> Color(0xFF2196F3).copy(alpha = 0.1f)
-                                ToolCategory.DESIGN -> Color(0xFFE91E63).copy(alpha = 0.1f)
-                                ToolCategory.PRODUCTIVITY -> Color(0xFF4CAF50).copy(alpha = 0.1f)
-                                ToolCategory.UTILITY -> Color(0xFFFF9800).copy(alpha = 0.1f)
-                                ToolCategory.AI -> Color(0xFF9C27B0).copy(alpha = 0.1f)
-                            },
-                            modifier = Modifier.padding(bottom = 12.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    val categoryColor = when(category) {
-                                        ToolCategory.DEVELOPMENT -> Color(0xFF2196F3)
-                                        ToolCategory.DESIGN -> Color(0xFFE91E63)
-                                        ToolCategory.PRODUCTIVITY -> Color(0xFF4CAF50)
-                                        ToolCategory.UTILITY -> Color(0xFFFF9800)
-                                        ToolCategory.AI -> Color(0xFF9C27B0)
-                                    }
-                                    
-                                    Icon(
-                                        imageVector = when(category) {
-                                            ToolCategory.DEVELOPMENT -> Icons.Default.Code
-                                            ToolCategory.DESIGN -> Icons.Default.Brush
-                                            ToolCategory.PRODUCTIVITY -> Icons.Default.Speed
-                                            ToolCategory.UTILITY -> Icons.Default.Build
-                                            ToolCategory.AI -> Icons.Default.Psychology
-                                        },
-                                        contentDescription = null,
-                                        tint = categoryColor,
-                                        modifier = Modifier.padding(end = 4.dp)
-                                    )
-
-                                    Text(
-                                        text = when(category) {
-                                            ToolCategory.DEVELOPMENT -> "开发工具"
-                                            ToolCategory.DESIGN -> "设计工具"
-                                            ToolCategory.PRODUCTIVITY -> "生产力工具"
-                                            ToolCategory.UTILITY -> "实用工具"
-                                            ToolCategory.AI -> "AI工具"
-                                        },
-                                        style = MaterialTheme.typography.h6,
-                                        color = categoryColor
-                                    )
-                                }
-
-                                Text(
-                                    text = "${toolsInCategory.size}",
-                                    style = MaterialTheme.typography.caption,
-                                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
-                                )
-                            }
-                        }
-
-                        // Tools grid for this category
-                        LazyVerticalGrid(
-                            columns = GridCells.Adaptive(minSize = 160.dp),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
-                            modifier = Modifier.heightIn(50.dp, 350.dp),
-                            userScrollEnabled = true,
-                            contentPadding = PaddingValues(horizontal = 16.dp)
-                        ) {
-                            items(toolsInCategory) { tool ->
-                                ToolCard(tool = tool, onClick = { urlHandler.openUrl(tool.url) })
-                            }
-                        }
+                
+                if (!showSearch) {
+                    IconButton(onClick = { showSearch = true }) {
+                        Icon(Icons.Default.Search, contentDescription = "搜索")
                     }
                 }
             }
-        }
 
-        // Floating search button and search box
-        Surface(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(16.dp),
-            elevation = if (showSearch) 8.dp else 0.dp,
-            shape = RoundedCornerShape(24.dp),
-            color = MaterialTheme.colors.surface
-        ) {
-            Row(
+            if (showSearch) {
+                // ... existing code ...
+            }
+
+            // Main content
+            LazyColumn(
                 modifier = Modifier
-                    .padding(horizontal = if (showSearch) 8.dp else 0.dp)
-                    .width(if (showSearch) 320.dp else 48.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(32.dp),
+                contentPadding = PaddingValues(vertical = 16.dp)
             ) {
-                IconButton(
-                    onClick = { 
-                        showSearch = !showSearch
-                        if (!showSearch) {
-                            searchQuery = ""
-                        }
-                    },
-                    modifier = Modifier
-                        .size(48.dp)
-                ) {
-                    Icon(
-                        imageVector = if (showSearch) Icons.Default.Close else Icons.Default.Search,
-                        contentDescription = if (showSearch) "关闭搜索" else "搜索",
-                        tint = MaterialTheme.colors.primary
-                    )
-                }
-
-                if (showSearch) {
-                    TextField(
-                        value = searchQuery,
-                        onValueChange = { searchQuery = it },
-                        modifier = Modifier
-                            .weight(1f)
-                            .focusRequester(focusRequester),
-                        placeholder = { 
-                            Text(
-                                "搜索工具...",
-                                color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
-                            ) 
-                        },
-                        singleLine = true,
-                        colors = TextFieldDefaults.textFieldColors(
-                            backgroundColor = Color.Transparent,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            cursorColor = MaterialTheme.colors.primary
-                        ),
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Text,
-                            imeAction = ImeAction.Done
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onDone = { 
-                                showSearch = false
-                            }
-                        )
-                    )
-
-                    LaunchedEffect(showSearch) {
-                        if (showSearch) {
-                            focusRequester.requestFocus()
+                items(groupedTools.entries.toList().sortedBy { (category, _) ->
+                    when(category) {
+                        ToolCategory.AI -> 0
+                        ToolCategory.DEVELOPMENT -> 1
+                        ToolCategory.DESIGN -> 2
+                        ToolCategory.PRODUCTIVITY -> 3
+                        ToolCategory.UTILITY -> 4
+                    }
+                }) { (category, toolsInCategory) ->
+                    if (toolsInCategory.isNotEmpty()) {
+                        Column {
+                            // ... existing code ...
                         }
                     }
                 }

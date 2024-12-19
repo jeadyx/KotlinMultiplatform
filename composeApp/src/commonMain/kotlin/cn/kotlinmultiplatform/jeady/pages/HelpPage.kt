@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,110 +37,127 @@ data class HelpSection(
 )
 
 @Composable
-fun HelpPage(urlHandler: UrlHandler) {
-    val sections = listOf(
-        HelpSection(
-            title = "网站发布",
-            icon = Icons.Default.Web,
-            description = "将您的 KMP 网站发布到各种平台",
-            steps = listOf(
-                HelpStep(
-                    title = "构建网站",
-                    description = "使用 Gradle 构建网站项目",
-                    command = "./gradlew :composeApp:jsBrowserProductionWebpack"
-                ),
-                HelpStep(
-                    title = "GitHub Pages",
-                    description = "将网站部署到 GitHub Pages",
-                    documentationUrl = "https://pages.github.com/"
-                ),
-                HelpStep(
-                    title = "Vercel",
-                    description = "使用 Vercel 托管您的网站",
-                    documentationUrl = "https://vercel.com/docs"
-                ),
-                HelpStep(
-                    title = "Netlify",
-                    description = "在 Netlify 上部署网站",
-                    documentationUrl = "https://docs.netlify.com/"
+fun HelpPage(
+    urlHandler: UrlHandler,
+    onBackClick: () -> Unit
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = onBackClick) {
+                Icon(Icons.Default.ArrowBack, contentDescription = "返回")
+            }
+        }
+
+        val sections = listOf(
+            HelpSection(
+                title = "网站发布",
+                icon = Icons.Default.Web,
+                description = "将您的 KMP 网站发布到各种平台",
+                steps = listOf(
+                    HelpStep(
+                        title = "建网站",
+                        description = "使用 Gradle 构建网站项目",
+                        command = "./gradlew :composeApp:jsBrowserProductionWebpack"
+                    ),
+                    HelpStep(
+                        title = "GitHub Pages",
+                        description = "将网站部署到 GitHub Pages",
+                        documentationUrl = "https://pages.github.com/"
+                    ),
+                    HelpStep(
+                        title = "Vercel",
+                        description = "使用 Vercel 托管您的网站",
+                        documentationUrl = "https://vercel.com/docs"
+                    ),
+                    HelpStep(
+                        title = "Netlify",
+                        description = "在 Netlify 上部署网站",
+                        documentationUrl = "https://docs.netlify.com/"
+                    )
                 )
-            )
-        ),
-        HelpSection(
-            title = "Android 应用",
-            icon = Icons.Default.Android,
-            description = "发布您的 Android 应用到应用商店",
-            steps = listOf(
-                HelpStep(
-                    title = "构建 APK",
-                    description = "生成发布版本的 APK",
-                    command = "./gradlew :composeApp:assembleRelease"
-                ),
-                HelpStep(
-                    title = "签名配置",
-                    description = "配置应用签名",
-                    documentationUrl = "https://developer.android.com/studio/publish/app-signing"
-                ),
-                HelpStep(
-                    title = "Google Play",
-                    description = "发布到 Google Play",
-                    documentationUrl = "https://play.google.com/console/"
+            ),
+            HelpSection(
+                title = "Android 应用",
+                icon = Icons.Default.Android,
+                description = "发布您的 Android 应用到应用商店",
+                steps = listOf(
+                    HelpStep(
+                        title = "构建 APK",
+                        description = "生成发布版本的 APK",
+                        command = "./gradlew :composeApp:assembleRelease"
+                    ),
+                    HelpStep(
+                        title = "签名配置",
+                        description = "配置应用签名",
+                        documentationUrl = "https://developer.android.com/studio/publish/app-signing"
+                    ),
+                    HelpStep(
+                        title = "Google Play",
+                        description = "发布到 Google Play",
+                        documentationUrl = "https://play.google.com/console/"
+                    )
                 )
-            )
-        ),
-        HelpSection(
-            title = "iOS 应用",
-            icon = Icons.Default.Apple,
-            description = "发布您的 iOS 应用到 App Store",
-            steps = listOf(
-                HelpStep(
-                    title = "构建应用",
-                    description = "生成 iOS 应用包",
-                    command = "./gradlew :composeApp:iosDeployRelease"
-                ),
-                HelpStep(
-                    title = "证书配置",
-                    description = "配置开发者证书和描述文件",
-                    documentationUrl = "https://developer.apple.com/documentation/xcode/distributing-your-app-for-beta-testing-and-releases"
-                ),
-                HelpStep(
-                    title = "App Store",
-                    description = "发布到 App Store",
-                    documentationUrl = "https://developer.apple.com/app-store/submissions/"
+            ),
+            HelpSection(
+                title = "iOS 应用",
+                icon = Icons.Default.Apple,
+                description = "发布您的 iOS 应用到 App Store",
+                steps = listOf(
+                    HelpStep(
+                        title = "构建应用",
+                        description = "生成 iOS 应用包",
+                        command = "./gradlew :composeApp:iosDeployRelease"
+                    ),
+                    HelpStep(
+                        title = "证书配置",
+                        description = "配置开发者证书和描述文件",
+                        documentationUrl = "https://developer.apple.com/documentation/xcode/distributing-your-app-for-beta-testing-and-releases"
+                    ),
+                    HelpStep(
+                        title = "App Store",
+                        description = "发布到 App Store",
+                        documentationUrl = "https://developer.apple.com/app-store/submissions/"
+                    )
                 )
-            )
-        ),
-        HelpSection(
-            title = "桌面应用",
-            icon = Icons.Default.DesktopWindows,
-            description = "发布您的桌面应用",
-            steps = listOf(
-                HelpStep(
-                    title = "构建桌面应用",
-                    description = "生成桌面应用安装包",
-                    command = "./gradlew :composeApp:packageReleaseDistributionForCurrentOS"
-                ),
-                HelpStep(
-                    title = "Microsoft Store",
-                    description = "发布到 Microsoft Store",
-                    documentationUrl = "https://docs.microsoft.com/windows/apps/publish/"
-                ),
-                HelpStep(
-                    title = "Mac App Store",
-                    description = "发布到 Mac App Store",
-                    documentationUrl = "https://developer.apple.com/app-store/"
+            ),
+            HelpSection(
+                title = "桌面应用",
+                icon = Icons.Default.DesktopWindows,
+                description = "发布您的桌面应用",
+                steps = listOf(
+                    HelpStep(
+                        title = "构建桌面应用",
+                        description = "生成桌面应用安装包",
+                        command = "./gradlew :composeApp:packageReleaseDistributionForCurrentOS"
+                    ),
+                    HelpStep(
+                        title = "Microsoft Store",
+                        description = "发布到 Microsoft Store",
+                        documentationUrl = "https://docs.microsoft.com/windows/apps/publish/"
+                    ),
+                    HelpStep(
+                        title = "Mac App Store",
+                        description = "发布到 Mac App Store",
+                        documentationUrl = "https://developer.apple.com/app-store/"
+                    )
                 )
             )
         )
-    )
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        items(sections.size) { index ->
-            HelpSectionCard(sections[index], urlHandler)
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(sections.size) { index ->
+                HelpSectionCard(sections[index], urlHandler)
+            }
         }
     }
 }
