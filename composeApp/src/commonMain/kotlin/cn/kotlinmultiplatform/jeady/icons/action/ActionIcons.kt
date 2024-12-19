@@ -44,3 +44,44 @@ public val Icons.Filled.OpenInNew: ImageVector
         return _openInNew!!
     }
 private var _openInNew: ImageVector? = null 
+
+val Icons.Filled.Help: ImageVector
+    get() {
+        if (_help != null) {
+            return _help!!
+        }
+        _help = materialIcon(name = "Help") {
+            materialPath {
+                moveTo(12f, 2f)
+                curveTo(6.48f, 2f, 2f, 6.48f, 2f, 12f)
+                reflectiveCurveToRelative(4.48f, 10f, 10f, 10f)
+                reflectiveCurveToRelative(10f, -4.48f, 10f, -10f)
+                reflectiveCurveTo(17.52f, 2f, 12f, 2f)
+                close()
+                moveTo(13f, 19f)
+                horizontalLineToRelative(-2f)
+                verticalLineToRelative(-2f)
+                horizontalLineToRelative(2f)
+                verticalLineToRelative(2f)
+                close()
+                moveTo(15.07f, 11.25f)
+                lineToRelative(-0.9f, 0.92f)
+                curveTo(13.45f, 12.9f, 13f, 13.5f, 13f, 15f)
+                horizontalLineToRelative(-2f)
+                verticalLineToRelative(-0.5f)
+                curveToRelative(0f, -1.1f, 0.45f, -2.1f, 1.17f, -2.83f)
+                lineToRelative(1.24f, -1.26f)
+                curveToRelative(0.37f, -0.36f, 0.59f, -0.86f, 0.59f, -1.41f)
+                curveToRelative(0f, -1.1f, -0.9f, -2f, -2f, -2f)
+                reflectiveCurveToRelative(-2f, 0.9f, -2f, 2f)
+                horizontalLineTo(8f)
+                curveToRelative(0f, -2.21f, 1.79f, -4f, 4f, -4f)
+                reflectiveCurveToRelative(4f, 1.79f, 4f, 4f)
+                curveToRelative(0f, 0.88f, -0.36f, 1.68f, -0.93f, 2.25f)
+                close()
+            }
+        }
+        return _help!!
+    }
+
+private var _help: ImageVector? = null 

@@ -44,6 +44,7 @@ import cn.kotlinmultiplatform.jeady.pages.BugDetailPage
 import cn.kotlinmultiplatform.jeady.pages.BugDialog
 import cn.kotlinmultiplatform.jeady.pages.BugsPage
 import cn.kotlinmultiplatform.jeady.pages.DetailPage
+import cn.kotlinmultiplatform.jeady.pages.HelpPage
 import cn.kotlinmultiplatform.jeady.pages.LoginPage
 import cn.kotlinmultiplatform.jeady.pages.OpenSourcePage
 import cn.kotlinmultiplatform.jeady.pages.PublishingPage
@@ -69,6 +70,7 @@ sealed class Screen(val route: String) {
     object BugDetail : Screen("bug-detail/{bugId}") {
         fun createRoute(bugId: String) = "bug-detail/$bugId"
     }
+    object Help : Screen("help")
 }
 
 @Composable
@@ -94,6 +96,7 @@ fun App() {
         
         val bugService = remember { BugService.getInstance() }
         var bugs by remember { mutableStateOf(bugService.getAllBugs()) }
+        val urlHandler = getPlatformUrlHandler()
 
         // 主界面
         when (currentScreen) {
@@ -130,6 +133,9 @@ fun App() {
                     onBugAdd = {
                         selectedBug = null
                         showBugEditDialog = true
+                    },
+                    onNavigateToHelp = {
+                        currentScreen = Screen.Help
                     }
                 )
             }
@@ -156,6 +162,11 @@ fun App() {
                         }
                     )
                 }
+            }
+            Screen.Help -> {
+                HelpPage(
+                    urlHandler = urlHandler
+                )
             }
         }
 
@@ -252,95 +263,156 @@ fun Navigation(
     bugs: List<Bug>,
     onBugEdit: (Bug) -> Unit,
     onBugDelete: (String) -> Unit,
-    onBugAdd: () -> Unit
+    onBugAdd: () -> Unit,
+    onNavigateToHelp: () -> Unit
 ) {
-    val tabs = listOf("推荐", "博客", "问答", "工具箱", "开源", "发布", "关于")
+    var currentPage by remember { mutableStateOf(0) }
+    val urlHandler = getPlatformUrlHandler()
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        // 顶部栏
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        // Header
         Surface(
             elevation = 4.dp,
-            color = MaterialTheme.colors.surface
+            modifier = Modifier.fillMaxWidth()
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Logo
-                Image(
-                    painter = painterResource(Res.drawable.app_logo),
-                    contentDescription = "Logo",
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                )
-
-                Spacer(modifier = Modifier.width(24.dp))
-
-                // 导航标签
                 Row(
-                    modifier = Modifier.weight(1f),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    tabs.forEachIndexed { index, title ->
-                        TabItem(
-                            title = title,
-                            selected = selectedTab == index,
-                            onClick = { onSelectedTabChange(index) }
-                        )
-                    }
+                    Image(
+                        painter = painterResource(Res.drawable.app_logo),
+                        contentDescription = "Logo",
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Text(
+                        text = "Kotlin Multiplatform",
+                        style = MaterialTheme.typography.h6,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
 
-                Spacer(modifier = Modifier.width(16.dp))
-
-                // 登录/登出按钮
-                if (isLoggedIn) {
-                    IconButton(
-                        onClick = onLogout,
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            Icons.Default.ExitToApp,
-                            contentDescription = "登出",
-                            tint = MaterialTheme.colors.primary
-                        )
-                    }
-                } else {
-                    Button(
-                        onClick = onLoginClick,
-                        modifier = Modifier.height(32.dp),
-                        contentPadding = PaddingValues(horizontal = 12.dp),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Text("登录")
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (isLoggedIn) {
+                        IconButton(onClick = onLogout) {
+                            Icon(Icons.Default.ExitToApp, contentDescription = "退出登录")
+                        }
+                    } else {
+                        Button(
+                            onClick = onLoginClick,
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = MaterialTheme.colors.primary
+                            )
+                        ) {
+                            Text("登录")
+                        }
                     }
                 }
             }
         }
 
-        // 内容区域
-        Box(modifier = Modifier.weight(1f)) {
-            when (selectedTab) {
-                0 -> RecommendationsPage(urlHandler = getPlatformUrlHandler()) { itemId, source ->
-                    onNavigateToDetail(itemId, source)
-                }
-                1 -> BlogPage(
-                    onPostClick = { postId ->
-                        onNavigateToDetail(postId, "blog")
-                    }
+        // Navigation Tabs
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            TextButton(
+                onClick = { currentPage = 0 },
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = if (currentPage == 0) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface
                 )
-                2 -> BugsPage(
+            ) {
+                Text("工具箱")
+            }
+            TextButton(
+                onClick = { currentPage = 1 },
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = if (currentPage == 1) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface
+                )
+            ) {
+                Text("博客")
+            }
+            TextButton(
+                onClick = { currentPage = 2 },
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = if (currentPage == 2) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface
+                )
+            ) {
+                Text("开源")
+            }
+            TextButton(
+                onClick = { currentPage = 3 },
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = if (currentPage == 3) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface
+                )
+            ) {
+                Text("推荐")
+            }
+            TextButton(
+                onClick = { currentPage = 4 },
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = if (currentPage == 4) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface
+                )
+            ) {
+                Text("问题")
+            }
+            TextButton(
+                onClick = { currentPage = 5 },
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = if (currentPage == 5) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface
+                )
+            ) {
+                Text("发布")
+            }
+            TextButton(
+                onClick = { currentPage = 6 },
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = if (currentPage == 6) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface
+                )
+            ) {
+                Text("关于")
+            }
+        }
+
+        // Content
+        Box(modifier = Modifier.weight(1f)) {
+            when (currentPage) {
+                0 -> ToolboxPage(urlHandler = urlHandler)
+                1 -> BlogPage(
+                    onPostClick = { postId -> onNavigateToDetail(postId, "blog") }
+                )
+                2 -> OpenSourcePage(
+                    urlHandler
+                )
+                3 -> RecommendationsPage(
+                    urlHandler = urlHandler,
+                    onNavigateToDetail = onNavigateToDetail)
+                4 -> BugsPage(
                     bugs = bugs,
                     onEdit = onBugEdit,
                     onDelete = onBugDelete,
                     onAdd = onBugAdd,
                     onNavigateToBugDetail = onNavigateToBugDetail
                 )
-                3 -> ToolboxPage(urlHandler = getPlatformUrlHandler())
-                4 -> OpenSourcePage(urlHandler = getPlatformUrlHandler())
-                5 -> PublishingPage(urlHandler = getPlatformUrlHandler())
+                5 -> PublishingPage(
+                    urlHandler = urlHandler,
+                    onNavigateToHelp = onNavigateToHelp
+                )
                 6 -> AboutPage()
             }
         }
