@@ -56,6 +56,7 @@ import cn.kotlinmultiplatform.jeady.icons.Category
 import cn.kotlinmultiplatform.jeady.icons.NewReleases
 import cn.kotlinmultiplatform.jeady.icons.Psychology
 import cn.kotlinmultiplatform.jeady.icons.Whatshot
+import cn.kotlinmultiplatform.jeady.platform.UrlHandler
 import kotlinmultiplatform.composeapp.generated.resources.Res
 import kotlinmultiplatform.composeapp.generated.resources.compose_hero
 import kotlinmultiplatform.composeapp.generated.resources.flutter_hero
@@ -82,7 +83,9 @@ data class RecommendItem(
 data class CarouselItem(
     val title: String,
     val description: String,
-    val iconRes: DrawableResource
+    val iconRes: DrawableResource,
+    val officialUrl: String,
+    val documentationUrl: String
 )
 
 data class TechCategory(
@@ -161,33 +164,44 @@ private object CarouselColors {
 @OptIn(ExperimentalFoundationApi::class, ExperimentalResourceApi::class)
 @Composable
 fun RecommendationsPage(
+    urlHandler: UrlHandler,
     onNavigateToDetail: (String, String) -> Unit
 ) {
     val carouselItems = listOf(
         CarouselItem(
             title = "Kotlin Multiplatform",
             description = "一次编写，处处运行\n让跨平台开发更简单",
-            iconRes = Res.drawable.tech_hero
+            iconRes = Res.drawable.tech_hero,
+            officialUrl = "https://kotlinlang.org/docs/multiplatform.html",
+            documentationUrl = "https://kotlinlang.org/docs/multiplatform-get-started.html"
         ),
         CarouselItem(
             title = "Compose Multiplatform",
             description = "现代化声明式UI\n为所有平台构建精美应用",
-            iconRes = Res.drawable.compose_hero
+            iconRes = Res.drawable.compose_hero,
+            officialUrl = "https://www.jetbrains.com/lp/compose-multiplatform/",
+            documentationUrl = "https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-multiplatform-getting-started.html"
         ),
         CarouselItem(
             title = "开源生态系统",
             description = "丰富的开源库和工具\n助力开发效率提升",
-            iconRes = Res.drawable.flutter_hero
+            iconRes = Res.drawable.flutter_hero,
+            officialUrl = "https://github.com/JetBrains/compose-multiplatform",
+            documentationUrl = "https://github.com/JetBrains/compose-multiplatform/tree/master/tutorials"
         ),
         CarouselItem(
             title = "跨平台开发",
             description = "Android、iOS、Desktop\n一套代码，多端运行",
-            iconRes = Res.drawable.tech_hero
+            iconRes = Res.drawable.tech_hero,
+            officialUrl = "https://kotlinlang.org/docs/native-overview.html",
+            documentationUrl = "https://kotlinlang.org/docs/multiplatform-mobile-getting-started.html"
         ),
         CarouselItem(
             title = "原生性能",
             description = "编译为原生代码\n获得最佳运行性能",
-            iconRes = Res.drawable.compose_hero
+            iconRes = Res.drawable.compose_hero,
+            officialUrl = "https://kotlinlang.org/docs/native-overview.html",
+            documentationUrl = "https://kotlinlang.org/docs/native-get-started.html"
         )
     )
     
@@ -294,7 +308,7 @@ fun RecommendationsPage(
     ) {
         // 轮播图分
         item {
-            ImageCarousel(carouselItems)
+            ImageCarousel(carouselItems, urlHandler)
         }
         
         // 热门推荐
@@ -316,13 +330,13 @@ fun RecommendationsPage(
 }
 
 @Composable
-private fun ImageCarousel(items: List<CarouselItem>) {
+private fun ImageCarousel(items: List<CarouselItem>, urlHandler: UrlHandler) {
     val currentIndex = remember { mutableStateOf(0) }
     val scope = rememberCoroutineScope()
     
     // 添加动画状态
     val animatedIndex = remember { Animatable(0f) }
-    // 主tab的透明度动画状态
+    // 主tab的透明度画状态
     val mainCardAlpha = remember { Animatable(0f) }
     
     // 初始动画 - 只为主tab添加
@@ -387,6 +401,7 @@ private fun ImageCarousel(items: List<CarouselItem>) {
                         1 -> CarouselColors.Compose
                         else -> CarouselColors.OpenSource
                     },
+                    urlHandler = urlHandler,
                     modifier = Modifier
                         .weight(1f)
                         .padding(horizontal = 4.dp)
@@ -418,6 +433,7 @@ private fun CarouselCard(
     animatedAlpha: Float,
     animatedOffset: Float,
     colors: List<Color>,
+    urlHandler: UrlHandler,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -474,10 +490,10 @@ private fun CarouselCard(
                 Surface(
                     shape = RoundedCornerShape(4.dp),
                     color = KotlinColors.Primary,
-                    modifier = Modifier.clickable { /* TODO: Add action */ }
+                    modifier = Modifier.clickable { urlHandler.openUrl(item.officialUrl) }
                 ) {
                     Text(
-                        text = "开始使用",
+                        text = "官网",
                         color = Color.White,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     )
@@ -485,10 +501,10 @@ private fun CarouselCard(
                 Surface(
                     shape = RoundedCornerShape(4.dp),
                     color = Color.White.copy(alpha = 0.15f),
-                    modifier = Modifier.clickable { /* TODO: Add action */ }
+                    modifier = Modifier.clickable { urlHandler.openUrl(item.documentationUrl) }
                 ) {
                     Text(
-                        text = "了解更多",
+                        text = "文档",
                         color = Color.White,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     )

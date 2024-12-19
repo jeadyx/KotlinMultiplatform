@@ -322,7 +322,7 @@ fun Navigation(
         // 内容区域
         Box(modifier = Modifier.weight(1f)) {
             when (selectedTab) {
-                0 -> RecommendationsPage { itemId, source ->
+                0 -> RecommendationsPage(urlHandler = getPlatformUrlHandler()) { itemId, source ->
                     onNavigateToDetail(itemId, source)
                 }
                 1 -> BlogPage(
