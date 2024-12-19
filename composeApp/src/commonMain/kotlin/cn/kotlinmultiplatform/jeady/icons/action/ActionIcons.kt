@@ -45,6 +45,34 @@ public val Icons.Filled.OpenInNew: ImageVector
     }
 private var _openInNew: ImageVector? = null 
 
+public val Icons.Filled.Publish: ImageVector
+    get() {
+        if (_publish != null) {
+            return _publish!!
+        }
+        _publish = materialIcon(name = "Filled.Publish") {
+            materialPath {
+                moveTo(5f, 4f)
+                verticalLineToRelative(2f)
+                horizontalLineToRelative(14f)
+                verticalLineToRelative(-2f)
+                horizontalLineTo(5f)
+                close()
+                moveTo(5f, 14f)
+                horizontalLineToRelative(4f)
+                verticalLineToRelative(6f)
+                horizontalLineToRelative(6f)
+                verticalLineToRelative(-6f)
+                horizontalLineToRelative(4f)
+                lineToRelative(-7f, -7f)
+                lineToRelative(-7f, 7f)
+                close()
+            }
+        }
+        return _publish!!
+    }
+private var _publish: ImageVector? = null
+
 val Icons.Filled.Help: ImageVector
     get() {
         if (_help != null) {

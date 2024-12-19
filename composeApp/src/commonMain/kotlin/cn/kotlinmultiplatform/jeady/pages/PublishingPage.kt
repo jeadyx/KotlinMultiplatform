@@ -27,6 +27,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,7 +64,8 @@ data class AppInfo(
 @Composable
 fun PublishingPage(
     urlHandler: UrlHandler,
-    onNavigateToHelp: () -> Unit
+    onNavigateToHelp: () -> Unit,
+    onClose: () -> Unit
 ) {
     var selectedPlatform by remember { mutableStateOf<String?>(null) }
     var appInfo by remember { mutableStateOf(AppInfo()) }
@@ -72,6 +74,11 @@ fun PublishingPage(
         topBar = {
             TopAppBar(
                 title = { Text("应用发布") },
+                navigationIcon = {
+                    IconButton(onClick = onClose) {
+                        Icon(Icons.Default.Close, contentDescription = "关闭")
+                    }
+                },
                 actions = {
                     IconButton(onClick = onNavigateToHelp) {
                         Icon(Icons.Default.Help, contentDescription = "帮助")

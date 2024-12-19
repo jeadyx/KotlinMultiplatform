@@ -47,6 +47,7 @@ import cn.kotlinmultiplatform.jeady.pages.DetailPage
 import cn.kotlinmultiplatform.jeady.pages.HelpPage
 import cn.kotlinmultiplatform.jeady.pages.LoginPage
 import cn.kotlinmultiplatform.jeady.pages.OpenSourcePage
+import cn.kotlinmultiplatform.jeady.pages.ProductsPage
 import cn.kotlinmultiplatform.jeady.pages.PublishingPage
 import cn.kotlinmultiplatform.jeady.pages.RecommendationsPage
 import cn.kotlinmultiplatform.jeady.pages.RegisterPage
@@ -268,6 +269,16 @@ fun Navigation(
 ) {
     var currentPage by remember { mutableStateOf(0) }
     val urlHandler = getPlatformUrlHandler()
+    var showPublishingPage by remember { mutableStateOf(false) }
+
+    if (showPublishingPage) {
+        PublishingPage(
+            urlHandler = urlHandler,
+            onNavigateToHelp = onNavigateToHelp,
+            onClose = { showPublishingPage = false }
+        )
+        return
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -377,7 +388,7 @@ fun Navigation(
                     contentColor = if (currentPage == 5) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface
                 )
             ) {
-                Text("发布")
+                Text("成品")
             }
             TextButton(
                 onClick = { currentPage = 6 },
@@ -409,9 +420,9 @@ fun Navigation(
                     onAdd = onBugAdd,
                     onNavigateToBugDetail = onNavigateToBugDetail
                 )
-                5 -> PublishingPage(
+                5 -> ProductsPage(
                     urlHandler = urlHandler,
-                    onNavigateToHelp = onNavigateToHelp
+                    onPublishClick = { showPublishingPage = true }
                 )
                 6 -> AboutPage()
             }
