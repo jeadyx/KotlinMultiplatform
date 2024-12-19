@@ -46,6 +46,7 @@ import cn.kotlinmultiplatform.jeady.pages.BugsPage
 import cn.kotlinmultiplatform.jeady.pages.DetailPage
 import cn.kotlinmultiplatform.jeady.pages.LoginPage
 import cn.kotlinmultiplatform.jeady.pages.OpenSourcePage
+import cn.kotlinmultiplatform.jeady.pages.PublishingPage
 import cn.kotlinmultiplatform.jeady.pages.RecommendationsPage
 import cn.kotlinmultiplatform.jeady.pages.RegisterPage
 import cn.kotlinmultiplatform.jeady.pages.ToolboxPage
@@ -253,7 +254,7 @@ fun Navigation(
     onBugDelete: (String) -> Unit,
     onBugAdd: () -> Unit
 ) {
-    val tabs = listOf("推荐", "博客", "Bugs", "工具箱", "开源", "关于")
+    val tabs = listOf("推荐", "博客", "问答", "工具箱", "开源", "发布", "关于")
 
     Column(modifier = Modifier.fillMaxSize()) {
         // 顶部栏
@@ -339,7 +340,8 @@ fun Navigation(
                 )
                 3 -> ToolboxPage(urlHandler = getPlatformUrlHandler())
                 4 -> OpenSourcePage(urlHandler = getPlatformUrlHandler())
-                5 -> AboutPage()
+                5 -> PublishingPage(urlHandler = getPlatformUrlHandler())
+                6 -> AboutPage()
             }
         }
     }
