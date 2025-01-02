@@ -1,26 +1,64 @@
-This is a Kotlin Multiplatform project targeting Android, iOS, Web, Desktop, Server.
+# Kotlin Multiplatform Demo
 
-* `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - `commonMain` is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    `iosMain` would be the right folder for such calls.
+这是一个使用 Kotlin Multiplatform 构建的演示项目，展示了如何使用 Kotlin 和 Compose Multiplatform 创建跨平台应用。
 
-* `/iosApp` contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform, 
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+## 特性
 
-* `/server` is for the Ktor server application.
+- 使用 Kotlin Multiplatform 进行跨平台开发
+- 使用 Compose Multiplatform 构建用户界面
+- 支持 Android、iOS、Desktop 和 Web 平台
+- 使用 WebAssembly 进行 Web 部署
 
-* `/shared` is for the code that will be shared between all targets in the project.
-  The most important subfolder is `commonMain`. If preferred, you can add code to the platform-specific folders here too.
+## 构建和运行
 
+### 前提条件
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html),
-[Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform/#compose-multiplatform),
-[Kotlin/Wasm](https://kotl.in/wasm/)…
+- JDK 17 或更高版本
+- Android Studio Arctic Fox 或更高版本
+- Xcode 12 或更高版本（用于 iOS 构建）
+- Node.js 和 npm（用于 Web 构建）
 
-We would appreciate your feedback on Compose/Web and Kotlin/Wasm in the public Slack channel [#compose-web](https://slack-chats.kotlinlang.org/c/compose-web).
-If you face any issues, please report them on [GitHub](https://github.com/JetBrains/compose-multiplatform/issues).
+### 构建步骤
 
-You can open the web application by running the `:composeApp:wasmJsBrowserDevelopmentRun` Gradle task.
+1. 克隆仓库：
+   ```bash
+   git clone https://github.com/yourusername/KotlinMultiplatform.git
+   ```
+
+2. 进入项目目录：
+   ```bash
+   cd KotlinMultiplatform
+   ```
+
+3. 构建项目：
+   ```bash
+   ./gradlew build
+   ```
+
+### 运行
+
+- Web 版本（开发模式）：
+  ```bash
+  ./gradlew wasmJsBrowserDevelopmentRun
+  ```
+
+- Web 版本（生产模式）：
+  ```bash
+  ./gradlew wasmJsBrowserProductionWebpack
+  ```
+
+- Android 版本：
+  使用 Android Studio 打开项目并运行
+
+- Desktop 版本：
+  ```bash
+  ./gradlew :composeApp:run
+  ```
+
+## 部署
+
+项目使用 GitHub Actions 自动部署到 GitHub Pages。每次推送到 main 分支时都会触发部署。
+
+## 许可证
+
+本项目采用 MIT 许可证。详见 [LICENSE](LICENSE) 文件。

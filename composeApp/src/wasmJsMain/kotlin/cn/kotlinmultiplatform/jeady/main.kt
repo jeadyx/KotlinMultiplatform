@@ -6,7 +6,9 @@ import kotlinx.browser.document
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
-    ComposeViewport(document.body!!) {
+    val root = document.getElementById("root")
+        ?: throw IllegalStateException("Root element not found")
+    ComposeViewport(root) {
         App()
     }
 }

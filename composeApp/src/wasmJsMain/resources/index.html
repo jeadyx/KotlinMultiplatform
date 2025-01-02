@@ -6,7 +6,18 @@
     <title>KotlinMultiplatform</title>
     <link type="text/css" rel="stylesheet" href="styles.css">
     <script type="application/javascript" src="composeApp.js"></script>
+    <script>
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.error('Error:', error);
+            const errorDiv = document.getElementById('error');
+            if (errorDiv) {
+                errorDiv.textContent = 'Error: ' + error;
+            }
+        };
+    </script>
 </head>
-<body>
+<body style="display: flex; flex-direction: column; min-height: 100vh;">
+    <div id="root"></div>
+    <div id="error" style="color: red;"></div>
 </body>
 </html>

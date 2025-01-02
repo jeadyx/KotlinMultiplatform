@@ -36,17 +36,23 @@ kotlin {
     wasmJs {
         moduleName = "composeApp"
         browser {
-            val rootDirPath = project.rootDir.path
-            val projectDirPath = project.projectDir.path
+            distribution {
+                directory = File("$projectDir/build/dist/")
+            }
             commonWebpackConfig {
                 outputFileName = "composeApp.js"
                 devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
                     static = (static ?: mutableListOf()).apply {
                         // Serve sources to debug inside browser
-                        add(rootDirPath)
-                        add(projectDirPath)
+                        add(project.projectDir.path)
                     }
                 }
+                // Add source maps for better debugging
+                sourceMaps = true
+                // Optimize for production
+                mode = KotlinWebpackConfig.Mode.PRODUCTION
+                // Configure output path for GitHub Pages
+                output?.publicPath = "./"
             }
         }
         binaries.executable()
@@ -79,6 +85,12 @@ kotlin {
         val wasmJsMain by getting {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material)
+                implementation(compose.ui)
+                implementation(compose.components.resources)
+                implementation(compose.components.uiToolingPreview)
             }
         }
     }
