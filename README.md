@@ -22,7 +22,7 @@
 
 1. 克隆仓库：
    ```bash
-   git clone https://github.com/yourusername/KotlinMultiplatform.git
+   git clone https://github.com/jeadyx/KotlinMultiplatform.git
    ```
 
 2. 进入项目目录：
