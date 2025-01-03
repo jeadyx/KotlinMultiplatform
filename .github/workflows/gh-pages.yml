@@ -37,4 +37,5 @@ jobs:
         with:
           folder: composeApp/build/dist
           branch: gh-pages
-          clean: true 
+          clean: true
+          force: true 
