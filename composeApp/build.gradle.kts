@@ -52,7 +52,9 @@ kotlin {
                 // Optimize for production
                 mode = KotlinWebpackConfig.Mode.PRODUCTION
                 // Configure output path for GitHub Pages
-                output?.publicPath = "/KotlinMultiplatform/"
+                output = KotlinWebpackConfig.Output().apply {
+                    publicPath = "/KotlinMultiplatform/"
+                }
             }
         }
         binaries.executable()
