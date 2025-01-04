@@ -1,0 +1,11 @@
+abi_version=1.8.0
+builtins_platform=WASM
+compiler_version=2.0.21
+depends=kotlin
+ir_signature_versions=1,2
+jsOutputName=KotlinMultiplatform-shared-wasm-js
+metadata_version=1.4.1
+serializedIrFileFingerprints=21hkwbg3cvih.32sy61e6klb6n
+serializedKlibFingerprint=3rx1znvalr5yh.34wt0kbn21oi4
+unique_name=KotlinMultiplatform\:shared
+wasm_targets=wasm-js
