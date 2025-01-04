@@ -2,6 +2,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalDistributionDsl
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
@@ -32,12 +33,12 @@ kotlin {
     
     jvm("desktop")
     
-    @OptIn(ExperimentalWasmDsl::class)
+    @OptIn(ExperimentalWasmDsl::class, ExperimentalDistributionDsl::class)
     wasmJs {
         moduleName = "composeApp"
         browser {
             distribution {
-                directory = File("$projectDir/build/dist/")
+                outputDirectory = File("$projectDir/build/dist/")
             }
             commonWebpackConfig {
                 outputFileName = "composeApp.js"
@@ -53,9 +54,6 @@ kotlin {
                 mode = KotlinWebpackConfig.Mode.PRODUCTION
                 // Configure output path for GitHub Pages
                 outputPath = File("$projectDir/build/dist/")
-                webpackConfigApply {
-                    it.output.publicPath = "/KotlinMultiplatform/"
-                }
             }
         }
         binaries.executable()
