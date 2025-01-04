@@ -54,8 +54,6 @@ kotlin {
                 mode = KotlinWebpackConfig.Mode.PRODUCTION
                 // Configure output path for GitHub Pages
                 outputPath = File("$projectDir/build/dist/")
-                // Configure public path for assets
-                publicPath = "/KotlinMultiplatform/dist/"
             }
         }
         binaries.executable()
