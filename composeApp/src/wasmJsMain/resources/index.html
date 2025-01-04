@@ -7,9 +7,8 @@
     <script>
         // Set the public path for webpack to find assets
         window.__webpack_public_path__ = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
-    </script>
-    <script>
-        // Polyfill for WASM MIME type
+        
+        // Polyfill for WASM MIME type and loading
         WebAssembly.instantiateStreaming = async (response, imports) => {
             const buffer = await (await response).arrayBuffer();
             return await WebAssembly.instantiate(buffer, imports);

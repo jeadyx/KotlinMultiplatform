@@ -55,6 +55,13 @@ kotlin {
                 // Configure output path for GitHub Pages
                 outputPath = File("$projectDir/build/dist/")
             }
+            webpackTask {
+                output.filename.set("composeApp.js")
+                output.library.set("composeApp")
+                output.libraryTarget.set("umd")
+                output.globalObject.set("this")
+                output.assetModuleFilename.set("[name][ext]")
+            }
         }
         binaries.executable()
     }
