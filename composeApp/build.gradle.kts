@@ -55,7 +55,7 @@ kotlin {
                 // Configure output path for GitHub Pages
                 outputPath = File("$projectDir/build/dist/")
                 // Configure public path for assets
-                output.publicPath = "/KotlinMultiplatform/dist/"
+                publicPath = "/KotlinMultiplatform/dist/"
             }
         }
         binaries.executable()
