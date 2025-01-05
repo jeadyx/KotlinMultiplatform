@@ -1,16 +1,42 @@
 #!/bin/bash
 
-# 设置变量
-SERVER="root@alicloud.com"
-REMOTE_DIR="/var/www/html"
+# 配置变量
+REMOTE_USER="root"
+REMOTE_HOST="alicloud.com"
+REMOTE_DIR="/var/www/kotlinmultiplatform.cn"
+LOCAL_DIST="composeApp/build/dist"
 
-# 上传文件
-scp composeApp/build/kotlin-webpack/wasmJs/productionExecutable/2eaba8643e2ccdf352b4.wasm $SERVER:$REMOTE_DIR/
-scp composeApp/build/kotlin-webpack/wasmJs/productionExecutable/composeApp.js $SERVER:$REMOTE_DIR/
-scp composeApp/src/wasmJsMain/resources/styles.css $SERVER:$REMOTE_DIR/
-scp composeApp/src/wasmJsMain/resources/index.html $SERVER:$REMOTE_DIR/
+# 确保本地构建完成
+./gradlew wasmJsBrowserProductionWebpack
 
-# 设置权限
-ssh $SERVER "chmod 644 $REMOTE_DIR/*"
+# 创建远程目录（如果不存在）
+ssh $REMOTE_USER@$REMOTE_HOST "mkdir -p $REMOTE_DIR"
 
-echo "部署完成！" 
+# 复制文件到服务器
+rsync -avz --delete $LOCAL_DIST/ $REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/
+
+# 配置Nginx
+ssh $REMOTE_USER@$REMOTE_HOST "cat > /etc/nginx/conf.d/kotlinmultiplatform.cn.conf << 'EOL'
+server {
+    listen 80;
+    server_name kotlinmultiplatform.cn;
+    root $REMOTE_DIR;
+    index index.html;
+
+    location / {
+        try_files \$uri \$uri/ /index.html;
+    }
+
+    location ~ \.wasm$ {
+        types {
+            application/wasm wasm;
+        }
+        add_header Cache-Control 'no-store';
+    }
+}
+EOL"
+
+# 测试Nginx配置并重启
+ssh $REMOTE_USER@$REMOTE_HOST "nginx -t && systemctl restart nginx"
+
+echo "部署完成！请访问 http://kotlinmultiplatform.cn 查看结果" 

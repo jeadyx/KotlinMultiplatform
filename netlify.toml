@@ -1,0 +1,8 @@
+[build]
+  publish = "composeApp/build/dist"
+  command = "./gradlew wasmJsBrowserProductionWebpack"
+
+[[headers]]
+  for = "/*.wasm"
+  [headers.values]
+    Content-Type = "application/wasm" 
