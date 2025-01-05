@@ -44,16 +44,20 @@ kotlin {
                 outputFileName = "composeApp.js"
                 devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
                     static = (static ?: mutableListOf()).apply {
-                        // Serve sources to debug inside browser
                         add(project.projectDir.path)
                     }
                 }
-                // Add source maps for better debugging
                 sourceMaps = true
-                // Optimize for production
                 mode = KotlinWebpackConfig.Mode.PRODUCTION
-                // Configure output path for GitHub Pages
                 outputPath = File("$projectDir/build/dist/")
+                publicPath = ""
+            }
+            webpackTask {
+                output.filename.set("composeApp.js")
+                output.library.set("composeApp")
+                output.libraryTarget.set("umd")
+                output.globalObject.set("this")
+                output.assetModuleFilename.set("composeApp.wasm")
             }
         }
         binaries.executable()
