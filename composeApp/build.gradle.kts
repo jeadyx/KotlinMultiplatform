@@ -50,14 +50,12 @@ kotlin {
                 sourceMaps = true
                 mode = KotlinWebpackConfig.Mode.PRODUCTION
                 outputPath = File("$projectDir/build/dist/")
-                publicPath = ""
             }
             webpackTask {
-                output.filename.set("composeApp.js")
-                output.library.set("composeApp")
-                output.libraryTarget.set("umd")
-                output.globalObject.set("this")
-                output.assetModuleFilename.set("composeApp.wasm")
+                mainOutputFileName = "composeApp.js"
+                output.libraryTarget = "umd"
+                output.globalObject = "this"
+                output.library = "composeApp"
             }
         }
         binaries.executable()
