@@ -14,9 +14,10 @@ plugins {
 
 kotlin {
     androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "11"
+            }
         }
     }
     
@@ -51,14 +52,12 @@ kotlin {
                 sourceMaps = true
                 mode = KotlinWebpackConfig.Mode.PRODUCTION
                 outputPath = File("$projectDir/build/dist/")
-                args = listOf("--env", "basePath=/KotlinMultiplatform/")
             }
             webpackTask {
                 mainOutputFileName = "composeApp.js"
+                output.library = "composeApp"
                 output.libraryTarget = "umd"
                 output.globalObject = "this"
-                output.library = "composeApp"
-                output.filename = "[name].wasm"
             }
         }
         binaries.executable()
