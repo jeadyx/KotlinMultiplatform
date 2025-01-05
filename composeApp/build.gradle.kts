@@ -46,16 +46,19 @@ kotlin {
                     static = (static ?: mutableListOf()).apply {
                         add(project.projectDir.path)
                     }
+                    open = true
                 }
                 sourceMaps = true
                 mode = KotlinWebpackConfig.Mode.PRODUCTION
                 outputPath = File("$projectDir/build/dist/")
+                args = listOf("--env", "basePath=/KotlinMultiplatform/")
             }
             webpackTask {
                 mainOutputFileName = "composeApp.js"
                 output.libraryTarget = "umd"
                 output.globalObject = "this"
                 output.library = "composeApp"
+                output.filename = "[name].wasm"
             }
         }
         binaries.executable()
